@@ -7,6 +7,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"os"
@@ -15,8 +16,10 @@ import (
 
 	"github.com/todkap/permanent-rotation/internal/csvio"
 	"github.com/todkap/permanent-rotation/internal/enrich"
+	"github.com/todkap/permanent-rotation/internal/gemini"
 	"github.com/todkap/permanent-rotation/internal/lastfm"
 	"github.com/todkap/permanent-rotation/internal/musicbrainz"
+	"github.com/todkap/permanent-rotation/internal/notes"
 	"github.com/todkap/permanent-rotation/internal/site"
 	"github.com/todkap/permanent-rotation/internal/spotify"
 )
@@ -39,13 +42,15 @@ func main() {
 	outPath := fs.String("out", "data/enriched.json", "enriched data file")
 	siteDir := fs.String("site", "site", "output directory for the rendered site")
 	minSongs := fs.Int("min", csvio.DefaultMinSongs, "minimum valid songs required")
+	contextPath := fs.String("context", "data/context.json", "background notes file")
+	includeMemory := fs.Bool("include-memory", true, "send memory text to the model (opt out with -include-memory=false)")
 	fs.Parse(args)
 
 	switch cmd {
 	case "enrich":
 		runEnrich(*csvPath, *outPath, *minSongs)
 	case "site":
-		runSite(*outPath, *siteDir)
+		runSite(*outPath, *siteDir, *contextPath)
 	case "playlist":
 		fmt.Println("playlist is not implemented in this skeleton yet.")
 		fmt.Println("Design (spec section 6): local run only, browser consent once,")
@@ -53,11 +58,7 @@ func main() {
 		fmt.Println("Order follows life chapters, no ranking.")
 		os.Exit(1)
 	case "notes":
-		fmt.Println("notes is not implemented in this skeleton yet.")
-		fmt.Println("Design (spec section 6): opt-in per run, sends title/artist/tags only")
-		fmt.Println("(memory text only with --include-memory), Gemini via GEMINI_API_KEY,")
-		fmt.Println("every note needs a source URL, output is reviewed before commit.")
-		os.Exit(1)
+		runNotes(*csvPath, *contextPath, *minSongs, *includeMemory)
 	default:
 		fmt.Fprintln(os.Stderr, "unknown command:", cmd)
 		os.Exit(2)
@@ -150,13 +151,87 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 	fmt.Printf("enriched %d/%d songs -> %s\n", len(out.Songs), len(songs), outPath)
 }
 
-func runSite(outPath, siteDir string) {
+func runSite(outPath, siteDir, contextPath string) {
 	f, err := enrich.LoadFile(outPath)
 	if err != nil {
 		fail(err)
 	}
-	if err := site.Render(f, siteDir); err != nil {
+	ctx, err := notes.Load(contextPath)
+	if err != nil {
+		fail(err)
+	}
+	if err := site.Render(f, ctx, siteDir); err != nil {
 		fail(err)
 	}
 	fmt.Printf("rendered %d songs -> %s\n", len(f.Songs), siteDir)
+}
+
+const notesPrompt = `You are writing a background note for a personal music page.
+
+Song: %s
+Artist: %s
+Tags from the listener: %s
+%s
+Write a 2-3 sentence background note about the song: release context, chart history, or musical context. Facts must be real - if you are not confident of a fact, leave it out. %sNever invent facts about the listener's life; you may only reference what they wrote above.
+
+Respond with JSON only: {"note": "...", "source_url": "..."} where source_url is a real URL (Wikipedia, official chart archive, Last.fm) supporting the note. If you cannot give a real source URL, respond {"note": "", "source_url": ""}.`
+
+func runNotes(csvPath, contextPath string, minSongs int, includeMemory bool) {
+	songs, err := csvio.Load(csvPath, minSongs)
+	if err != nil {
+		fail(err)
+	}
+	ctx, err := notes.Load(contextPath)
+	if err != nil {
+		fail(err)
+	}
+	g := gemini.New(env("GEMINI_API_KEY"))
+
+	type reply struct {
+		Note      string `json:"note"`
+		SourceURL string `json:"source_url"`
+	}
+	var added, dropped int
+	for _, s := range songs {
+		k := notes.Key(s.Song, s.Artist)
+		memCtx, memRule := "", "The listener did not share a personal memory for this one. "
+		if includeMemory && s.Memory != "" {
+			memCtx = "The listener's own words about it: " + s.Memory + "\n"
+			memRule = "You may acknowledge the listener's association with the song. "
+		}
+		prompt := fmt.Sprintf(notesPrompt, s.Song, s.Artist, s.Tags, memCtx, memRule)
+		text, err := g.Generate(prompt)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "warn:", s.Song, "-", err)
+			dropped++
+			time.Sleep(time.Second)
+			continue
+		}
+		text = strings.TrimSpace(strings.Trim(strings.TrimSpace(text), "`"))
+		text = strings.TrimPrefix(text, "json")
+		var r reply
+		if err := json.Unmarshal([]byte(strings.TrimSpace(text)), &r); err != nil {
+			fmt.Printf("dropped (unparseable): %s - %s\n", s.Song, s.Artist)
+			dropped++
+			time.Sleep(time.Second)
+			continue
+		}
+		n := notes.Note{Note: strings.TrimSpace(r.Note), SourceURL: strings.TrimSpace(r.SourceURL)}
+		if !notes.Valid(n) {
+			fmt.Printf("dropped (no source): %s - %s\n", s.Song, s.Artist)
+			dropped++
+		} else {
+			ctx.Notes[k] = n
+			added++
+		}
+		time.Sleep(time.Second) // free-tier pacing
+	}
+	ctx.GeneratedAt = time.Now().UTC().Format(time.RFC3339)
+	ctx.Model = gemini.Model
+	ctx.IncludeMemory = includeMemory
+	if err := ctx.Save(contextPath); err != nil {
+		fail(err)
+	}
+	fmt.Printf("notes: %d written, %d dropped -> %s\n", added, dropped, contextPath)
+	fmt.Println("Review the notes before committing - the site only renders what you commit.")
 }
