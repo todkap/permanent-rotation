@@ -1,4 +1,3 @@
-
 name: build
 
 on:
@@ -9,9 +8,6 @@ on:
       - 'songs.csv'
       - 'examples/**'
       - 'data/overrides.csv'
-  # optional monthly refresh of the numbers; uncomment if wanted
-  # schedule:
-  #   - cron: '0 9 1 * *'
 
 permissions:
   contents: write
@@ -19,7 +15,6 @@ permissions:
   id-token: write
 
 env:
-  # Forks: point this at your own list, usually songs.csv
   CSV_PATH: examples/todd/songs.csv
   OUT_PATH: examples/todd/enriched.json
   SITE_DIR: site
@@ -31,6 +26,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -54,3 +52,4 @@ jobs:
         with:
           path: site
       - uses: actions/deploy-pages@v4
+        id: deployment
