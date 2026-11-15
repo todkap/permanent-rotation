@@ -185,7 +185,7 @@ func runNotes(csvPath, contextPath string, minSongs int, includeMemory bool) {
 	if err != nil {
 		fail(err)
 	}
-	g := gemini.New(env("GEMINI_API_KEY"))
+	g := gemini.New(env("GEMINI_API_KEY"), env("GEMINI_MODEL"))
 
 	type reply struct {
 		Note      string `json:"note"`
@@ -227,7 +227,7 @@ func runNotes(csvPath, contextPath string, minSongs int, includeMemory bool) {
 		time.Sleep(time.Second) // free-tier pacing
 	}
 	ctx.GeneratedAt = time.Now().UTC().Format(time.RFC3339)
-	ctx.Model = gemini.Model
+	ctx.Model = g.Model()
 	ctx.IncludeMemory = includeMemory
 	if err := ctx.Save(contextPath); err != nil {
 		fail(err)

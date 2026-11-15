@@ -47,6 +47,7 @@ Docs: https://www.last.fm/api
 2. Click **Create API key**, name it, and attach it to a new or existing Google Cloud project when prompted.
 3. Copy the key (typically starts with `AIza`).
 4. The free tier has rate limits and its own data-use terms. Read them before sending any of your own writing to the API.
+5. The model name is config, not code: it defaults to `gemini-3.8-flash`. To override it for Action runs, add a `GEMINI_MODEL` repository variable under **Settings, Secrets and variables, Actions, Variables tab** (leave it unset to keep the default). For local runs, export `GEMINI_MODEL` in your shell.
 
 Docs: https://aistudio.google.com/docs/api-key
 
