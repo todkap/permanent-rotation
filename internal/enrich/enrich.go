@@ -1,0 +1,176 @@
+// Package enrich matches each CSV row to public music data and merges the
+// results into enriched.json. Rules that always hold: never invent a match
+// (unmatched songs are listed and skipped), manual overrides always win,
+// and matching is deterministic so a song never silently changes identity.
+package enrich
+
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+	"sort"
+	"strings"
+	"time"
+
+	"github.com/todkap/permanent-rotation/internal/csvio"
+)
+
+// Record is one enriched song. It mirrors the spec's enriched.json schema.
+type Record struct {
+	Song              string `json:"song"`
+	Artist            string `json:"artist"`
+	LifeYear          int    `json:"life_year"`
+	Chapter           string `json:"chapter"`
+	Memory            string `json:"memory,omitempty"`
+	Tags              string `json:"tags,omitempty"`
+	SpotifyID         string `json:"spotify_id,omitempty"`
+	SpotifyURL        string `json:"spotify_url,omitempty"`
+	ReleaseYear       int    `json:"release_year,omitempty"`
+	Album             string `json:"album,omitempty"`
+	LastfmListeners   int64  `json:"lastfm_listeners"`
+	LastfmPlaycount   int64  `json:"lastfm_playcount"`
+	SpotifyPopularity *int   `json:"spotify_popularity"` // nil for post-Feb-2026 Dev Mode apps
+	Tier              string `json:"tier"`               // canon | middle | deep-cut
+	MatchConfidence   string `json:"match_confidence"`   // exact | fuzzy | manual
+	YearConflict      bool   `json:"year_conflict,omitempty"`
+	FetchedAt         string `json:"fetched_at,omitempty"`
+}
+
+// File is the committed enriched.json document.
+type File struct {
+	GeneratedAt string   `json:"generated_at"`
+	Songs       []Record `json:"songs"`
+}
+
+func LoadFile(path string) (*File, error) {
+	b, err := os.ReadFile(path)
+	if os.IsNotExist(err) {
+		return &File{}, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	var f File
+	if err := json.Unmarshal(b, &f); err != nil {
+		return nil, fmt.Errorf("parsing %s: %w", path, err)
+	}
+	return &f, nil
+}
+
+func (f *File) Save(path string) error {
+	b, err := json.MarshalIndent(f, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(path, append(b, '\n'), 0o644)
+}
+
+func key(song, artist string) string {
+	return strings.ToLower(strings.TrimSpace(song)) + "|" + strings.ToLower(strings.TrimSpace(artist))
+}
+
+// Override pins a match by hand. Overrides always win.
+type Override struct {
+	SpotifyID   string
+	ReleaseYear int
+}
+
+// LoadOverrides reads data/overrides.csv (song,artist,spotify_id,release_year).
+func LoadOverrides(path string) (map[string]Override, error) {
+	out := map[string]Override{}
+	b, err := os.ReadFile(path)
+	if os.IsNotExist(err) {
+		return out, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	for i, line := range strings.Split(string(b), "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "#") || i == 0 {
+			continue
+		}
+		parts := strings.Split(line, ",")
+		if len(parts) < 3 {
+			continue
+		}
+		var o Override
+		o.SpotifyID = strings.TrimSpace(parts[2])
+		if len(parts) > 3 {
+			fmt.Sscanf(strings.TrimSpace(parts[3]), "%d", &o.ReleaseYear)
+		}
+		out[key(parts[0], parts[1])] = o
+	}
+	return out, nil
+}
+
+// AssignTiers splits records into canon / middle / deep-cut by playcount
+// percentile within the list: top third canon, bottom third deep cut. The
+// split is relative to the list, so it scales with any song count.
+func AssignTiers(recs []Record) {
+	type pc struct {
+		i int
+		n int64
+	}
+	idx := make([]pc, len(recs))
+	for i, r := range recs {
+		idx[i] = pc{i, r.LastfmPlaycount}
+	}
+	sort.Slice(idx, func(a, b int) bool { return idx[a].n > idx[b].n })
+	n := len(idx)
+	for rank, p := range idx {
+		switch {
+		case n == 0:
+		case rank < n/3 || (n%3 != 0 && rank == n/3 && n < 3):
+			recs[p.i].Tier = "canon"
+		case rank >= 2*n/3:
+			recs[p.i].Tier = "deep-cut"
+		default:
+			recs[p.i].Tier = "middle"
+		}
+	}
+}
+
+// Merge reconciles freshly fetched records against the cached file.
+// Matching fields (spotify id, album, release year) come from the cache for
+// unchanged rows; metrics are always fresh. The caller does the fetching;
+// Merge only reconciles.
+func Merge(songs []csvio.Song, fetched map[string]Record, cached *File, overrides map[string]Override, now time.Time) (*File, []string) {
+	cachedByKey := map[string]Record{}
+	for _, r := range cached.Songs {
+		cachedByKey[key(r.Song, r.Artist)] = r
+	}
+	out := &File{GeneratedAt: now.UTC().Format(time.RFC3339)}
+	var problems []string
+	for _, s := range songs {
+		k := key(s.Song, s.Artist)
+		rec, ok := fetched[k]
+		if !ok {
+			if old, hit := cachedByKey[k]; hit && old.SpotifyID != "" {
+				rec = old // keep a previously matched record rather than dropping it
+			} else {
+				problems = append(problems, fmt.Sprintf("unmatched: %s - %s", s.Song, s.Artist))
+				continue
+			}
+		}
+		rec.Song, rec.Artist = s.Song, s.Artist
+		rec.LifeYear, rec.Chapter = s.LifeYear, s.Chapter
+		rec.Memory, rec.Tags = s.Memory, s.Tags
+		if o, hit := overrides[k]; hit {
+			if o.SpotifyID != "" {
+				rec.SpotifyID = o.SpotifyID
+				rec.SpotifyURL = "https://open.spotify.com/track/" + o.SpotifyID
+				rec.MatchConfidence = "manual"
+			}
+			if o.ReleaseYear != 0 {
+				rec.ReleaseYear = o.ReleaseYear
+			}
+		}
+		if rec.MatchConfidence == "" {
+			rec.MatchConfidence = "exact"
+		}
+		out.Songs = append(out.Songs, rec)
+	}
+	AssignTiers(out.Songs)
+	return out, problems
+}
