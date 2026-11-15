@@ -9,9 +9,9 @@ on:
         default: false
   push:
     branches: [main]
-    paths:
+    paths: # CSV-only triggers: the generated JSON this workflow commits can never retrigger it
       - 'songs.csv'
-      - 'examples/*/.csv'
+      - 'examples/**/*.csv'
       - 'data/overrides.csv'
   # optional monthly refresh of the numbers; uncomment if wanted
   # schedule:
@@ -54,6 +54,9 @@ jobs:
         if: github.event_name == 'workflow_dispatch' && inputs.notes
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          # Optional: Settings > Secrets and variables > Actions > Variables tab.
+          # Unset = empty = the tool's built-in default model.
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
         run: go run ./cmd/songs notes --csv "$CSV_PATH" --context "$CONTEXT_PATH"
       - name: render site
         run: go run ./cmd/songs site --out "$OUT_PATH" --context "$CONTEXT_PATH" --site "$SITE_DIR"
