@@ -1,0 +1,56 @@
+
+name: build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'songs.csv'
+      - 'examples/**'
+      - 'data/overrides.csv'
+  # optional monthly refresh of the numbers; uncomment if wanted
+  # schedule:
+  #   - cron: '0 9 1 * *'
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+env:
+  # Forks: point this at your own list, usually songs.csv
+  CSV_PATH: examples/todd/songs.csv
+  OUT_PATH: examples/todd/enriched.json
+  SITE_DIR: site
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+      - name: enrich
+        env:
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
+        run: go run ./cmd/songs enrich --csv "$CSV_PATH" --out "$OUT_PATH"
+      - name: render site
+        run: go run ./cmd/songs site --out "$OUT_PATH" --site "$SITE_DIR"
+      - name: commit data changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: 'chore: refresh enriched data'
+          file_pattern: 'examples/todd/enriched.json data/enriched.json'
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - uses: actions/deploy-pages@v4
