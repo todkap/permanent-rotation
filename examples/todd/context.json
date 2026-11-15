@@ -1,6 +1,91 @@
 {
-  "generated_at": "2026-11-15T23:42:07Z",
-  "model": "gemini-2.5-flash",
+  "generated_at": "2026-11-15T23:58:56Z",
+  "model": "gemini-3.5-flash-lite",
   "include_memory": true,
-  "notes": {}
+  "notes": {
+    "11 minutes|yungblud \u0026 halsey (feat. travis barker)": {
+      "note": "Released in February 2019, '11 Minutes' by YUNGBLUD and Halsey featuring Travis Barker is a high-energy modern alt-pop crossover that blends heavy drum-driven pop-punk nostalgia with rap-influenced vocal cadences. The collaborative track resonated with fans of the genre, offering a fresh take on classic 2000s alternative sounds.",
+      "source_url": "https://en.wikipedia.org/wiki/11_Minutes_(song)"
+    },
+    "colors|halsey": {
+      "note": "Released as part of Halsey's 2015 debut studio album, *Badlands*, \"Colors\" captures the atmospheric synth-pop sound that defined her early career. For fans of 1980s alternative music, the track delivers a catchy, melodic blend of nostalgia and modern pop production.",
+      "source_url": "https://en.wikipedia.org/wiki/Colors_(Halsey_song)"
+    },
+    "deep cover|dr. dre and snoop dogg": {
+      "note": "Released in 1992 as the lead single from the soundtrack to the crime film of the same name, 'Deep Cover' marked Dr. Dre's debut solo single after the breakup of N.W.A and famously introduced the world to Snoop Dogg. The track's minimalist, heavy funk-infused beat provided the foundation for Snoop's effortless lyrical flow, making it a hardcore rap classic that resonates strongly with anyone looking back at their high school days and hometown roots.",
+      "source_url": "https://en.wikipedia.org/wiki/Deep_Cover_(song)"
+    },
+    "dreams|van halen": {
+      "note": "Released in 1986 on the album 5150, Van Halen's \"Dreams\" became a definitive anthem of the era, showcasing the band's bold integration of prominent synthesizers into their hard rock sound alongside Sammy Hagar's soaring vocals. It remains a nostalgic favorite for anyone who first discovered its uplifting keyboard-driven energy on MTV back in middle school.",
+      "source_url": "https://en.wikipedia.org/wiki/Dreams_(Van_Halen_song)"
+    },
+    "freshman|verve pipe": {
+      "note": "\"The Freshman\" by American alternative rock band The Verve Pipe was released in 1996 as the third single from their debut major-label album, *Villagers*. Driven by its poignant acoustic intro and emotional crescendo, the track became a massive mainstream success, reaching number five on the US Billboard Hot 100 in 1997. For this listener, the song is forever intertwined with a pivotal post-college transition involving a temporary separation and a first-time stay at a friend's new place.",
+      "source_url": "https://en.wikipedia.org/wiki/The_Freshman"
+    },
+    "heartspark dollarsign|everclear": {
+      "note": "\"Heartspark Dollarsign\" is a track by the alternative rock band Everclear, featured on their breakout 1995 album *Sparkle and Fade*. For this listener, the song evokes memories of an Everclear performance at an Xmas Rave in Boston that featured both acoustic and rock sets, marking one of the final concerts shared with a college roommate.",
+      "source_url": "https://en.wikipedia.org/wiki/Sparkle_and_Fade"
+    },
+    "hey ya|outkast": {
+      "note": "Released in 2003 as part of Outkast's double album Speakerboxxx/The Love Below, 'Hey Ya!' became a massive cultural phenomenon and spent nine consecutive weeks at number one on the Billboard Hot 100. The iconic, Beatles-inspired music video remains a defining visual memory of the early 2000s MTV era. It's fitting that you associate this upbeat track with holding your newborn son and working out, capturing a vibrant snapshot in time.",
+      "source_url": "https://en.wikipedia.org/wiki/Hey_Ya!"
+    },
+    "home sweet home|mötley crüe": {
+      "note": "Released in 1985 on Mötley Crûé's album Theatre of Pain, \"Home Sweet Home\" helped define the era of the heavy metal power ballad and reached number 89 on the Billboard Hot 100. For many listeners, including those navigating the transition into middle school, the song's iconic piano intro and emotional resonance capture the bittersweet feeling of moving on and starting over.",
+      "source_url": "https://en.wikipedia.org/wiki/Home_Sweet_Home_(M%C3%B6tley_Cr%C3%BCe_song)"
+    },
+    "i write sins not tragedies|panic! at the disco": {
+      "note": "Released in 2005 by Las Vegas band Panic! At The Disco as the lead single from their debut album, 'A Fever You Can't Sweat Out,' the track became a defining anthem of the mid-2000s emo and theatrical rock wave with its massive hooks and iconic music video.",
+      "source_url": "https://en.wikipedia.org/wiki/I_Write_Sins_Not_Tragedies"
+    },
+    "i'll be|edwin mccain": {
+      "note": "Released in 1997 on Edwin McCain's album 'Misguided Roses', 'I's Be' became a major adult contemporary and billboard hit, often serving as a nostalgic soundtrack for major life transitions like college friendships and moving on.",
+      "source_url": "https://en.wikipedia.org/wiki/I%27ll_Be_(Edwin_McCain_song)"
+    },
+    "joey|concrete blonde": {
+      "note": "Released in 1990 on Concrete Blonde's album 'Bloodletting', 'Joey' became the band's biggest mainstream hit, reaching number 19 on the Billboard Hot 100 and spending several weeks at the top of the Modern Rock Tracks chart. For many fans tuning into alternative radio stations like WBRU or discovering new music through television soundtracks in the early 90s, Johnette Napolitano's haunting vocals defined an era. One listener fondly associates this unforgettable track with driving through southeastern Massachusetts to visit his then-girlfriend, who is now his wife.",
+      "source_url": "https://en.wikipedia.org/wiki/Joey_(Concrete_Blonde_song)"
+    },
+    "nightswimming|r.e.m.": {
+      "note": "Released as the fourth single from R.E.M.'s critically acclaimed 1992 album Automatic for the People, \"Nightswimming\" is a poignant track driven primarily by Michael Stipe's vocals, Bill Berry's piano, and a string arrangement by John Paul Jones. For this listener, the song holds a deeply personal connection as a close college friends' wedding song, evoking memories of shared happiness while reflecting on love, friendship, and growing up.",
+      "source_url": "https://en.wikipedia.org/wiki/Nightswimming"
+    },
+    "regret|new order": {
+      "note": "Released in 1983... wait, no, Regret by New Order was released in April 1993 as the lead single from their sixth album, Republic, and became a major alternative crossover hit. For this listener, the track captures the era of discovering '80s British alternative in college around 1993, sharing the music with a roommate, and pairing it with '90s grunge.",
+      "source_url": "https://en.wikipedia.org/wiki/Regret_(New_Order_song)"
+    },
+    "smells like teen spirit|nirvana": {
+      "note": "Released in 1991 as the lead single from Nirvana's seminal album Nevermind, this grunge anthem famously catapulted alternative rock into the mainstream by topping charts worldwide. For this listener navigating the financial strains of dorm life and the bittersweet growing pains of freshman year, the track serves as a soundtrack to the shifting trajectories of childhood and college friendships.",
+      "source_url": "https://en.wikipedia.org/wiki/Smells_Like_Teen_Spirit"
+    },
+    "summer|buffalo tom": {
+      "note": "Released by the alternative rock band Buffalo Tom, this track captures the bittersweet energy of transitioning into a new chapter of life. For this listener, the song is forever tied to a memorable concert where their friend Greg was pulled onto the stage just before moving away to Arizona.",
+      "source_url": "https://en.wikipedia.org/wiki/Buffalo_Tom"
+    },
+    "teenage love|slick rick": {
+      "note": "Released in 1988 on Slick Rick's acclaimed debut album *The Great Adventures of Slick Rick*, \"Teenage Love\" captures the awkwardness and earnest longing of youth that resonated deeply with listeners navigating high school.",
+      "source_url": "https://en.wikipedia.org/wiki/The_Great_Adventures_of_Slick_Rick"
+    },
+    "the old apartment|barenaked ladies": {
+      "note": "Released in 1996 on Barenaked Ladies' album Born on a Bank, 'The Old Apartment' became one of the band's signature alternative rock hits and peaked at number two on the Canadian RPM Alternative 30 chart. For this listener, the song evokes fond memories of post-college years, a concert experience featuring Guster, and the Arlington neighborhood where their future wife once lived.",
+      "source_url": "https://en.wikipedia.org/wiki/The_Old_Apartment"
+    },
+    "there is a light that never goes out|the smiths": {
+      "note": "Introduced by a college roommate during junior year, this listener connected with the confident delivery and intelligent, fun lyrics of The Smiths. Originally released on their acclaimed 1986 album 'The Queen Is Dead', 'There Is a Light That Never Goes Out' grew to become one of the band's most beloved and enduring tracks.",
+      "source_url": "https://en.wikipedia.org/wiki/There_Is_a_Light_That_Never_Goes_Out"
+    },
+    "welcome to the terrordome|public enemy": {
+      "note": "Released in 1989 on Public Enemy's landmark album *Fear of a Black Planet*, \"Welcome to the Terrordome\" pairs a blistering, high-energy musical backdrop with Chuck D's deeply dense and politically charged lyrics. For this listener, the track evokes nostalgic memories of car rides to an amusement park shared with family, capturing the rock-band intensity that made Public Enemy legendary.",
+      "source_url": "https://en.wikipedia.org/wiki/Welcome_to_the_Terrordome"
+    },
+    "with or without you|u2": {
+      "note": "Released in 1987 on U2's landmark album The Joshua Tree, \"With or Without You\" became the band's first number-one single on the US Billboard Hot 100. Its soaring musical arrangement and emotional intensity helped resonate deeply with audiences, including listeners in heavily Irish-influenced communities like Boston.",
+      "source_url": "https://en.wikipedia.org/wiki/With_or_Without_You"
+    },
+    "would|alice in chains": {
+      "note": "Alice in Chains' \"Would?\" served as a standout track on the 1992 soundtrack for Cameron Crowe's Seattle-set film \"Singles,\" written by Jerry Cantrell as a tribute to the late Mother Love Bone singer Andrew Wood. It became one of the definitive anthems of the grunge era, following the band's breakthrough success with \"Man in the Box.\"",
+      "source_url": "https://en.wikipedia.org/wiki/Would%3F"
+    }
+  }
 }
