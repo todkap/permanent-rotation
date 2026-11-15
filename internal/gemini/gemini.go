@@ -12,20 +12,29 @@ import (
 	"time"
 )
 
-// Model is the model notes are generated with. Recorded in context.json so
+// DefaultModel is the model notes are generated with when GEMINI_MODEL is
+// not set. Google retires models, so the name is config, not code: set
+// GEMINI_MODEL to override. The model used is recorded in context.json so
 // readers can see what wrote the background layer.
-const Model = "gemini-2.5-flash"
+const DefaultModel = "gemini-3.8-flash"
 
-const apiURL = "https://generativelanguage.googleapis.com/v1beta/models/" + Model + ":generateContent"
+const apiURL = "https://generativelanguage.googleapis.com/v1beta/models/"
 
 type Client struct {
-	key string
-	hc  *http.Client
+	key, model string
+	hc         *http.Client
 }
 
-func New(key string) *Client {
-	return &Client{key: key, hc: &http.Client{Timeout: 30 * time.Second}}
+// New builds a client. model falls back to DefaultModel when empty.
+func New(key, model string) *Client {
+	if model == "" {
+		model = DefaultModel
+	}
+	return &Client{key: key, model: model, hc: &http.Client{Timeout: 30 * time.Second}}
 }
+
+// Model returns the model name in use (for recording in context.json).
+func (c *Client) Model() string { return c.model }
 
 // Generate sends one prompt and returns the text of the first candidate.
 func (c *Client) Generate(prompt string) (string, error) {
@@ -42,7 +51,7 @@ func (c *Client) Generate(prompt string) (string, error) {
 		},
 	}
 	b, _ := json.Marshal(body)
-	req, _ := http.NewRequest("POST", apiURL, bytes.NewReader(b))
+	req, _ := http.NewRequest("POST", apiURL+c.model+":generateContent", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("x-goog-api-key", c.key)
 	resp, err := c.hc.Do(req)
