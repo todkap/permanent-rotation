@@ -32,9 +32,11 @@ type Record struct {
 	SeenLive          string `json:"seen_live,omitempty"`
 	LastfmListeners   int64  `json:"lastfm_listeners"`
 	LastfmPlaycount   int64  `json:"lastfm_playcount"`
-	SpotifyPopularity *int   `json:"spotify_popularity"` // nil for post-Feb-2026 Dev Mode apps
-	Tier              string `json:"tier"`               // canon | middle | deep-cut
-	MatchConfidence   string `json:"match_confidence"`   // exact | fuzzy | manual
+	SpotifyPopularity *int   `json:"spotify_popularity"`        // nil for post-Feb-2026 Dev Mode apps
+	Tier              string `json:"tier"`                      // canon | middle | deep-cut
+	MatchConfidence   string `json:"match_confidence"`          // exact | fuzzy | manual
+	MatchReason       string `json:"match_reason,omitempty"`    // why the pin is what it is
+	ReleaseChanged    bool   `json:"release_changed,omitempty"` // pin moved; the notes run clears this after regenerating that song's note
 	YearConflict      bool   `json:"year_conflict,omitempty"`
 	FetchedAt         string `json:"fetched_at,omitempty"`
 }
@@ -172,7 +174,9 @@ func Merge(songs []csvio.Song, fetched map[string]Record, cached *File, override
 		rec.Memory, rec.Tags = s.Memory, s.Tags
 		rec.SeenLive = s.SeenLive
 		if o, hit := overrides[k]; hit {
+			changed := false
 			if o.SpotifyID != "" {
+				changed = changed || rec.SpotifyID != o.SpotifyID
 				if rec.SpotifyID != o.SpotifyID {
 					rec.AlbumArt = ""
 				}
@@ -181,10 +185,16 @@ func Merge(songs []csvio.Song, fetched map[string]Record, cached *File, override
 				rec.MatchConfidence = "manual"
 			}
 			if o.ReleaseYear != 0 {
+				changed = changed || rec.ReleaseYear != o.ReleaseYear
 				rec.ReleaseYear = o.ReleaseYear
 			}
 			if o.Album != "" {
+				changed = changed || !strings.EqualFold(rec.Album, o.Album)
 				rec.Album = o.Album
+			}
+			rec.MatchReason = "manual override (data/overrides.csv)"
+			if changed {
+				rec.ReleaseChanged = true // note facts may name the old release
 			}
 		}
 		if rec.MatchConfidence == "" {

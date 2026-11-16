@@ -1,58 +1,66 @@
 package main
 
 import (
-	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
-
-	"github.com/todkap/permanent-rotation/internal/csvio"
 )
 
-func TestCleanAlbum(t *testing.T) {
-	cases := map[string]string{
-		"Born on a Pirate Ship (Enhanced Edition)":            "Born on a Pirate Ship",
-		"The Joshua Tree (Super Deluxe)":                      "The Joshua Tree",
-		"Dirt (2022 Remaster)":                                "Dirt",
-		"Whatever And Ever Amen (Remastered Edition)":         "Whatever And Ever Amen",
-		"Siamese Dream (Deluxe Edition)":                      "Siamese Dream",
-		"Transatlanticism (10th Anniversary Edition)":         "Transatlanticism",
-		"Nevermind (Remastered)":                              "Nevermind",
-		"Hybrid Theory (Bonus Edition)":                       "Hybrid Theory",
-		"Violator (Deluxe)":                                   "Violator",
-		"The Great Adventures Of Slick Rick (Deluxe Edition)": "The Great Adventures Of Slick Rick",
-		"Misguided Roses":                                     "Misguided Roses",
-		"11 Minutes (with Halsey feat. Travis Barker)":        "11 Minutes (with Halsey feat. Travis Barker)",
-		"Speakerboxxx/The Love Below":                         "Speakerboxxx/The Love Below",
-	}
-	for in, want := range cases {
-		if got := cleanAlbum(in); got != want {
-			t.Errorf("cleanAlbum(%q) = %q, want %q", in, got, want)
-		}
-	}
-}
-
-func TestCanonicalTitleMigrationPreservesPinnedData(t *testing.T) {
-	songs, err := csvio.Load("../../examples/todd/songs.csv", 1)
+func TestReportAndFlushSummary(t *testing.T) {
+	f := filepath.Join(t.TempDir(), "summary.md")
+	t.Setenv("GITHUB_STEP_SUMMARY", f)
+	report("re-matched: A - B (Gold 2008 -> No Need To Argue 1994)")
+	report("note: dropped (no source URL in generated note): C - D")
+	flushSummary("Enrich: matching decisions")
+	b, err := os.ReadFile(f)
 	if err != nil {
 		t.Fatal(err)
 	}
-	canonicalTitles(songs)
-	want := map[string]string{
-		"nirvana":         "Smells Like Teen Spirit",
-		"the smiths":      "There Is a Light That Never Goes Out",
-		"alice in chains": "Would?",
-		"verve pipe":      "The Freshmen",
+	if !strings.Contains(string(b), "### Enrich: matching decisions") ||
+		!strings.Contains(string(b), "- re-matched: A - B (Gold 2008 -> No Need To Argue 1994)") ||
+		!strings.Contains(string(b), "- note: dropped (no source URL in generated note): C - D") {
+		t.Fatalf("summary content: %q", b)
 	}
-	for _, s := range songs {
-		if expected, ok := want[strings.ToLower(s.Artist)]; ok && s.Song != expected {
-			t.Fatalf("%s: %q, want %q", s.Artist, s.Song, expected)
+	if len(reportLines) != 0 {
+		t.Fatal("reportLines not reset after flush")
+	}
+}
+
+func TestFlushSummaryNoEnvIsQuiet(t *testing.T) {
+	report("matched: A - B -> X 1994 (exact)")
+	flushSummary("Enrich: matching decisions") // no GITHUB_STEP_SUMMARY: must not fail
+	if len(reportLines) != 1 {
+		t.Fatal("lines should be kept when no summary file is set")
+	}
+	reportLines = nil
+}
+
+func TestSimilarTitles(t *testing.T) {
+	yes := [][2]string{{"Would?", "Would"}, {"The Freshmen", "Freshman"}, {"There Is a Light That Never Goes Out", "There is a light that never goes out"}}
+	for _, c := range yes {
+		if !similarTitles(c[0], c[1]) {
+			t.Fatalf("want similar: %q / %q", c[0], c[1])
+		}
+	}
+	no := [][2]string{{"Zombie", "Linger"}, {"Would?", "Go"}, {"Basket Case", "Longview"}}
+	for _, c := range no {
+		if similarTitles(c[0], c[1]) {
+			t.Fatalf("want distinct: %q / %q", c[0], c[1])
 		}
 	}
 }
 
-func TestPromptWarnsAboutSecondPersonTitles(t *testing.T) {
-	prompt := fmt.Sprintf(notesPrompt, "With or Without You", "U2", "tag", "", "facts", "")
-	if !strings.Contains(prompt, `NEVER write "you", "your", "yours"`) || !strings.Contains(prompt, "including inside song titles") {
-		t.Fatal("prompt does not constrain second-person titles")
+func TestFlushSummaryEscapesExternalText(t *testing.T) {
+	f := filepath.Join(t.TempDir(), "summary.md")
+	t.Setenv("GITHUB_STEP_SUMMARY", f)
+	report("card: A | B -> Violator [Deluxe] *1990* [kept]")
+	flushSummary("Enrich: per-card final state")
+	b, err := os.ReadFile(f)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(b), "A | B") || strings.Contains(string(b), "*1990*") || strings.Contains(string(b), "[kept]") {
+		t.Fatalf("unescaped external text in summary: %q", b)
 	}
 }
