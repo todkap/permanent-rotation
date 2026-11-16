@@ -86,7 +86,6 @@ const navHTML = `<nav><div class="wrap">
 <li><a href="index.html"{{if .Timeline}} class="active"{{end}}>Timeline</a></li>
 <li><a href="stats.html"{{if not .Timeline}} class="active"{{end}}>Stats</a></li>
 <li><a href="https://github.com/todkap/permanent-rotation">Make your own</a></li>
-<li><a href="https://todkap.github.io/">Todd Kaplinger</a></li>
 </ul></div></nav>`
 
 type chapter struct {
@@ -163,7 +162,7 @@ var indexTpl = template.Must(template.New("index").Parse(`<!doctype html>
 {{end}}
 </section>
 </div></main>
-<footer><div class="wrap"><p class="note">Data as of {{if .GeneratedAt}}{{.GeneratedAt}}{{else}}not yet enriched{{end}} &middot; Built with <a href="https://github.com/todkap/permanent-rotation">permanent-rotation</a><span class="dot">.</span></p></div></footer>
+<footer><div class="wrap"><p class="note">Data as of {{if .GeneratedAt}}{{.GeneratedAt}}{{else}}not yet enriched{{end}} &middot; Built with <a href="https://github.com/todkap/permanent-rotation">permanent-rotation</a> by <a href="https://todkap.github.io/">Todd Kaplinger</a><span class="dot">.</span></p></div></footer>
 </body></html>`))
 
 var statsTpl = template.Must(template.New("stats").Parse(`<!doctype html>
@@ -194,7 +193,7 @@ var statsTpl = template.Must(template.New("stats").Parse(`<!doctype html>
 </div>{{end}}
 </section>
 </div></main>
-<footer><div class="wrap"><p class="note">Data as of {{if .GeneratedAt}}{{.GeneratedAt}}{{else}}not yet enriched{{end}} &middot; Built with <a href="https://github.com/todkap/permanent-rotation">permanent-rotation</a><span class="dot">.</span></p></div></footer>
+<footer><div class="wrap"><p class="note">Data as of {{if .GeneratedAt}}{{.GeneratedAt}}{{else}}not yet enriched{{end}} &middot; Built with <a href="https://github.com/todkap/permanent-rotation">permanent-rotation</a> by <a href="https://todkap.github.io/">Todd Kaplinger</a><span class="dot">.</span></p></div></footer>
 </body></html>`))
 
 type kv struct {
