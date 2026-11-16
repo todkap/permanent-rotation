@@ -6,9 +6,13 @@ package gemini
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -18,7 +22,8 @@ import (
 // readers can see what wrote the background layer.
 const DefaultModel = "gemini-3.8-flash"
 
-const apiURL = "https://generativelanguage.googleapis.com/v1beta/models/"
+// apiBase is a var so tests can point at a local server
+var apiBase = "https://generativelanguage.googleapis.com/v1beta/models/"
 
 type Client struct {
 	key, model string
@@ -30,17 +35,72 @@ func New(key, model string) *Client {
 	if model == "" {
 		model = DefaultModel
 	}
-	return &Client{key: key, model: model, hc: &http.Client{Timeout: 30 * time.Second}}
+	return &Client{key: key, model: model, hc: &http.Client{Timeout: 120 * time.Second}}
 }
 
 // Model returns the model name in use (for recording in context.json).
 func (c *Client) Model() string { return c.model }
 
 // Generate sends one prompt and returns the text of the first candidate.
+// Newer models can be slow to first token, so timeouts and transient
+// failures get up to two retries with backoff (5s, then 15s).
 func (c *Client) Generate(prompt string) (string, error) {
 	if c.key == "" {
 		return "", fmt.Errorf("GEMINI_API_KEY is not set")
 	}
+	var err error
+	var out string
+	for attempt := 0; attempt < 3; attempt++ {
+		if attempt > 0 {
+			wait := time.Duration(attempt*attempt) * 5 * time.Second
+			var he httpError
+			if errors.As(err, &he) && he.retryAfter > wait {
+				wait = he.retryAfter // the API said how long; believe it
+			}
+			sleep(wait)
+		}
+		out, err = c.generateOnce(prompt)
+		if err == nil || !retriable(err) {
+			return out, err
+		}
+	}
+	return "", err
+}
+
+// sleep is swappable in tests
+var sleep = time.Sleep
+
+type httpError struct {
+	status     string
+	retryAfter time.Duration
+}
+
+func (e httpError) Error() string { return "gemini: " + e.status }
+
+func parseRetryAfter(h string) time.Duration {
+	if n, err := strconv.Atoi(strings.TrimSpace(h)); err == nil && n > 0 {
+		return time.Duration(n) * time.Second
+	}
+	return 0
+}
+
+func retriable(err error) bool {
+	if errors.Is(err, os.ErrDeadlineExceeded) {
+		return true
+	}
+	var he httpError
+	if errors.As(err, &he) {
+		return strings.HasPrefix(he.status, "429") || strings.HasPrefix(he.status, "5")
+	}
+	// timeouts surface as *url.Error wrapping a deadline
+	var ue interface{ Timeout() bool }
+	if errors.As(err, &ue) && ue.Timeout() {
+		return true
+	}
+	return false
+}
+
+func (c *Client) generateOnce(prompt string) (string, error) {
 	body := map[string]any{
 		"contents": []map[string]any{
 			{"parts": []map[string]string{{"text": prompt}}},
@@ -51,7 +111,7 @@ func (c *Client) Generate(prompt string) (string, error) {
 		},
 	}
 	b, _ := json.Marshal(body)
-	req, _ := http.NewRequest("POST", apiURL+c.model+":generateContent", bytes.NewReader(b))
+	req, _ := http.NewRequest("POST", apiBase+c.model+":generateContent", bytes.NewReader(b))
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("x-goog-api-key", c.key)
 	resp, err := c.hc.Do(req)
@@ -61,7 +121,7 @@ func (c *Client) Generate(prompt string) (string, error) {
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
 		msg, _ := io.ReadAll(io.LimitReader(resp.Body, 512))
-		return "", fmt.Errorf("gemini: %s: %s", resp.Status, msg)
+		return "", fmt.Errorf("%w: %s", httpError{resp.Status, parseRetryAfter(resp.Header.Get("Retry-After"))}, msg)
 	}
 	var out struct {
 		Candidates []struct {

@@ -44,6 +44,7 @@ func main() {
 	minSongs := fs.Int("min", csvio.DefaultMinSongs, "minimum valid songs required")
 	contextPath := fs.String("context", "data/context.json", "background notes file")
 	includeMemory := fs.Bool("include-memory", true, "send memory text to the model (opt out with -include-memory=false)")
+	paceSecs := fs.Int("pace", 5, "seconds between Gemini requests (free tier allows 15/min; lower this on a paid tier)")
 	fs.Parse(args)
 
 	switch cmd {
@@ -58,7 +59,7 @@ func main() {
 		fmt.Println("Order follows life chapters, no ranking.")
 		os.Exit(1)
 	case "notes":
-		runNotes(*csvPath, *contextPath, *minSongs, *includeMemory)
+		runNotes(*csvPath, *contextPath, *minSongs, *includeMemory, time.Duration(*paceSecs)*time.Second)
 	default:
 		fmt.Fprintln(os.Stderr, "unknown command:", cmd)
 		os.Exit(2)
@@ -176,7 +177,7 @@ Write a 2-3 sentence background note about the song: release context, chart hist
 
 Respond with JSON only: {"note": "...", "source_url": "..."} where source_url is a real URL (Wikipedia, official chart archive, Last.fm) supporting the note. If you cannot give a real source URL, respond {"note": "", "source_url": ""}.`
 
-func runNotes(csvPath, contextPath string, minSongs int, includeMemory bool) {
+func runNotes(csvPath, contextPath string, minSongs int, includeMemory bool, pace time.Duration) {
 	songs, err := csvio.Load(csvPath, minSongs)
 	if err != nil {
 		fail(err)
@@ -204,7 +205,7 @@ func runNotes(csvPath, contextPath string, minSongs int, includeMemory bool) {
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "warn:", s.Song, "-", err)
 			dropped++
-			time.Sleep(time.Second)
+			time.Sleep(pace)
 			continue
 		}
 		text = strings.TrimSpace(strings.Trim(strings.TrimSpace(text), "`"))
@@ -213,7 +214,7 @@ func runNotes(csvPath, contextPath string, minSongs int, includeMemory bool) {
 		if err := json.Unmarshal([]byte(strings.TrimSpace(text)), &r); err != nil {
 			fmt.Printf("dropped (unparseable): %s - %s\n", s.Song, s.Artist)
 			dropped++
-			time.Sleep(time.Second)
+			time.Sleep(pace)
 			continue
 		}
 		n := notes.Note{Note: strings.TrimSpace(r.Note), SourceURL: strings.TrimSpace(r.SourceURL)}
@@ -224,7 +225,7 @@ func runNotes(csvPath, contextPath string, minSongs int, includeMemory bool) {
 			ctx.Notes[k] = n
 			added++
 		}
-		time.Sleep(time.Second) // free-tier pacing
+		time.Sleep(pace) // stay under the API rate limit
 	}
 	ctx.GeneratedAt = time.Now().UTC().Format(time.RFC3339)
 	ctx.Model = g.Model()
