@@ -15,6 +15,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strings"
 
 	"github.com/todkap/permanent-rotation/internal/enrich"
 	"github.com/todkap/permanent-rotation/internal/notes"
@@ -93,6 +94,34 @@ type chapter struct {
 	Songs []songView
 }
 
+// stageRank orders chapters that tie on year by life stage, derived from
+// the era label. School years beat college, college beats career, and so
+// on. Labels with no recognizable stage land mid-rank (after school and
+// college, before adult-life labels) so they never sink or float weirdly.
+func stageRank(chapter string) int {
+	c := strings.ToLower(chapter)
+	switch {
+	case strings.Contains(c, "childhood"):
+		return 10
+	case strings.Contains(c, "middle school"):
+		return 20
+	case strings.Contains(c, "high school"):
+		return 30
+	case strings.Contains(c, "post-college"), strings.Contains(c, "early career"):
+		return 50
+	case strings.Contains(c, "college"), strings.Contains(c, "dorm"),
+		strings.Contains(c, "roommates"), strings.Contains(c, "freshman"),
+		strings.Contains(c, "sophomore"):
+		return 40
+	case strings.Contains(c, "marriage"), strings.Contains(c, "family"),
+		strings.Contains(c, "fatherhood"), strings.Contains(c, "adulthood"),
+		strings.Contains(c, "relocating"):
+		return 60
+	default:
+		return 45
+	}
+}
+
 type songView struct {
 	enrich.Record
 	Note       *notes.Note
@@ -141,7 +170,11 @@ func groupByChapter(recs []enrich.Record, ctx *notes.Context) []chapter {
 		if yi != yj {
 			return yi < yj
 		}
-		return order[i] < order[j] // same year: alphabetical
+		// same year: life stage, then alphabetical
+		if ri, rj := stageRank(order[i]), stageRank(order[j]); ri != rj {
+			return ri < rj
+		}
+		return order[i] < order[j]
 	})
 	var out []chapter
 	for _, name := range order {

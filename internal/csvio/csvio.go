@@ -32,8 +32,9 @@ type Song struct {
 }
 
 var (
-	year4 = regexp.MustCompile(`\d{4}`)
-	year2 = regexp.MustCompile(`~(\d{2})\b`)
+	year4  = regexp.MustCompile(`\d{4}`)
+	parens = regexp.MustCompile(`\(([^)]*)\)`)
+	year2  = regexp.MustCompile(`~(\d{2})\b`)
 )
 
 // ParseEra splits an era string like "College Freshman Year (~1991)" into
@@ -44,7 +45,13 @@ func ParseEra(era string) (chapter string, lifeYear int) {
 	if i := strings.Index(chapter, "("); i >= 0 {
 		chapter = strings.TrimSpace(chapter[:i])
 	}
-	if m := year4.FindString(era); m != "" {
+	// the year he wrote in the (~...) parens is the intended memory year;
+	// digits in the label itself (e.g. "Early 2000s") are only a fallback
+	target := era
+	if m := parens.FindStringSubmatch(era); m != nil && year4.MatchString(m[1]) {
+		target = m[1]
+	}
+	if m := year4.FindString(target); m != "" {
 		lifeYear, _ = strconv.Atoi(m)
 	} else if m := year2.FindStringSubmatch(era); m != nil {
 		lifeYear, _ = strconv.Atoi("19" + m[1])

@@ -77,6 +77,8 @@ func TestParseEra(t *testing.T) {
 		{"College Freshman Year (~1991)", "College Freshman Year", 1991},
 		{" Middle School (~1985)", "Middle School", 1985},
 		{"Marriage & Family (~1994-Present)", "Marriage & Family", 1994},
+		{"Childhood / Prospect St (~1985–1986)", "Childhood / Prospect St", 1985}, // en dash range: start year wins
+		{"Middle Age & Family (~mid-2000s)", "Middle Age & Family", 2000},
 		{"Childhood / Prospect St (~85)", "Childhood / Prospect St", 1985},
 		{"No year at all", "No year at all", 0},
 	}
@@ -98,5 +100,36 @@ func TestAngleNeverRequired(t *testing.T) {
 	got, err := Read(strings.NewReader(b.String()), DefaultMinSongs)
 	if err != nil || len(got) != 25 {
 		t.Fatalf("5-column csv: %v", err)
+	}
+}
+
+func TestParseEraPrefersParenYear(t *testing.T) {
+	cases := []struct {
+		era  string
+		year int
+	}{
+		{"Fatherhood / Early 2000s (~2003)", 2003}, // label digits lose to parens
+		{"Mid-2000s / Pop-Punk Pivot (~2006)", 2006},
+		{"2010s / Family & Reflection (~2013)", 2013},
+		{"Late 2010s / 2020s Threshold (~2019)", 2019},
+		{"Late Discovery / Wilmington Era (~2000s)", 2000}, // decade in parens still parses
+		{"College / Dorm Life (~1993)", 1993},              // unchanged behavior
+		{"College Roommates (~1992–1993)", 1992},           // range takes the start year
+	}
+	for _, c := range cases {
+		if _, y := ParseEra(c.era); y != c.year {
+			t.Fatalf("ParseEra(%q) year = %d, want %d", c.era, y, c.year)
+		}
+	}
+}
+
+func TestParseEraFallsBackToLabelDigits(t *testing.T) {
+	// no parens at all: first digits in the label, as before
+	if _, y := ParseEra("Late 2000s Era"); y != 2000 {
+		t.Fatalf("label-digit fallback = %d, want 2000", y)
+	}
+	// parens present but no 4-digit year inside: label digits still win
+	if _, y := ParseEra("Mid-2000s Era (~back then)"); y != 2000 {
+		t.Fatalf("empty-parens fallback = %d, want 2000", y)
 	}
 }
