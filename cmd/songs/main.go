@@ -23,6 +23,7 @@ import (
 	"github.com/todkap/permanent-rotation/internal/notes"
 	"github.com/todkap/permanent-rotation/internal/site"
 	"github.com/todkap/permanent-rotation/internal/spotify"
+	"github.com/todkap/permanent-rotation/internal/wikipedia"
 )
 
 func fail(err error) {
@@ -188,7 +189,9 @@ Song: %s
 Artist: %s
 Tags from the listener: %s
 %s
-Write exactly 2 sentences about the song. Sentence 1: release context, chart history, or musical context. Sentence 2: how the song connects to the listener's memory above, or its lasting resonance if no memory was shared. Facts must be real. Include the release year, album name, single order, chart position, or any other specific fact only when you are confident it is correct; if you are unsure, omit it rather than guess - a shorter accurate note is better than a detailed wrong one. %sNever invent facts about the listener's life; you may only reference what they wrote above.
+Verified facts, sourced from MusicBrainz and Wikipedia:
+%s
+Write exactly 2 sentences about the song. Sentence 1: release context, chart history, or musical context, using ONLY the verified facts above - never state an album name, year, chart position, or any other specific that is not written there; if the facts do not include one, write around it, a shorter accurate note is better than a detailed wrong one. Sentence 2: how the song connects to the listener's memory above, or its lasting resonance if no memory was shared. %sNever invent facts about the listener's life; you may only reference what they wrote above.
 
 Style rules, no exceptions: write in the third person only; refer to the person as "this listener" or "the listener", never "you" or "your". No self-corrections, restarts, or hedges (never write "wait", "actually", "no,", or similar). No meta commentary about the writing itself.
 
@@ -204,6 +207,8 @@ func runNotes(csvPath, contextPath string, minSongs int, includeMemory, force bo
 		fail(err)
 	}
 	g := gemini.New(env("GEMINI_API_KEY"), env("GEMINI_MODEL"))
+	mb := musicbrainz.New()
+	wk := wikipedia.New()
 
 	type reply struct {
 		Note      string `json:"note"`
@@ -223,7 +228,34 @@ func runNotes(csvPath, contextPath string, minSongs int, includeMemory, force bo
 			memCtx = "The listener's own words about it: " + s.Memory + "\n"
 			memRule = "You may acknowledge the listener's association with the song. "
 		}
-		prompt := fmt.Sprintf(notesPrompt, s.Song, s.Artist, s.Tags, memCtx, memRule)
+
+		// Grounding: pull sourced facts first so the model is only ever
+		// handed real album names, years and chart history.
+		var factsLines []string
+		if album, mbYear, err := mb.FirstRelease(s.Artist, s.Song); err != nil {
+			fmt.Fprintln(os.Stderr, "warn: musicbrainz:", s.Song, "-", err)
+		} else if album != "" || mbYear > 0 {
+			factsLines = append(factsLines, fmt.Sprintf("- MusicBrainz earliest release group, single or album: %q (%d)", album, mbYear))
+		}
+		time.Sleep(1100 * time.Millisecond) // MusicBrainz allows one request per second
+		wikiURL := ""
+		if wTitle, wURL, wExtract, err := wk.Lookup(s.Song, s.Artist); err != nil {
+			fmt.Fprintln(os.Stderr, "warn: wikipedia:", s.Song, "-", err)
+		} else if wExtract != "" {
+			wikiURL = wURL
+			factsLines = append(factsLines, fmt.Sprintf("- Wikipedia article %q intro: %s", wTitle, wExtract))
+		}
+		if s.LifeYear > 0 {
+			factsLines = append(factsLines, fmt.Sprintf("- The listener places this song around %d in their own life.", s.LifeYear))
+		}
+		if len(factsLines) == 0 {
+			factsLines = append(factsLines, "- No sourced facts found for this song. State no release year, album name, chart position or other specific.")
+		}
+		factsBlock := strings.Join(factsLines, "\n")
+		// claimsText is what the fact validator checks the note against: the
+		// facts plus the song's own title/artist (quoting them is fine).
+		claimsText := factsBlock + "\n" + s.Song + "\n" + s.Artist + "\n" + s.Memory + "\n" + s.Tags
+		prompt := fmt.Sprintf(notesPrompt, s.Song, s.Artist, s.Tags, memCtx, factsBlock, memRule)
 		text, err := g.Generate(prompt)
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "warn:", s.Song, "-", err)
@@ -241,10 +273,10 @@ func runNotes(csvPath, contextPath string, minSongs int, includeMemory, force bo
 			continue
 		}
 		n := notes.Note{Note: strings.TrimSpace(r.Note), SourceURL: strings.TrimSpace(r.SourceURL)}
-		if notes.Valid(n) && !notes.StyleOK(n.Note) {
-			// one retry for voice/self-correction slips, then keep the old note
+		if notes.Valid(n) && (!notes.StyleOK(n.Note) || !notes.ClaimsOK(n.Note, claimsText)) {
+			// one retry for voice slips or ungrounded claims, then keep the old note
 			retried++
-			fmt.Printf("style retry: %s - %s\n", s.Song, s.Artist)
+			fmt.Printf("style/fact retry: %s - %s\n", s.Song, s.Artist)
 			time.Sleep(pace)
 			text, err = g.Generate(prompt)
 			if err != nil {
@@ -259,12 +291,18 @@ func runNotes(csvPath, contextPath string, minSongs int, includeMemory, force bo
 				n = notes.Note{Note: strings.TrimSpace(r.Note), SourceURL: strings.TrimSpace(r.SourceURL)}
 			}
 		}
+		if wikiURL != "" {
+			n.SourceURL = wikiURL // the article we actually pulled facts from
+		}
 		switch {
 		case !notes.Valid(n):
 			fmt.Printf("dropped (no source): %s - %s\n", s.Song, s.Artist)
 			dropped++
 		case !notes.StyleOK(n.Note):
 			fmt.Printf("kept existing (style check failed after retry): %s - %s\n", s.Song, s.Artist)
+			kept++
+		case !notes.ClaimsOK(n.Note, claimsText):
+			fmt.Printf("kept existing (fact check failed after retry): %s - %s\n", s.Song, s.Artist)
 			kept++
 		default:
 			ctx.Notes[k] = n

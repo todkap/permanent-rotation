@@ -73,3 +73,50 @@ var (
 func StyleOK(note string) bool {
 	return !secondPerson.MatchString(note) && !selfCorrection.MatchString(note)
 }
+
+var (
+	yearClaim   = regexp.MustCompile(`\b(?:19|20)\d{2}\b`)
+	doubleQuote = regexp.MustCompile(`["\x{201c}](.*?)["\x{201d}]`)
+	// A single-quoted title: opening quote not mid-word (that would be an
+	// apostrophe), span starts uppercase, no apostrophes inside.
+	singleQuote = regexp.MustCompile(`(?:^|[\s("\x{201c}])'([A-Z][^']{2,60}?)'(?:[\s,.!?:;)]|$)`)
+	// An unquoted album name: the word "album" followed by title-cased words
+	// and small connectors, stopped by punctuation or a lowercase word.
+	albumClaim = regexp.MustCompile(`(?i)\balbum[,:]?\s+["'\x{201c}]?((?:[A-Z0-9][\w&'.-]*|of|the|a|an|and|in|on|de|la)(?:\s+(?:[A-Z0-9][\w&'.-]*|of|the|a|an|and|in|on|de|la))*)`)
+)
+
+// ClaimsOK enforces the grounding contract: every specific the note states
+// must come from the sourced facts the model was given. Any 4-digit year and
+// any quoted title (album, film, single) must literally appear in facts.
+// Notes failing this are retried once, then dropped.
+func ClaimsOK(note, facts string) bool {
+	low := strings.ToLower(facts)
+	for _, y := range yearClaim.FindAllString(note, -1) {
+		if !strings.Contains(facts, y) {
+			return false
+		}
+	}
+	var spans []string
+	for _, m := range doubleQuote.FindAllStringSubmatch(note, -1) {
+		spans = append(spans, m[1])
+	}
+	for _, m := range singleQuote.FindAllStringSubmatch(note, -1) {
+		spans = append(spans, m[1])
+	}
+	for _, m := range albumClaim.FindAllStringSubmatch(note, -1) {
+		span := strings.TrimRight(m[1], " ")
+		if strings.HasPrefix(strings.ToLower(span), "of the same") {
+			continue // "album of the same name" is not a claim
+		}
+		spans = append(spans, span)
+	}
+	for _, q := range spans {
+		if len(strings.TrimSpace(q)) < 4 {
+			continue
+		}
+		if !strings.Contains(low, strings.ToLower(strings.TrimSpace(q))) {
+			return false
+		}
+	}
+	return true
+}

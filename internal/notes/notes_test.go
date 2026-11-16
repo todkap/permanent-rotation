@@ -27,3 +27,32 @@ func TestStyleOK(t *testing.T) {
 		}
 	}
 }
+
+func TestClaimsOK(t *testing.T) {
+	facts := `- MusicBrainz first release: "Born on a Pirate Ship" (1996)
+- Wikipedia article "The Old Apartment" intro: "The Old Apartment" is a song by Canadian group Barenaked Ladies, from the album Born on a Pirate Ship. It reached number five in Canada.
+- The listener places this song around 1997 in their own life.
+The Old Apartment
+Barenaked Ladies`
+	bad := []string{
+		"Released as a single from Barenaked Ladies' album Born on a Gerrard Street, it was a hit.",   // invented album
+		"Released in 1994 on the album Born on a Pirate Ship, it was a hit.",                          // year not in facts
+		"From the album 'Born on a Dunedin Street', the track became a radio staple.",                 // invented album, single quotes
+		"The \u201cBorn on a Pirate Ship\u201d follow-up \u201cOne Week\u201d topped charts in 1999.", // ungrounded second title + year
+	}
+	for _, n := range bad {
+		if ClaimsOK(n, facts) {
+			t.Fatalf("should reject: %q", n)
+		}
+	}
+	good := []string{
+		"Released in 1996 as a single from Barenaked Ladies' album Born on a Pirate Ship, \"The Old Apartment\" reached number five in Canada.",
+		"The listener's post-college years in Waltham were soundtracked by this one.", // possessive apostrophes are not quotes
+		"Released in 1996, it evokes the late nineties for this listener, who places it around 1997.",
+	}
+	for _, n := range good {
+		if !ClaimsOK(n, facts) {
+			t.Fatalf("should accept: %q", n)
+		}
+	}
+}

@@ -25,6 +25,14 @@ func New() *Client {
 // the recording, or 0 when there is no confident answer. Call no more than
 // once per second (MusicBrainz rate limit).
 func (c *Client) FirstReleaseYear(artist, recording string) (int, error) {
+	_, year, err := c.FirstRelease(artist, recording)
+	return year, err
+}
+
+// FirstRelease returns the earliest release-group title and year it can find
+// for the recording, or empty/0 when there is no confident answer. Call no
+// more than once per second (MusicBrainz rate limit).
+func (c *Client) FirstRelease(artist, recording string) (string, int, error) {
 	q := url.Values{}
 	q.Set("query", fmt.Sprintf(`recording:"%s" AND artist:"%s"`, recording, artist))
 	q.Set("fmt", "json")
@@ -33,21 +41,23 @@ func (c *Client) FirstReleaseYear(artist, recording string) (int, error) {
 	req.Header.Set("User-Agent", "permanent-rotation/0.1 (personal music list tool)")
 	resp, err := c.hc.Do(req)
 	if err != nil {
-		return 0, err
+		return "", 0, err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		return 0, fmt.Errorf("musicbrainz %q: %s", recording, resp.Status)
+		return "", 0, fmt.Errorf("musicbrainz %q: %s", recording, resp.Status)
 	}
 	var out struct {
 		ReleaseGroups []struct {
+			Title            string `json:"title"`
 			FirstReleaseDate string `json:"first-release-date"`
 		} `json:"release-groups"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
-		return 0, err
+		return "", 0, err
 	}
 	best := 0
+	album := ""
 	for _, rg := range out.ReleaseGroups {
 		if len(rg.FirstReleaseDate) < 4 {
 			continue
@@ -56,7 +66,8 @@ func (c *Client) FirstReleaseYear(artist, recording string) (int, error) {
 		fmt.Sscanf(rg.FirstReleaseDate[:4], "%d", &y)
 		if y > 0 && (best == 0 || y < best) {
 			best = y
+			album = rg.Title
 		}
 	}
-	return best, nil
+	return album, best, nil
 }
