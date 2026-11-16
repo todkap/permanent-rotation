@@ -28,6 +28,7 @@ type Record struct {
 	SpotifyURL        string `json:"spotify_url,omitempty"`
 	ReleaseYear       int    `json:"release_year,omitempty"`
 	Album             string `json:"album,omitempty"`
+	AlbumType         string `json:"album_type,omitempty"`
 	AlbumArt          string `json:"album_art,omitempty"`
 	SeenLive          string `json:"seen_live,omitempty"`
 	LastfmListeners   int64  `json:"lastfm_listeners"`

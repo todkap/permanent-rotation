@@ -116,6 +116,7 @@ func adoptPin(rec *enrich.Record, best spotify.Track, why string) {
 	report("re-matched: %s - %s (%s %d -> %s %d; %s)", rec.Song, rec.Artist, rec.Album, rec.ReleaseYear, best.Album, y, why)
 	rec.SpotifyID, rec.SpotifyURL = best.ID, best.URL
 	rec.Album, rec.ReleaseYear = best.Album, y
+	rec.AlbumType = best.AlbumType
 	rec.AlbumArt = best.AlbumArt
 	rec.SpotifyPopularity = best.Popularity
 	rec.MatchConfidence = "exact"
@@ -134,7 +135,7 @@ func adoptPin(rec *enrich.Record, best spotify.Track, why string) {
 // only to an exact title+artist match that is strictly better than the
 // cached pin.
 // rescueCompilationPin returns the size of the candidate pool it searched,
-// so the caller can distinguish "original not in Spotify's catalog" from
+// so the caller can distinguish "original not found in the bounded Spotify searches" from
 // "candidates found but none better than the pin".
 func rescueCompilationPin(sp *spotify.Client, mb *musicbrainz.Client, song, artist, mbAlbum string, mbYear int, rec *enrich.Record) int {
 	var pool []spotify.Track
@@ -175,11 +176,18 @@ func rescueCompilationPin(sp *spotify.Client, mb *musicbrainz.Client, song, arti
 			add(tracks)
 		}
 	}
+	if _, _, _, album, err := wikipedia.New().LookupRelease(song, artist, rec.Album); err == nil && album != "" {
+		if tracks, err := sp.SearchAlbum(song, artist, album); err == nil {
+			add(tracks)
+		} else {
+			report("rescue: %s: album search failed: %v", song, err)
+		}
+	}
 	if len(pool) == 0 {
 		return 0
 	}
 	best, exact := spotify.PickBest(pool, song, artist)
-	if exact && spotify.StrictlyBetter(best, rec.Album, rec.ReleaseYear) {
+	if exact && spotify.BetterPin(best, spotify.Track{Album: rec.Album, AlbumType: rec.AlbumType, ReleaseDate: fmt.Sprint(rec.ReleaseYear)}) {
 		adoptPin(rec, best, "targeted rescue via MusicBrainz original release")
 	}
 	return len(pool)
@@ -236,8 +244,9 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 				// A pin moved in an earlier build keeps its marker until the
 				// notes run regenerates that song's note; the reason text is
 				// preserved the same way.
-				rec.ReleaseChanged = old.ReleaseChanged
+				copyReleaseState(&rec, old)
 				rec.MatchReason = old.MatchReason
+				rec.AlbumType = old.AlbumType
 				// Existing matches stay pinned, including while adding art.
 				needMatch = false
 				break
@@ -265,9 +274,19 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 				rec.MatchReason = "kept: cached pin (no Spotify credentials this run)"
 			}
 		default:
+			metadataOK := rec.AlbumType != ""
+			if !metadataOK {
+				if d, err := sp.Details(rec.SpotifyID); err == nil {
+					rec.AlbumType = d.AlbumType
+					metadataOK = true
+				} else {
+					report("metadata: %s: %v; retaining pin until metadata is verified", s.Song, err)
+				}
+			}
 			tracks, err := sp.Search(s.Song, s.Artist)
 			switch {
 			case err != nil:
+				rec.MatchReason = "kept: Spotify search failed; original remains unverified"
 				report("re-check: %s - %s: search failed (%v), keeping %s %d", s.Song, s.Artist, err, rec.Album, rec.ReleaseYear)
 			default:
 				best, exact := spotify.PickBest(tracks, s.Song, s.Artist)
@@ -276,7 +295,7 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 					report("re-check: %s - %s: no exact title+artist in search results, keeping %s %d", s.Song, s.Artist, rec.Album, rec.ReleaseYear)
 				case best.ID == rec.SpotifyID:
 					report("re-check: %s - %s: pin confirmed %s %d", s.Song, s.Artist, rec.Album, rec.ReleaseYear)
-				case spotify.StrictlyBetter(best, rec.Album, rec.ReleaseYear):
+				case metadataOK && spotify.BetterPin(best, spotify.Track{Album: rec.Album, AlbumType: rec.AlbumType, ReleaseDate: fmt.Sprint(rec.ReleaseYear)}):
 					adoptPin(&rec, best, "earlier or plainer original in plain search")
 				default:
 					report("re-check: %s - %s: search offered nothing better, keeping %s %d", s.Song, s.Artist, rec.Album, rec.ReleaseYear)
@@ -288,12 +307,12 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 			mbAlbum, mbYear, mbErr := mb.FirstRelease(s.Artist, s.Song)
 			time.Sleep(time.Second) // musicbrainz courtesy
 			if mbErr == nil && mbYear > 0 {
-				if rec.ReleaseYear > mbYear || spotify.LooksLikeCompilation(rec.Album) {
+				if metadataOK && (rec.ReleaseYear > mbYear || spotify.LooksLikeCompilation(rec.Album) || rec.AlbumType == "single") {
 					before := rec.SpotifyID
 					poolSize := rescueCompilationPin(sp, mb, s.Song, s.Artist, mbAlbum, mbYear, &rec)
 					if rec.SpotifyID == before {
 						if poolSize == 0 {
-							report("rescue: %s - %s: original (%s %d) not in Spotify's catalog, keeping %s %d", s.Song, s.Artist, mbAlbum, mbYear, rec.Album, rec.ReleaseYear)
+							report("rescue: %s - %s: original (%s %d) not found in the bounded Spotify searches, keeping %s %d", s.Song, s.Artist, mbAlbum, mbYear, rec.Album, rec.ReleaseYear)
 						} else {
 							report("rescue: %s - %s: none of %d targeted candidates beats %s %d (original: %s %d)", s.Song, s.Artist, poolSize, rec.Album, rec.ReleaseYear, mbAlbum, mbYear)
 						}
@@ -313,6 +332,7 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 				best, exactMatch := spotify.PickBest(tracks, s.Song, s.Artist)
 				rec.SpotifyID, rec.SpotifyURL = best.ID, best.URL
 				rec.Album = best.Album
+				rec.AlbumType = best.AlbumType
 				rec.AlbumArt = best.AlbumArt
 				rec.SpotifyPopularity = best.Popularity
 				if len(best.ReleaseDate) >= 4 {
@@ -528,7 +548,7 @@ Verified facts, sourced from Spotify and Wikipedia:
 %s
 Write exactly 2 sentences about the song. Sentence 1: release context, chart history, or musical context, using ONLY the verified facts above - never state an album name, year, chart position, or any other specific that is not written there; if the facts do not include one, write around it, a shorter accurate note is better than a detailed wrong one. If the verified facts name the album the song appears on, mention it in sentence 1. Sentence 2: how the song connects to the listener's memory above, or its lasting resonance if no memory was shared. %sNever invent facts about the listener's life; you may only reference what they wrote above.
 
-Style rules, no exceptions: write in the third person only; refer to the person as "this listener" or "the listener". NEVER write "you", "your", "yours", "you're", "you've", or "you'll" ANYWHERE in the response, including inside song titles, quoted lyrics, album titles, or band names. If the song or album title contains one of those words, still refer to the song only by the exact title from the Song line when quoting it, or avoid quotation marks. This validator has no exceptions for titles. No self-corrections, restarts, or hedges (never write "wait", "actually", "no,", or similar). No meta commentary about the writing itself.
+Style rules: write in the third person; refer to the person as "this listener" or "the listener". Do not address the listener as you/your. Exact song or artist names may contain those words. Do not expand initials, abbreviations, or nicknames from the memory into names not provided in the facts. Do not put memory paraphrases in quotation marks. No self-corrections, restarts, or hedges (never write "wait", "actually", "no,", or similar). No meta commentary about the writing itself.
 
 Respond with JSON only: {"note": "...", "source_url": "..."} where source_url is a real URL (Wikipedia, official chart archive, Last.fm) supporting the note. If you cannot give a real source URL, respond {"note": "", "source_url": ""}.`
 
@@ -614,6 +634,17 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 			}
 		}
 
+		oldSourceOK := true
+		if hasOld {
+			if ok, err := wk.SourceUsable(old.SourceURL); err == nil {
+				oldSourceOK = ok
+				if !ok {
+					report("note source: %s: old source is disambiguation/empty and cannot be retained", s.Song)
+				}
+			} else {
+				report("note source: %s: old-source verification unavailable: %v", s.Song, err)
+			}
+		}
 		memCtx, memRule := "", "The listener did not share a personal memory for this one. "
 		if includeMemory && s.Memory != "" {
 			memCtx = "The listener's own words about it: " + s.Memory + "\n"
@@ -625,7 +656,7 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 		var factsLines []string
 		if haveRec && rec.Album != "" {
 			album := cleanAlbum(rec.Album)
-			if strings.EqualFold(album, s.Song) {
+			if rec.AlbumType == "single" {
 				// title matches the song: the release is the single itself
 				factsLines = append(factsLines, fmt.Sprintf("- Release (Spotify data): %q (%d), a single", album, rec.ReleaseYear))
 			} else {
@@ -633,8 +664,8 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 			}
 		}
 		wikiURL := ""
-		if wTitle, wURL, wExtract, err := wk.Lookup(s.Song, s.Artist); err != nil {
-			fmt.Fprintln(os.Stderr, "warn: wikipedia:", s.Song, "-", err)
+		if wTitle, wURL, wExtract, _, err := wk.LookupRelease(s.Song, s.Artist, cleanAlbum(recAlbum(rec))); err != nil {
+			report("note source: %s: %v", s.Song, err)
 		} else if wExtract != "" {
 			wikiURL = wURL
 			factsLines = append(factsLines, fmt.Sprintf("- Wikipedia article %q intro: %s", wTitle, wExtract))
@@ -657,6 +688,10 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 		var n notes.Note
 		issue := ""
 		for attempt := 1; attempt <= 3; attempt++ {
+			if wikiURL == "" {
+				issue = "no verified non-disambiguation source article; no generation attempted"
+				break
+			}
 			text, err := g.Generate(prompt)
 			if err != nil {
 				issue = fmt.Sprintf("generation failed: %v", err)
@@ -677,7 +712,9 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 			if wikiURL != "" {
 				n.SourceURL = wikiURL // the article we actually pulled facts from
 			}
-			if !notes.Valid(n) {
+			if wikiURL == "" {
+				issue = "no verified non-disambiguation source article; refusing model-supplied URL"
+			} else if !notes.Valid(n) {
 				issue = "no real source URL in the response"
 			} else if si := notes.StyleIssue(n.Note, s.Song, s.Artist); si != "" {
 				issue = "style check failed: " + si
@@ -711,7 +748,7 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 			} else {
 				report("note: written: %s - %s", s.Song, s.Artist)
 			}
-		case hasOld && regenReason != "" && !notes.ClaimsOK(old.Note, claimsText):
+		case hasOld && (!oldSourceOK || regenReason != "" && !notes.ClaimsOK(old.Note, claimsText)):
 			// the old note names facts that no longer hold and the rewrite
 			// failed: drop it rather than publish a stale album claim
 			delete(ctx.Notes, k)
@@ -742,4 +779,16 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 	report("notes: %d written, %d skipped (existing), %d retries, %d kept old after failed regeneration, %d dropped -> %s", added, skipped, retried, kept, dropped, contextPath)
 	fmt.Println("Review the notes before committing - the site only renders what you commit.")
 	flushSummary("Notes: per-song outcomes")
+}
+
+func recAlbum(r *enrich.Record) string {
+	if r == nil {
+		return ""
+	}
+	return r.Album
+}
+
+// Keep regeneration state across the enrich step that precedes notes.
+func copyReleaseState(rec *enrich.Record, old enrich.Record) {
+	rec.ReleaseChanged = old.ReleaseChanged
 }

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/todkap/permanent-rotation/internal/enrich"
+	"github.com/todkap/permanent-rotation/internal/spotify"
 	"os"
 	"path/filepath"
 	"strings"
@@ -63,4 +65,17 @@ func TestFlushSummaryEscapesExternalText(t *testing.T) {
 	if strings.Contains(string(b), "A | B") || strings.Contains(string(b), "*1990*") || strings.Contains(string(b), "[kept]") {
 		t.Fatalf("unescaped external text in summary: %q", b)
 	}
+}
+
+func TestV5MarkerSurvivesAndAdoptionRecordsAlbumType(t *testing.T) {
+	rec := enrich.Record{Song: "Here Comes a Regular", Artist: "The Replacements"}
+	copyReleaseState(&rec, enrich.Record{ReleaseChanged: true})
+	if !rec.ReleaseChanged {
+		t.Fatal("marker lost before notes")
+	}
+	adoptPin(&rec, spotify.Track{ID: "album", Album: "Tim", AlbumType: "album", ReleaseDate: "1985"}, "test")
+	if !rec.ReleaseChanged || rec.AlbumType != "album" || rec.ReleaseYear != 1985 {
+		t.Fatal(rec)
+	}
+	reportLines = nil
 }

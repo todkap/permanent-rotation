@@ -75,9 +75,9 @@ type Track struct {
 	IsVarious   bool // compilation flag, deprioritized in matching
 }
 
-// Search looks up one song and returns up to 10 candidates (Dev Mode cap).
+// Search pages up to 30 candidates, ten per request (Dev Mode cap).
 func (c *Client) Search(title, artist string) ([]Track, error) {
-	return c.searchPaginated(fmt.Sprintf("track:%s artist:%s", title, artist), 1)
+	return c.searchPaginated(fmt.Sprintf("track:%s artist:%s", title, artist), 3)
 }
 
 // SearchAlbum narrows the search to one album title. Used to rescue catalog
@@ -295,6 +295,9 @@ func PickBest(tracks []Track, title, artist string) (Track, bool) {
 	wantTitle := normalizeTitle(title)
 	var exact []int
 	for i, tr := range tracks {
+		if alternateRecording(tr) {
+			continue
+		}
 		if !strings.EqualFold(normalizeTitle(tr.Name), wantTitle) {
 			continue
 		}
@@ -318,14 +321,36 @@ func PickBest(tracks []Track, title, artist string) (Track, bool) {
 // non-compilation over compilation.
 func betterCandidate(a, b Track) bool {
 	ka, kb := releaseKey(a.ReleaseDate), releaseKey(b.ReleaseDate)
-	if ka != kb {
-		return ka < kb
+	if ka[:4] != kb[:4] {
+		return ka[:4] < kb[:4]
 	}
-	return compilationPenalty(a) < compilationPenalty(b)
+	if releaseKind(a) != releaseKind(b) {
+		return releaseKind(a) < releaseKind(b)
+	}
+	if compilationPenalty(a) != compilationPenalty(b) {
+		return compilationPenalty(a) < compilationPenalty(b)
+	}
+	return ka < kb
 }
 
+// OSTs may be typed compilation by Spotify, but are album releases, not
+// greatest-hits collections. A single is never a same-year album upgrade.
+func releaseKind(t Track) int {
+	if strings.EqualFold(t.AlbumType, "single") {
+		return 1
+	}
+	return 0
+}
 func compilationPenalty(t Track) int {
-	if t.IsVarious || LooksLikeCompilation(t.Album) {
+	a := strings.ToLower(t.Album)
+	// Movie titles like Singles are not evidence of a hits collection.
+	soundtrack := strings.Contains(a, "soundtrack") || strings.Contains(a, "motion picture")
+	for _, w := range []string{"greatest hits", "best of", "anthology", "essential", "collection", "gold"} {
+		if strings.Contains(" "+a+" ", " "+w+" ") {
+			return 2
+		}
+	}
+	if LooksLikeCompilation(t.Album) && !(soundtrack && strings.HasPrefix(a, "singles")) {
 		return 1
 	}
 	return 0
@@ -388,17 +413,56 @@ func normalizeTitle(title string) string {
 // Anything later or equally packaged keeps the pin, so a shuffled Spotify
 // result order can never move a card backwards.
 func StrictlyBetter(c Track, album string, year int) bool {
-	cy := 0
-	if len(c.ReleaseDate) >= 4 {
-		fmt.Sscanf(c.ReleaseDate[:4], "%d", &cy)
-	}
-	if cy == 0 {
+	return BetterPin(c, Track{Album: album, ReleaseDate: fmt.Sprint(year)})
+}
+
+// BetterPin uses the same ordering as PickBest, but never churns on an
+// intra-year date or ID tie: year, album-v-single, then packaging quality.
+func BetterPin(c, old Track) bool {
+	cy, oy := releaseKey(c.ReleaseDate)[:4], releaseKey(old.ReleaseDate)[:4]
+	if cy == "9999" {
 		return false
 	}
-	if cy != year {
-		return cy < year
+	if cy != oy {
+		return cy < oy
 	}
-	return compilationPenalty(c) < compilationPenalty(Track{Album: album})
+	if releaseKind(c) != releaseKind(old) {
+		return releaseKind(c) < releaseKind(old)
+	}
+	return compilationPenalty(c) < compilationPenalty(old)
+}
+
+// Details supplies release type for older cached pins before comparing a
+// single with an album. Unknown metadata is never guessed from its title.
+func (c *Client) Details(id string) (Track, error) {
+	if err := c.authorize(); err != nil {
+		return Track{}, err
+	}
+	req, _ := http.NewRequest("GET", "https://api.spotify.com/v1/tracks/"+url.PathEscape(id), nil)
+	req.Header.Set("Authorization", "Bearer "+c.token)
+	resp, err := c.hc.Do(req)
+	if err != nil {
+		return Track{}, err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return Track{}, fmt.Errorf("track details: %s", resp.Status)
+	}
+	var v struct {
+		ID, Name string
+		Album    struct {
+			Name string `json:"name"`
+			Type string `json:"album_type"`
+			Date string `json:"release_date"`
+		}
+	}
+	if err = json.NewDecoder(resp.Body).Decode(&v); err != nil {
+		return Track{}, err
+	}
+	if v.Album.Type == "" {
+		return Track{}, fmt.Errorf("track details missing album_type")
+	}
+	return Track{ID: v.ID, Name: v.Name, Album: v.Album.Name, AlbumType: v.Album.Type, ReleaseDate: v.Album.Date}, nil
 }
 
 // stripFeaturing drops " (feat. ...)"-style suffixes so a CSV credit like
@@ -408,4 +472,16 @@ func stripFeaturing(artist string) string {
 		return strings.TrimSpace(artist[:i])
 	}
 	return artist
+}
+
+// Some catalog uploads put the altered version in the release title rather
+// than the track name. Do not treat those as an original recording.
+func alternateRecording(t Track) bool {
+	a := strings.ToLower(t.Album)
+	for _, v := range []string{"sped up", "sped-up", "speed up", "slowed", "nightcore", "karaoke", "tribute", "re-recorded", "rerecorded", "remix", "(live", "[live", "live at ", "live in ", "(acoustic", "unplugged", "(demo"} {
+		if strings.Contains(a, v) {
+			return true
+		}
+	}
+	return false
 }

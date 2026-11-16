@@ -339,8 +339,8 @@ func TestNormalizeTitleSoundtrackBranding(t *testing.T) {
 	// Footloose sits on the 1984 OST under a soundtrack-branded track name;
 	// it is the same master and must exact-match the catalog title.
 	cases := map[string]string{
-		`Footloose - From "Footloose" Soundtrack`: "Footloose",
-		`Footloose (From "Footloose" Soundtrack)`: "Footloose",
+		`Footloose - From "Footloose" Soundtrack`:           "Footloose",
+		`Footloose (From "Footloose" Soundtrack)`:           "Footloose",
 		"Footloose - From \u201cFootloose\u201d Soundtrack": "Footloose",
 	}
 	for in, want := range cases {
@@ -374,5 +374,53 @@ func TestQuerySafeStripsColons(t *testing.T) {
 	}
 	if gotQ != "isrc:USEE10001993" {
 		t.Fatalf("isrc query = %q", gotQ)
+	}
+}
+
+func TestV5AlbumBeatsSameYearEarlierSingle(t *testing.T) {
+	single := Track{ID: "single", Name: "Zombie", Artist: "The Cranberries", Album: "Zombie", AlbumType: "single", ReleaseDate: "1994-09-19"}
+	album := Track{ID: "album", Name: "Zombie - 2025 Remaster", Artist: "The Cranberries", Album: "No Need To Argue (2025 Remastered)", AlbumType: "album", ReleaseDate: "1994-10-03"}
+	best, exact := PickBest([]Track{single, album}, "Zombie", "The Cranberries")
+	if !exact || best.ID != "album" || !BetterPin(album, single) || BetterPin(single, album) {
+		t.Fatalf("album preference failed: %+v", best)
+	}
+	later := album
+	later.ReleaseDate = "1995"
+	if BetterPin(later, single) {
+		t.Fatal("later-year album must not displace earlier recording")
+	}
+}
+func TestV5PlainSoundtrackBeatsAnniversary(t *testing.T) {
+	old := Track{ID: "anniv", Name: "Footloose", Artist: "Kenny Loggins", Album: "Footloose (15th Anniversary Collectors' Edition)", AlbumType: "compilation", ReleaseDate: "1984-01-01"}
+	plain := Track{ID: "plain", Name: `Footloose - From "Footloose" Soundtrack`, Artist: "Kenny Loggins", Album: "Footloose (Original Motion Picture Soundtrack)", AlbumType: "compilation", ReleaseDate: "1984-01-23"}
+	got, ok := PickBest([]Track{old, plain}, "Footloose", "Kenny Loggins")
+	if !ok || got.ID != "plain" || !BetterPin(plain, old) || BetterPin(old, plain) {
+		t.Fatalf("plain OST failed: %+v", got)
+	}
+}
+func TestV5ProtectCorrectCardsAndRejectAlteredAlbums(t *testing.T) {
+	for _, name := range []string{"Republic", "Dookie", "Pyromania", "Violator", "Whatever and Ever Amen", "Tim", "Eye Of The Tiger", "Singles - Original Motion Picture Soundtrack"} {
+		old := Track{Album: name, AlbumType: "album", ReleaseDate: "1994"}
+		for _, cand := range []Track{{Album: name + " (Deluxe)", AlbumType: "album", ReleaseDate: "1994"}, {Album: name, AlbumType: "single", ReleaseDate: "1994"}, {Album: name, AlbumType: "album", ReleaseDate: "1995"}} {
+			if BetterPin(cand, old) {
+				t.Errorf("correct album downgraded: %s -> %s %s", name, cand.Album, cand.AlbumType)
+			}
+		}
+	}
+	ts := []Track{{ID: "bad", Name: "Zombie", Artist: "The Cranberries", Album: "Zombie (Sped Up)", AlbumType: "single", ReleaseDate: "1993"}, {ID: "good", Name: "Zombie", Artist: "The Cranberries", Album: "No Need To Argue", AlbumType: "album", ReleaseDate: "1994"}}
+	got, ok := PickBest(ts, "Zombie", "The Cranberries")
+	if !ok || got.ID != "good" {
+		t.Fatal(got)
+	}
+}
+func TestV5DetailsReadsReleaseType(t *testing.T) {
+	c := fixtureClient(`{"id":"old","name":"Zombie","album":{"name":"Zombie","album_type":"single","release_date":"1994"}}`)
+	d, err := c.Details("old")
+	if err != nil || d.AlbumType != "single" {
+		t.Fatalf("%+v %v", d, err)
+	}
+	c = fixtureClient(`{"id":"old","album":{"name":"Eye Of The Tiger"}}`)
+	if _, err = c.Details("old"); err == nil {
+		t.Fatal("missing type must remain unverified")
 	}
 }
