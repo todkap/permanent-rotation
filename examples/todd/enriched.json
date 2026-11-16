@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T21:48:34Z",
+  "generated_at": "2026-11-16T22:07:05Z",
   "songs": [
     {
       "song": "Regret",
@@ -12,6 +12,7 @@
       "spotify_url": "https://open.spotify.com/track/2NphJ0mVP7y3qtLt5H5URY",
       "release_year": 1993,
       "album": "Republic",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e0210230d7a38a6cdcf418e8c7e",
       "lastfm_listeners": 339329,
       "lastfm_playcount": 1896971,
@@ -19,7 +20,7 @@
       "tier": "middle",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:04Z"
+      "fetched_at": "2026-11-16T22:05:13Z"
     },
     {
       "song": "Smells Like Teen Spirit",
@@ -28,18 +29,20 @@
       "chapter": "College Freshman Year",
       "memory": "Dorm life. The choices our friends make and how freshman-year life choices change the trajectory of life. Balancing home life and college life, and feeling broke.",
       "tags": "Freshman year / Growing up / Grunge / Pivot from rap / Childhood friends moving on and meeting new college friends",
-      "spotify_id": "5ghIJDpPoe3CfHMGu71E6T",
-      "spotify_url": "https://open.spotify.com/track/5ghIJDpPoe3CfHMGu71E6T",
+      "spotify_id": "75aLTVBSGIquqzQ6AkmK3Q",
+      "spotify_url": "https://open.spotify.com/track/75aLTVBSGIquqzQ6AkmK3Q",
       "release_year": 1991,
-      "album": "Nevermind (Remastered)",
-      "album_art": "https://i.scdn.co/image/ab67616d00001e02e175a19e530c898d167d39bf",
+      "album": "Nevermind",
+      "album_type": "compilation",
+      "album_art": "https://i.scdn.co/image/ab67616d00001e02d27b5404a8aa5b94856e24cc",
       "lastfm_listeners": 4229696,
       "lastfm_playcount": 43982861,
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:07Z"
+      "match_reason": "earlier or plainer original in plain search",
+      "release_changed": true,
+      "fetched_at": "2026-11-16T22:05:14Z"
     },
     {
       "song": "Home Sweet Home",
@@ -52,6 +55,7 @@
       "spotify_url": "https://open.spotify.com/track/1kvq7ksGQWSyRysYYNd6lu",
       "release_year": 1985,
       "album": "Theatre of Pain (Deluxe Version)",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02c9dcca18dd8a9e562490baa8",
       "lastfm_listeners": 467986,
       "lastfm_playcount": 3069569,
@@ -59,7 +63,7 @@
       "tier": "middle",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:09Z"
+      "fetched_at": "2026-11-16T22:05:18Z"
     },
     {
       "song": "Dreams",
@@ -72,6 +76,7 @@
       "spotify_url": "https://open.spotify.com/track/2APxH5XbOLDTmW9X5yi6Hw",
       "release_year": 1986,
       "album": "5150",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e0281e66f0aa00989cbe6030d57",
       "lastfm_listeners": 281733,
       "lastfm_playcount": 1495595,
@@ -79,7 +84,7 @@
       "tier": "deep-cut",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:11Z"
+      "fetched_at": "2026-11-16T22:05:20Z"
     },
     {
       "song": "Summer",
@@ -92,6 +97,7 @@
       "spotify_url": "https://open.spotify.com/track/6K8FqSCxIQEF5zuZsxv7rG",
       "release_year": 1995,
       "album": "Sleepy Eyed",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e0256bc3f0eee9d468403302416",
       "seen_live": "The Middle East, Cambridge, late 1990s",
       "lastfm_listeners": 21177,
@@ -100,7 +106,7 @@
       "tier": "deep-cut",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:13Z"
+      "fetched_at": "2026-11-16T22:05:22Z"
     },
     {
       "song": "Heartspark Dollarsign",
@@ -113,6 +119,7 @@
       "spotify_url": "https://open.spotify.com/track/4FiLbwboDT9mTAxwQ9Gk7J",
       "release_year": 1995,
       "album": "Sparkle And Fade",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02ec4d79e8035ed2803ecfe2b3",
       "seen_live": "WBCN X-Mas Rave, Avalon, Boston, 1997",
       "lastfm_listeners": 53633,
@@ -121,7 +128,7 @@
       "tier": "deep-cut",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:15Z"
+      "fetched_at": "2026-11-16T22:05:24Z"
     },
     {
       "song": "I'll Be",
@@ -134,6 +141,7 @@
       "spotify_url": "https://open.spotify.com/track/5K7AMlpc4796JRWXb26nCV",
       "release_year": 1997,
       "album": "Misguided Roses",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02e1076bcd33dbf8d74f88e4a9",
       "seen_live": "Jimmy V benefit concert, Raleigh, 2001",
       "lastfm_listeners": 382588,
@@ -142,7 +150,7 @@
       "tier": "middle",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:16Z"
+      "fetched_at": "2026-11-16T22:05:28Z"
     },
     {
       "song": "Hey Ya",
@@ -155,6 +163,7 @@
       "spotify_url": "https://open.spotify.com/track/2PpruBYCo4H7WOBJ7Q2EwM",
       "release_year": 2003,
       "album": "Speakerboxxx/The Love Below",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e026e88eb6508fd94cd1b745ce2",
       "lastfm_listeners": 2488990,
       "lastfm_playcount": 19422704,
@@ -162,7 +171,7 @@
       "tier": "canon",
       "match_confidence": "fuzzy",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:18Z"
+      "fetched_at": "2026-11-16T22:05:30Z"
     },
     {
       "song": "Nightswimming",
@@ -175,6 +184,7 @@
       "spotify_url": "https://open.spotify.com/track/6G0NzOx2jEPFsSmhr9N8Ys",
       "release_year": 1992,
       "album": "Automatic For The People",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02ace3e7aae0b7c78bbe1c4f35",
       "lastfm_listeners": 557545,
       "lastfm_playcount": 3304237,
@@ -182,7 +192,7 @@
       "tier": "middle",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:20Z"
+      "fetched_at": "2026-11-16T22:05:32Z"
     },
     {
       "song": "Joey",
@@ -195,6 +205,7 @@
       "spotify_url": "https://open.spotify.com/track/04UWtAIMwi67MG8uHwYqgK",
       "release_year": 1990,
       "album": "Bloodletting",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e028cdaba8fdcd659d7f18a1630",
       "lastfm_listeners": 125158,
       "lastfm_playcount": 830828,
@@ -202,7 +213,7 @@
       "tier": "deep-cut",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:22Z"
+      "fetched_at": "2026-11-16T22:05:34Z"
     },
     {
       "song": "The Freshmen",
@@ -215,6 +226,7 @@
       "spotify_url": "https://open.spotify.com/track/21jEuMn2lf37715rwjow2M",
       "release_year": 1996,
       "album": "Villains",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e023744b2ac418a362d4dc816b3",
       "seen_live": "Cincinnati, 2026",
       "lastfm_listeners": 304736,
@@ -223,7 +235,7 @@
       "tier": "middle",
       "match_confidence": "fuzzy",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:23Z"
+      "fetched_at": "2026-11-16T22:05:36Z"
     },
     {
       "song": "Teenage Love",
@@ -232,18 +244,20 @@
       "chapter": "High School",
       "memory": "An awkward teen time. I didn't have a girlfriend and was still trying to find myself. This song was a perfect love song and felt like what I yearned for.",
       "tags": "rap / britisih / high school trying to find love",
-      "spotify_id": "4nAukQPJhSwQMCAvRrQnb4",
-      "spotify_url": "https://open.spotify.com/track/4nAukQPJhSwQMCAvRrQnb4",
+      "spotify_id": "3F644VZh6mKJYdH3gSlrjb",
+      "spotify_url": "https://open.spotify.com/track/3F644VZh6mKJYdH3gSlrjb",
       "release_year": 1988,
-      "album": "The Great Adventures Of Slick Rick (Deluxe Edition)",
-      "album_art": "https://i.scdn.co/image/ab67616d00001e02a5234ad1d0dbc9dfc94c5ee5",
+      "album": "The Great Adventures Of Slick Rick",
+      "album_type": "album",
+      "album_art": "https://i.scdn.co/image/ab67616d00001e0231d320cf8e982c7f1a5f9d29",
       "lastfm_listeners": 44166,
       "lastfm_playcount": 137044,
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:25Z"
+      "match_reason": "earlier or plainer original in plain search",
+      "release_changed": true,
+      "fetched_at": "2026-11-16T22:05:38Z"
     },
     {
       "song": "Deep Cover",
@@ -258,7 +272,7 @@
       "tier": "deep-cut",
       "match_confidence": "unmatched",
       "match_reason": "unmatched: no Spotify result accepted",
-      "fetched_at": "2026-11-16T21:47:25Z"
+      "fetched_at": "2026-11-16T22:05:40Z"
     },
     {
       "song": "Welcome to the Terrordome",
@@ -271,6 +285,7 @@
       "spotify_url": "https://open.spotify.com/track/2HlKSufhcnPDZAS1S7jLg6",
       "release_year": 1990,
       "album": "Fear Of A Black Planet",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e022e3d1de8b2f61a477ae1ed6c",
       "lastfm_listeners": 150902,
       "lastfm_playcount": 511355,
@@ -279,7 +294,7 @@
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
       "year_conflict": true,
-      "fetched_at": "2026-11-16T21:47:29Z"
+      "fetched_at": "2026-11-16T22:05:43Z"
     },
     {
       "song": "Papercut",
@@ -292,6 +307,7 @@
       "spotify_url": "https://open.spotify.com/track/1Vej0qeQ3ioKwpI6FUbRv1",
       "release_year": 2000,
       "album": "Hybrid Theory (Bonus Edition)",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02e2f039481babe23658fc719a",
       "seen_live": "Saitama, Japan, 2025",
       "lastfm_listeners": 1837521,
@@ -300,7 +316,7 @@
       "tier": "canon",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:31Z"
+      "fetched_at": "2026-11-16T22:05:45Z"
     },
     {
       "song": "Love Song",
@@ -313,6 +329,7 @@
       "spotify_url": "https://open.spotify.com/track/0X5C4WjQNubRysTkHOubz3",
       "release_year": 1989,
       "album": "Disintegration (Deluxe Edition)",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e025eaaa770d39591fd91b2b03b",
       "lastfm_listeners": 897494,
       "lastfm_playcount": 6558712,
@@ -320,7 +337,7 @@
       "tier": "middle",
       "match_confidence": "fuzzy",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:33Z"
+      "fetched_at": "2026-11-16T22:05:49Z"
     },
     {
       "song": "Here Comes a Regular",
@@ -329,11 +346,12 @@
       "chapter": "Late Discovery / Wilmington Era",
       "memory": "Wilmington is part vacation with Mike and Jess, but also where OTH was filmed. We did a set tour years later that made me love Wilmington even more, and it is one of the select cities in NC that I like to visit.",
       "tags": "Late find (almost 15 years after the release) / Feelings about losing something / One Tree Hill / Vacation in Wilmington",
-      "spotify_id": "5Yc1rQKy4uv4QJFJTPHEiu",
-      "spotify_url": "https://open.spotify.com/track/5Yc1rQKy4uv4QJFJTPHEiu",
+      "spotify_id": "6tV65o0vDhTK0xRQh8IxZN",
+      "spotify_url": "https://open.spotify.com/track/6tV65o0vDhTK0xRQh8IxZN",
       "release_year": 1985,
-      "album": "Tim (Expanded)",
-      "album_art": "https://i.scdn.co/image/ab67616d00001e02b642af238927dd4cf465d8a4",
+      "album": "Tim (Let It Bleed Edition)",
+      "album_type": "album",
+      "album_art": "https://i.scdn.co/image/ab67616d00001e02ba06c7712f4fe6d6f49b4928",
       "lastfm_listeners": 108220,
       "lastfm_playcount": 551413,
       "spotify_popularity": null,
@@ -341,7 +359,7 @@
       "match_confidence": "exact",
       "match_reason": "earlier or plainer original in plain search",
       "release_changed": true,
-      "fetched_at": "2026-11-16T21:47:35Z"
+      "fetched_at": "2026-11-16T22:05:52Z"
     },
     {
       "song": "More than Words",
@@ -354,6 +372,7 @@
       "spotify_url": "https://open.spotify.com/track/1gVgkQFOKa8Wc1HYsJtPdH",
       "release_year": 1990,
       "album": "Extreme II - Pornograffitti",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02fb16b9b69eb891027654bcb1",
       "lastfm_listeners": 858944,
       "lastfm_playcount": 5366932,
@@ -361,7 +380,7 @@
       "tier": "middle",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:37Z"
+      "fetched_at": "2026-11-16T22:05:54Z"
     },
     {
       "song": "Silent Running",
@@ -374,6 +393,7 @@
       "spotify_url": "https://open.spotify.com/track/4ae0AmiDt3o18FvSmQOOYc",
       "release_year": 1985,
       "album": "Mike + The Mechanics",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e029caf94c1de577112a37d4592",
       "lastfm_listeners": 70684,
       "lastfm_playcount": 262723,
@@ -381,7 +401,7 @@
       "tier": "deep-cut",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:39Z"
+      "fetched_at": "2026-11-16T22:05:56Z"
     },
     {
       "song": "Something's Always Wrong",
@@ -394,6 +414,7 @@
       "spotify_url": "https://open.spotify.com/track/1W02KkFerpTBP29RKIt2c4",
       "release_year": 1994,
       "album": "Dulcinea",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e020ed745c9302d285eb14914dc",
       "seen_live": "Orpheum, Boston, 1995",
       "lastfm_listeners": 126177,
@@ -402,7 +423,7 @@
       "tier": "deep-cut",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:40Z"
+      "fetched_at": "2026-11-16T22:05:58Z"
     },
     {
       "song": "Somewhere Only We Know",
@@ -411,18 +432,20 @@
       "chapter": "Middle Age \u0026 Family",
       "memory": "The family watched Glee. We all had different music tastes and songs that we tied to that show. I have always loved songs that are melodic and memorable. This one feels like one of those songs.",
       "tags": "Middle Age / Kids Starting to form their own opinions on music / calming song / glee",
-      "spotify_id": "6uNP8aOZphmhsYlOwRhNh1",
-      "spotify_url": "https://open.spotify.com/track/6uNP8aOZphmhsYlOwRhNh1",
+      "spotify_id": "0ll8uFnc0nANY35E0Lfxvg",
+      "spotify_url": "https://open.spotify.com/track/0ll8uFnc0nANY35E0Lfxvg",
       "release_year": 2004,
-      "album": "Somewhere Only We Know",
-      "album_art": "https://i.scdn.co/image/ab67616d00001e02f806a7942ff458ea7653edd7",
-      "lastfm_listeners": 2609560,
-      "lastfm_playcount": 28106508,
+      "album": "Hopes And Fears",
+      "album_type": "album",
+      "album_art": "https://i.scdn.co/image/ab67616d00001e02045d0a38105fbe7bde43c490",
+      "lastfm_listeners": 2609063,
+      "lastfm_playcount": 28102215,
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:42Z"
+      "match_reason": "earlier or plainer original in plain search",
+      "release_changed": true,
+      "fetched_at": "2026-11-16T22:06:00Z"
     },
     {
       "song": "With or Without You",
@@ -435,6 +458,7 @@
       "spotify_url": "https://open.spotify.com/track/6ADSaE87h8Y3lccZlBJdXH",
       "release_year": 1987,
       "album": "The Joshua Tree (Super Deluxe)",
+      "album_type": "compilation",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02b7bea3d01f04e6d0408d2afe",
       "lastfm_listeners": 1691200,
       "lastfm_playcount": 12819481,
@@ -442,7 +466,7 @@
       "tier": "canon",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:44Z"
+      "fetched_at": "2026-11-16T22:06:03Z"
     },
     {
       "song": "Would?",
@@ -455,6 +479,7 @@
       "spotify_url": "https://open.spotify.com/track/2da0KrvLB5acEfw9bCnwQY",
       "release_year": 1992,
       "album": "Singles - Original Motion Picture Soundtrack",
+      "album_type": "compilation",
       "album_art": "https://i.scdn.co/image/ab67616d00001e023be87f2541b5d23f70853207",
       "lastfm_listeners": 916901,
       "lastfm_playcount": 7788758,
@@ -462,7 +487,7 @@
       "tier": "canon",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:45Z"
+      "fetched_at": "2026-11-16T22:06:05Z"
     },
     {
       "song": "Tiny Dancer",
@@ -475,6 +500,7 @@
       "spotify_url": "https://open.spotify.com/track/2TVxnKdb3tqe1nhQWwwZCO",
       "release_year": 1971,
       "album": "Madman Across The Water",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02d03ab2da904d8251a87bbc31",
       "seen_live": "IBM conference, Las Vegas, 2016",
       "lastfm_listeners": 1417861,
@@ -483,7 +509,7 @@
       "tier": "canon",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:47Z"
+      "fetched_at": "2026-11-16T22:06:07Z"
     },
     {
       "song": "Brick",
@@ -496,6 +522,7 @@
       "spotify_url": "https://open.spotify.com/track/6wy16VUfaWw4kqUMHlU39c",
       "release_year": 1997,
       "album": "Whatever and Ever Amen",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02772c39ac16b1382e5a658155",
       "seen_live": "WBCN X-Mas Rave, Avalon, Boston, 1997",
       "lastfm_listeners": 402194,
@@ -505,7 +532,7 @@
       "match_confidence": "exact",
       "match_reason": "earlier or plainer original in plain search",
       "year_conflict": true,
-      "fetched_at": "2026-11-16T21:47:49Z"
+      "fetched_at": "2026-11-16T22:06:09Z"
     },
     {
       "song": "Scenario",
@@ -518,6 +545,7 @@
       "spotify_url": "https://open.spotify.com/track/0301nLjG0ti26rx5ZmfqtP",
       "release_year": 1991,
       "album": "The Low End Theory",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02f38c6b37a21334e22005b1f7",
       "seen_live": "Lollapalooza, Kingston, RI, 1994",
       "lastfm_listeners": 286471,
@@ -526,7 +554,7 @@
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:51Z"
+      "fetched_at": "2026-11-16T22:06:11Z"
     },
     {
       "song": "Mayonaise",
@@ -539,6 +567,7 @@
       "spotify_url": "https://open.spotify.com/track/0jmKzJmUEKNbC7eU8YfOiA",
       "release_year": 1993,
       "album": "Siamese Dream (Deluxe Edition)",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e025274788f34fc7656d2856dfd",
       "seen_live": "Lollapalooza, Kingston, RI, 1994",
       "lastfm_listeners": 310010,
@@ -547,7 +576,7 @@
       "tier": "middle",
       "match_confidence": "fuzzy",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:53Z"
+      "fetched_at": "2026-11-16T22:06:14Z"
     },
     {
       "song": "There Is a Light That Never Goes Out",
@@ -560,6 +589,7 @@
       "spotify_url": "https://open.spotify.com/track/0WQiDwKJclirSYG9v5tayI",
       "release_year": 1986,
       "album": "The Queen Is Dead",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e026236778a208a15eb71079601",
       "lastfm_listeners": 965239,
       "lastfm_playcount": 10333988,
@@ -567,7 +597,7 @@
       "tier": "canon",
       "match_confidence": "fuzzy",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:55Z"
+      "fetched_at": "2026-11-16T22:06:17Z"
     },
     {
       "song": "Someday I Suppose",
@@ -580,6 +610,7 @@
       "spotify_url": "https://open.spotify.com/track/5IReyQMxi6LTLoIl5caW2B",
       "release_year": 1993,
       "album": "Don't Know How To Party",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e0234199d91c91f8303bcb83abb",
       "seen_live": "The Middle East, Cambridge, 1998",
       "lastfm_listeners": 81720,
@@ -588,7 +619,7 @@
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:57Z"
+      "fetched_at": "2026-11-16T22:06:19Z"
     },
     {
       "song": "So What'Cha Want",
@@ -609,7 +640,7 @@
       "tier": "middle",
       "match_confidence": "manual",
       "match_reason": "manual override (data/overrides.csv)",
-      "fetched_at": "2026-11-16T21:47:57Z"
+      "fetched_at": "2026-11-16T22:06:19Z"
     },
     {
       "song": "The Old Apartment",
@@ -622,6 +653,7 @@
       "spotify_url": "https://open.spotify.com/track/5HjviQMuDBIvcyNXJtka23",
       "release_year": 1996,
       "album": "Born on a Pirate Ship (Enhanced Edition)",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e0290a09aa3edca8b7cd812d03c",
       "seen_live": "Harborlights, Boston, 1997",
       "lastfm_listeners": 143484,
@@ -630,7 +662,7 @@
       "tier": "deep-cut",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:47:59Z"
+      "fetched_at": "2026-11-16T22:06:21Z"
     },
     {
       "song": "Title and Registration",
@@ -643,6 +675,7 @@
       "spotify_url": "https://open.spotify.com/track/5IJVWLwidnnU2O4XiscsEe",
       "release_year": 2003,
       "album": "Transatlanticism",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02ac5899ddc449d1e54a1b8880",
       "seen_live": "Deck the Hall Ball, Seattle, 2018",
       "lastfm_listeners": 741473,
@@ -651,7 +684,7 @@
       "tier": "middle",
       "match_confidence": "exact",
       "match_reason": "targeted rescue via MusicBrainz original release",
-      "fetched_at": "2026-11-16T21:48:01Z"
+      "fetched_at": "2026-11-16T22:06:26Z"
     },
     {
       "song": "Demons",
@@ -664,6 +697,7 @@
       "spotify_url": "https://open.spotify.com/track/3LlAyCYU26dvFZBDUIMb7a",
       "release_year": 2012,
       "album": "Night Visions",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02b2b2747c89d2157b0b29fb6a",
       "seen_live": "IBM conference, Las Vegas, 2016",
       "lastfm_listeners": 1779999,
@@ -672,7 +706,7 @@
       "tier": "canon",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:48:03Z"
+      "fetched_at": "2026-11-16T22:06:27Z"
     },
     {
       "song": "Colors",
@@ -685,6 +719,7 @@
       "spotify_url": "https://open.spotify.com/track/1TnUURhehaoMWKAqQtirm6",
       "release_year": 2015,
       "album": "BADLANDS",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02bd02d63417be256b22bffc28",
       "seen_live": "Raleigh, 2025",
       "lastfm_listeners": 866884,
@@ -693,7 +728,7 @@
       "tier": "canon",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:48:04Z"
+      "fetched_at": "2026-11-16T22:06:29Z"
     },
     {
       "song": "I Write Sins Not Tragedies",
@@ -706,6 +741,7 @@
       "spotify_url": "https://open.spotify.com/track/4bPQs0PHn4xbipzdPfn6du",
       "release_year": 2005,
       "album": "A Fever You Can't Sweat Out",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e023ab3ff3559d2664560e1fdb4",
       "seen_live": "Raleigh, 2016",
       "lastfm_listeners": 2321586,
@@ -714,7 +750,7 @@
       "tier": "canon",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:48:06Z"
+      "fetched_at": "2026-11-16T22:06:31Z"
     },
     {
       "song": "Thnks fr th Mmrs",
@@ -727,6 +763,7 @@
       "spotify_url": "https://open.spotify.com/track/3Zwu2K0Qa5sT6teCCHPShP",
       "release_year": 2007,
       "album": "Infinity On High",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02da071ae7564949fbbfc6904d",
       "seen_live": "IBM conference, Las Vegas, 2014",
       "lastfm_listeners": 1808559,
@@ -735,7 +772,7 @@
       "tier": "canon",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:48:08Z"
+      "fetched_at": "2026-11-16T22:06:33Z"
     },
     {
       "song": "My Name Is Jonas",
@@ -748,6 +785,7 @@
       "spotify_url": "https://open.spotify.com/track/4nzyOwogJuWn1s6QuGFZ6w",
       "release_year": 1994,
       "album": "Weezer",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02345536847e60f622ee0eae96",
       "seen_live": "Raleigh, 2016 (with Panic! At The Disco)",
       "lastfm_listeners": 1107901,
@@ -756,7 +794,7 @@
       "tier": "middle",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:48:10Z"
+      "fetched_at": "2026-11-16T22:06:36Z"
     },
     {
       "song": "Monsters (feat. blackbear)",
@@ -769,6 +807,7 @@
       "spotify_url": "https://open.spotify.com/track/0tyR7Bu9P086aWBFZ4QJoo",
       "release_year": 2020,
       "album": "Wake Up, Sunshine",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02fb7ae2e64f698edee69afc11",
       "lastfm_listeners": 348265,
       "lastfm_playcount": 3721908,
@@ -776,7 +815,7 @@
       "tier": "middle",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:48:12Z"
+      "fetched_at": "2026-11-16T22:06:38Z"
     },
     {
       "song": "Enjoy the Silence",
@@ -789,14 +828,15 @@
       "spotify_url": "https://open.spotify.com/track/4U21h8AueaOxQ30agnDk6R",
       "release_year": 1990,
       "album": "Violator",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02e2b1de6eadee18a2022e1dd0",
-      "lastfm_listeners": 2225238,
-      "lastfm_playcount": 24492959,
+      "lastfm_listeners": 2224681,
+      "lastfm_playcount": 24486787,
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
       "match_reason": "earlier or plainer original in plain search",
-      "fetched_at": "2026-11-16T21:48:13Z"
+      "fetched_at": "2026-11-16T22:06:40Z"
     },
     {
       "song": "Barrel of a Gun",
@@ -809,6 +849,7 @@
       "spotify_url": "https://open.spotify.com/track/41Nr8E10Q1ewRRAHNF1wqs",
       "release_year": 1999,
       "album": "Lost and Gone Forever",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e025f56c76e9a616e438de02777",
       "seen_live": "Harborlights, Boston, 1997",
       "lastfm_listeners": 93876,
@@ -817,7 +858,7 @@
       "tier": "deep-cut",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:48:15Z"
+      "fetched_at": "2026-11-16T22:06:42Z"
     },
     {
       "song": "11 Minutes",
@@ -830,6 +871,7 @@
       "spotify_url": "https://open.spotify.com/track/4mGdjNMo0RonTlOEb7cYg4",
       "release_year": 2019,
       "album": "11 Minutes (with Halsey feat. Travis Barker)",
+      "album_type": "single",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02200aac9c99ae5499bfd43500",
       "lastfm_listeners": 2,
       "lastfm_playcount": 14,
@@ -837,7 +879,7 @@
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:48:17Z"
+      "fetched_at": "2026-11-16T22:06:44Z"
     },
     {
       "song": "Footloose",
@@ -846,18 +888,20 @@
       "chapter": "Childhood / Prospect St",
       "memory": "Kenny Loggins brings me back to my childhood living on prospect street. This was one of a bunch of songs from the soundtrack. Loved the small town feel and also that this was a movie too. The dance at the end just makes me happy.",
       "tags": "80s movie soundtracks / small town feel / dance ending",
-      "spotify_id": "2vz1CsL5WBsbpBcwgboTAw",
-      "spotify_url": "https://open.spotify.com/track/2vz1CsL5WBsbpBcwgboTAw",
+      "spotify_id": "4lUquPSQVHZv1eKuswOLsG",
+      "spotify_url": "https://open.spotify.com/track/4lUquPSQVHZv1eKuswOLsG",
       "release_year": 1984,
-      "album": "Footloose (15th Anniversary Collectors' Edition)",
-      "album_art": "https://i.scdn.co/image/ab67616d00001e023b7492bb678d5d51683444ae",
+      "album": "Footloose (Original Motion Picture Soundtrack)",
+      "album_type": "compilation",
+      "album_art": "https://i.scdn.co/image/ab67616d00001e02dc57053315f6e413204a091a",
       "lastfm_listeners": 789442,
       "lastfm_playcount": 3885658,
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
       "match_reason": "earlier or plainer original in plain search",
-      "fetched_at": "2026-11-16T21:48:19Z"
+      "release_changed": true,
+      "fetched_at": "2026-11-16T22:06:46Z"
     },
     {
       "song": "Eye of the Tiger",
@@ -870,6 +914,7 @@
       "spotify_url": "https://open.spotify.com/track/2HHtWyy5CgaQbC7XSoOb0e",
       "release_year": 1982,
       "album": "Eye Of The Tiger",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e024e2755e7a96ec5e062c76aac",
       "lastfm_listeners": 1876850,
       "lastfm_playcount": 12258062,
@@ -877,7 +922,7 @@
       "tier": "canon",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:48:21Z"
+      "fetched_at": "2026-11-16T22:06:48Z"
     },
     {
       "song": "Crazy for You",
@@ -890,6 +935,7 @@
       "spotify_url": "https://open.spotify.com/track/6iABG3ruJ1ArrulilbVhai",
       "release_year": 1995,
       "album": "Something to Remember",
+      "album_type": "compilation",
       "album_art": "https://i.scdn.co/image/ab67616d00001e0226f6bb4664640bfa48391cf4",
       "lastfm_listeners": 339031,
       "lastfm_playcount": 2197356,
@@ -898,7 +944,7 @@
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
       "year_conflict": true,
-      "fetched_at": "2026-11-16T21:48:23Z"
+      "fetched_at": "2026-11-16T22:06:52Z"
     },
     {
       "song": "I Think We're Alone Now",
@@ -911,6 +957,7 @@
       "spotify_url": "https://open.spotify.com/track/4uvjOKsp7mSjrDhWdkLPBY",
       "release_year": 1987,
       "album": "Tiffany",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02ec908cd672ac564d27f9ae51",
       "seen_live": "first concert, late 1980s",
       "lastfm_listeners": 712701,
@@ -919,7 +966,7 @@
       "tier": "middle",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:48:25Z"
+      "fetched_at": "2026-11-16T22:06:54Z"
     },
     {
       "song": "Basket Case",
@@ -932,6 +979,7 @@
       "spotify_url": "https://open.spotify.com/track/6L89mwZXSOwYl76YXfX13s",
       "release_year": 1994,
       "album": "Dookie",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02db89b08034de626ebee6823d",
       "seen_live": "Hatch Shell, Boston, Sept 9, 1994",
       "lastfm_listeners": 2659910,
@@ -940,7 +988,7 @@
       "tier": "canon",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:48:27Z"
+      "fetched_at": "2026-11-16T22:06:56Z"
     },
     {
       "song": "Rock of Ages",
@@ -953,6 +1001,7 @@
       "spotify_url": "https://open.spotify.com/track/4eXGF4fOubY0IhWieQ0OoF",
       "release_year": 1983,
       "album": "Pyromania",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02e45161990e83649071399525",
       "lastfm_listeners": 279634,
       "lastfm_playcount": 1839443,
@@ -960,7 +1009,7 @@
       "tier": "middle",
       "match_confidence": "exact",
       "match_reason": "earlier or plainer original in plain search",
-      "fetched_at": "2026-11-16T21:48:28Z"
+      "fetched_at": "2026-11-16T22:06:59Z"
     },
     {
       "song": "Zombie",
@@ -969,19 +1018,21 @@
       "chapter": "College to Post-College Transition",
       "memory": "Spring of 1995 in Rhode Island. It was the week I was graduating college and my girlfriend was not able to go. I instead brought my brother-in-law who was more into moshing than that type of music. It was surreal to see a mosh pit of sorts break out during Zombie and he was in his element.",
       "tags": "irish alt-rock / 90s alternative / graduation week / mosh pit",
-      "spotify_id": "6yeSZ9KWPIAOX8JOEO02jh",
-      "spotify_url": "https://open.spotify.com/track/6yeSZ9KWPIAOX8JOEO02jh",
+      "spotify_id": "3gjHnylel3PTRpjS44ocqr",
+      "spotify_url": "https://open.spotify.com/track/3gjHnylel3PTRpjS44ocqr",
       "release_year": 1994,
-      "album": "Zombie",
-      "album_art": "https://i.scdn.co/image/ab67616d00001e029ddc936d3e254f6556363d68",
+      "album": "No Need To Argue (2025 Remastered)",
+      "album_type": "album",
+      "album_art": "https://i.scdn.co/image/ab67616d00001e0220a28883cdd0fc7d5f85a9a9",
       "seen_live": "The Strand, Providence, May 14, 1995",
       "lastfm_listeners": 2570860,
       "lastfm_playcount": 21693327,
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "match_reason": "targeted rescue via MusicBrainz original release",
-      "fetched_at": "2026-11-16T21:48:30Z"
+      "match_reason": "earlier or plainer original in plain search",
+      "release_changed": true,
+      "fetched_at": "2026-11-16T22:07:01Z"
     },
     {
       "song": "Desperately Wanting",
@@ -994,6 +1045,7 @@
       "spotify_url": "https://open.spotify.com/track/7GuLQiPvQbfzP0kqcvgIQQ",
       "release_year": 1996,
       "album": "Friction Baby",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02fe921a2c2da5e97173e53c0b",
       "seen_live": "Lupo's Heartbreak Hotel, Providence, Sept 9, 1995",
       "lastfm_listeners": 126642,
@@ -1002,7 +1054,7 @@
       "tier": "deep-cut",
       "match_confidence": "exact",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:48:32Z"
+      "fetched_at": "2026-11-16T22:07:03Z"
     },
     {
       "song": "Running From My Shadow",
@@ -1015,6 +1067,7 @@
       "spotify_url": "https://open.spotify.com/track/5hM5rw3KMmwft67MBgFRUD",
       "release_year": 2018,
       "album": "Post Traumatic (Deluxe Remastered Version)",
+      "album_type": "album",
       "album_art": "https://i.scdn.co/image/ab67616d00001e028c03cf97818d390d723ef1a9",
       "seen_live": "The Ritz, Raleigh, Oct 23, 2018",
       "lastfm_listeners": 3,
@@ -1023,7 +1076,7 @@
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
       "match_reason": "kept: no better original found",
-      "fetched_at": "2026-11-16T21:48:34Z"
+      "fetched_at": "2026-11-16T22:07:05Z"
     }
   ]
 }
