@@ -157,8 +157,8 @@ func TestToddSeenLiveCount(t *testing.T) {
 			n++
 		}
 	}
-	if n != 17 || songs[0].Song != "Regret" {
-		t.Fatalf("seen live = %d, want 17", n)
+	if n != 20 || songs[0].Song != "Regret" {
+		t.Fatalf("seen live = %d, want 20", n)
 	}
 }
 
