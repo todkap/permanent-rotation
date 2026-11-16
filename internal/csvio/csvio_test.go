@@ -41,8 +41,8 @@ func TestRealList(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(songs) != 47 {
-		t.Fatalf("expected 47 rows, got %d", len(songs))
+	if len(songs) != 50 {
+		t.Fatalf("expected 50 rows, got %d", len(songs))
 	}
 	var regret *Song
 	for i := range songs {
@@ -157,8 +157,8 @@ func TestToddSeenLiveCount(t *testing.T) {
 			n++
 		}
 	}
-	if n != 22 || songs[0].Song != "Regret" {
-		t.Fatalf("seen live = %d, want 22", n)
+	if n != 25 || songs[0].Song != "Regret" {
+		t.Fatalf("seen live = %d, want 25", n)
 	}
 }
 
@@ -178,6 +178,9 @@ func TestToddSeenLiveMappings(t *testing.T) {
 		"I Write Sins Not Tragedies": "Raleigh, 2016",
 		"Thnks fr th Mmrs":           "IBM conference, Las Vegas, 2014",
 		"Colors":                     "Raleigh, 2025",
+		"Zombie":                      "The Strand, Providence, May 14, 1995",
+		"Desperately Wanting":         "Lupo's Heartbreak Hotel, Providence, Sept 9, 1995",
+		"Running From My Shadow":      "The Ritz, Raleigh, Oct 23, 2018",
 		"Nightswimming":              "", "Hey Ya": "", "Here Comes a Regular": "", "11 Minutes": "",
 	}
 	for _, s := range songs {
