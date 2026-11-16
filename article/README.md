@@ -1,10 +1,14 @@
 # Permanent Rotation: an agentic project for the end of the year
 
+![The Boston skyline from the Longfellow Bridge at golden hour](../assets/article-header-boston.jpg)
+
+*Photo: [King of Hearts](https://commons.wikimedia.org/wiki/File:Boston_skyline_from_Longfellow_Bridge_September_2017_panorama_2.jpg), CC BY-SA 4.0, via Wikimedia Commons*
+
 Every December I take a break from the office and use part of it to go hands on with a technology I did not have time for during the year. In past years that has meant containers, Kubernetes and Istio. Projects like this have always belonged to downtime, because downtime was the only block of time big enough to hold them. That assumption broke this year. Agents are the disruption of 2026, and I spend most of my work week thinking about how teams build with them. With an agent doing the typing, a real app now fits into a few afternoons, something both fun and interesting. So this year's holiday build is about music, and the stakes were personal instead of professional.
 
 ### The idea
 
-Earlier this fall I wrote about the songs that stayed with me [LINK: companion LinkedIn article, to be added after he publishes it]. The list started at 30 and kept growing once I stopped trying to rank them and just asked which songs had earned a permanent spot. It sits at 50 now. Each one has a few sentences in my own words about what it means and when it entered my life.
+Earlier this fall I wrote about the songs that stayed with me. The list started at 30 and kept growing once I stopped trying to rank them and just asked which songs had earned a permanent spot. It sits at 50 now. Each one has a few sentences in my own words about what it means and when it entered my life.
 
 The list lived in a spreadsheet, which felt like a waste. So the project became permanent-rotation, a small open source tool that turns a spreadsheet of your songs into a personal site and a Spotify playlist. My list is the sample that ships with it. The repo is built so you can fork it and make your own.
 
