@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -70,4 +71,50 @@ func (c *Client) FirstRelease(artist, recording string) (string, int, error) {
 		}
 	}
 	return album, best, nil
+}
+
+const recURL = "https://musicbrainz.org/ws/2/recording/"
+
+// RecordingISRC returns one ISRC for the recording (the exact-match titled
+// recording when possible). ISRCs identify the recording itself, so Spotify
+// can find every catalog instance of it regardless of packaging. Returns ""
+// when MusicBrainz has no usable answer. Same 1-call-per-second courtesy.
+func (c *Client) RecordingISRC(artist, recording string) (string, error) {
+	q := url.Values{}
+	q.Set("query", fmt.Sprintf(`recording:"%s" AND artist:"%s"`, recording, artist))
+	q.Set("fmt", "json")
+	q.Set("limit", "5")
+	q.Set("inc", "isrcs")
+	req, _ := http.NewRequest("GET", recURL+"?"+q.Encode(), nil)
+	req.Header.Set("User-Agent", "permanent-rotation/0.1 (personal music list tool)")
+	resp, err := c.hc.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("musicbrainz recording %q: %s", recording, resp.Status)
+	}
+	var out struct {
+		Recordings []struct {
+			Title string   `json:"title"`
+			ISRCs []string `json:"isrcs"`
+		} `json:"recordings"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
+		return "", err
+	}
+	fallback := ""
+	for _, r := range out.Recordings {
+		if len(r.ISRCs) == 0 {
+			continue
+		}
+		if fallback == "" {
+			fallback = r.ISRCs[0]
+		}
+		if strings.EqualFold(strings.TrimSpace(r.Title), strings.TrimSpace(recording)) {
+			return r.ISRCs[0], nil
+		}
+	}
+	return fallback, nil
 }
