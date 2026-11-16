@@ -96,3 +96,22 @@ func TestZeroPlaycountGetsNoTier(t *testing.T) {
 		t.Fatalf("tiering of the metric-bearing records changed: %v %v", recs[0].Tier, recs[2].Tier)
 	}
 }
+
+func TestOverridePinsAlbumAndYear(t *testing.T) {
+	songs := []csvio.Song{{Song: "So What'Cha Want", Artist: "Beastie Boys"}}
+	fetched := map[string]Record{key("So What'Cha Want", "Beastie Boys"): {
+		Song: "So What'Cha Want", Artist: "Beastie Boys",
+		SpotifyID: "25pl7kV4OxafIc9wPAggYf", Album: "Anthology: The Sounds Of Science", ReleaseYear: 1999,
+	}}
+	ov := map[string]Override{key("So What'Cha Want", "Beastie Boys"): {
+		SpotifyID: "5h9mwffuipb2TSeTFp8Pu0", ReleaseYear: 1992, Album: "Check Your Head",
+	}}
+	out, _ := Merge(songs, fetched, &File{}, ov, time.Now())
+	r := out.Songs[0]
+	if r.SpotifyID != "5h9mwffuipb2TSeTFp8Pu0" || r.ReleaseYear != 1992 || r.Album != "Check Your Head" {
+		t.Fatalf("override: %+v", r)
+	}
+	if r.MatchConfidence != "manual" {
+		t.Fatalf("confidence: %s", r.MatchConfidence)
+	}
+}

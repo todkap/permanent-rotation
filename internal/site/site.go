@@ -47,6 +47,7 @@ section:last-of-type{border-bottom:none}
 .era-head:first-of-type{margin-top:0;padding-top:0;border-top:none}
 .era-head .eyebrow{color:var(--red);text-transform:uppercase;letter-spacing:.22em;font-size:.8rem;font-weight:700;margin-bottom:10px}
 .era-head h2{font-size:clamp(2rem,4.5vw,2.75rem);letter-spacing:-.02em}
+.legend{color:var(--muted);font-size:.85rem;margin:8px 0 32px}
 .chapter-head{margin:48px 0 8px}
 .chapter-head:first-of-type{margin-top:0}
 .chapter-head .eyebrow{color:var(--red);text-transform:uppercase;letter-spacing:.18em;font-size:.75rem;font-weight:700;margin-bottom:8px}
@@ -301,7 +302,7 @@ var indexTpl = template.Must(template.New("index").Parse(`<!doctype html>
 {{range .Songs}}<div class="song"><div class="row">
 <div class="when">{{.DecadeYear}}</div>
 <div class="body">
-<h3>{{.Song}}{{if .Tier}}<span class="tier {{.Tier}}">{{.Tier}}</span>{{end}}</h3>
+<h3>{{.Song}}{{if .Tier}}<span class="tier {{.Tier}}" title="Canon / middle / deep-cut: most to least played of these songs, from Last.fm playcounts">{{.Tier}}</span>{{end}}</h3>
 <p class="byline">{{.Artist}}{{if .Album}} &middot; <em>{{.Album}}</em>{{end}}{{if .ReleaseYear}} &middot; {{.ReleaseYear}}{{end}}</p>
 {{if .Memory}}<p class="memory">{{.Memory}}</p>{{end}}
 {{if .Note}}<div class="background"><span class="label">Background &middot; AI-researched &middot; source linked</span><p>{{.Note.Note}}</p><p class="src"><a href="{{.Note.SourceURL}}">Source</a></p></div>{{end}}
@@ -340,6 +341,7 @@ var statsTpl = template.Must(template.New("stats").Parse(`<!doctype html>
 <div class="chapter-head"><p class="eyebrow">Tiers</p><h2>Canon vs deep cuts</h2></div>
 <table><tr><th>Tier</th><th>Songs</th></tr>
 {{range .Tiers}}<tr><td>{{.Name}}</td><td>{{.Count}}</td></tr>{{end}}</table>
+<p class="legend">Canon / middle / deep-cut: most to least played of these songs, from Last.fm playcounts.</p>
 </div>
 <div class="stat-block">
 <div class="chapter-head"><p class="eyebrow">Timeline</p><h2>Songs by life decade</h2></div>

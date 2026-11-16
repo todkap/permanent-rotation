@@ -47,6 +47,7 @@ func main() {
 	contextPath := fs.String("context", "data/context.json", "background notes file")
 	includeMemory := fs.Bool("include-memory", true, "send memory text to the model (opt out with -include-memory=false)")
 	paceSecs := fs.Int("pace", 5, "seconds between Gemini requests (free tier allows 15/min; lower this on a paid tier)")
+	forceNotes := fs.Bool("force", false, "notes: regenerate even songs that already have a note (default fills only missing ones)")
 	fs.Parse(args)
 
 	switch cmd {
@@ -61,7 +62,7 @@ func main() {
 		fmt.Println("Order follows life chapters, no ranking.")
 		os.Exit(1)
 	case "notes":
-		runNotes(*csvPath, *contextPath, *minSongs, *includeMemory, time.Duration(*paceSecs)*time.Second)
+		runNotes(*csvPath, *contextPath, *minSongs, *includeMemory, *forceNotes, time.Duration(*paceSecs)*time.Second)
 	default:
 		fmt.Fprintln(os.Stderr, "unknown command:", cmd)
 		os.Exit(2)
@@ -187,11 +188,13 @@ Song: %s
 Artist: %s
 Tags from the listener: %s
 %s
-Write a 2-3 sentence background note about the song: release context, chart history, or musical context. Facts must be real - if you are not confident of a fact, leave it out. %sNever invent facts about the listener's life; you may only reference what they wrote above.
+Write exactly 2 sentences about the song. Sentence 1: release context, chart history, or musical context. Sentence 2: how the song connects to the listener's memory above, or its lasting resonance if no memory was shared. Facts must be real - if you are not confident of a fact, leave it out. %sNever invent facts about the listener's life; you may only reference what they wrote above.
+
+Style rules, no exceptions: write in the third person only; refer to the person as "this listener" or "the listener", never "you" or "your". No self-corrections, restarts, or hedges (never write "wait", "actually", "no,", or similar). No meta commentary about the writing itself.
 
 Respond with JSON only: {"note": "...", "source_url": "..."} where source_url is a real URL (Wikipedia, official chart archive, Last.fm) supporting the note. If you cannot give a real source URL, respond {"note": "", "source_url": ""}.`
 
-func runNotes(csvPath, contextPath string, minSongs int, includeMemory bool, pace time.Duration) {
+func runNotes(csvPath, contextPath string, minSongs int, includeMemory, force bool, pace time.Duration) {
 	songs, err := csvio.Load(csvPath, minSongs)
 	if err != nil {
 		fail(err)
@@ -206,9 +209,15 @@ func runNotes(csvPath, contextPath string, minSongs int, includeMemory bool, pac
 		Note      string `json:"note"`
 		SourceURL string `json:"source_url"`
 	}
-	var added, dropped int
+	var added, dropped, kept, skipped, retried int
 	for _, s := range songs {
 		k := notes.Key(s.Song, s.Artist)
+		if !force {
+			if old, ok := ctx.Notes[k]; ok && notes.Valid(old) {
+				skipped++
+				continue // existing note preserved; use --force to regenerate
+			}
+		}
 		memCtx, memRule := "", "The listener did not share a personal memory for this one. "
 		if includeMemory && s.Memory != "" {
 			memCtx = "The listener's own words about it: " + s.Memory + "\n"
@@ -232,10 +241,32 @@ func runNotes(csvPath, contextPath string, minSongs int, includeMemory bool, pac
 			continue
 		}
 		n := notes.Note{Note: strings.TrimSpace(r.Note), SourceURL: strings.TrimSpace(r.SourceURL)}
-		if !notes.Valid(n) {
+		if notes.Valid(n) && !notes.StyleOK(n.Note) {
+			// one retry for voice/self-correction slips, then keep the old note
+			retried++
+			fmt.Printf("style retry: %s - %s\n", s.Song, s.Artist)
+			time.Sleep(pace)
+			text, err = g.Generate(prompt)
+			if err != nil {
+				fmt.Fprintln(os.Stderr, "warn:", s.Song, "-", err)
+				time.Sleep(pace)
+				kept++
+				continue
+			}
+			text = strings.TrimSpace(strings.Trim(strings.TrimSpace(text), "`"))
+			text = strings.TrimPrefix(text, "json")
+			if err := json.Unmarshal([]byte(strings.TrimSpace(text)), &r); err == nil {
+				n = notes.Note{Note: strings.TrimSpace(r.Note), SourceURL: strings.TrimSpace(r.SourceURL)}
+			}
+		}
+		switch {
+		case !notes.Valid(n):
 			fmt.Printf("dropped (no source): %s - %s\n", s.Song, s.Artist)
 			dropped++
-		} else {
+		case !notes.StyleOK(n.Note):
+			fmt.Printf("kept existing (style check failed after retry): %s - %s\n", s.Song, s.Artist)
+			kept++
+		default:
 			ctx.Notes[k] = n
 			added++
 		}
@@ -247,6 +278,6 @@ func runNotes(csvPath, contextPath string, minSongs int, includeMemory bool, pac
 	if err := ctx.Save(contextPath); err != nil {
 		fail(err)
 	}
-	fmt.Printf("notes: %d written, %d dropped -> %s\n", added, dropped, contextPath)
+	fmt.Printf("notes: %d written, %d skipped (existing), %d style retries, %d kept old after failed retry, %d dropped -> %s\n", added, skipped, retried, kept, dropped, contextPath)
 	fmt.Println("Review the notes before committing - the site only renders what you commit.")
 }

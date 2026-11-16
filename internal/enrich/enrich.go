@@ -70,13 +70,16 @@ func key(song, artist string) string {
 	return strings.ToLower(strings.TrimSpace(song)) + "|" + strings.ToLower(strings.TrimSpace(artist))
 }
 
-// Override pins a match by hand. Overrides always win.
+// Override pins a match by hand. Overrides always win. Album is optional:
+// set it when the pinned ID belongs to a different album than the cached
+// match (e.g. original album instead of a compilation).
 type Override struct {
 	SpotifyID   string
 	ReleaseYear int
+	Album       string
 }
 
-// LoadOverrides reads data/overrides.csv (song,artist,spotify_id,release_year).
+// LoadOverrides reads data/overrides.csv (song,artist,spotify_id,release_year[,album]).
 func LoadOverrides(path string) (map[string]Override, error) {
 	out := map[string]Override{}
 	b, err := os.ReadFile(path)
@@ -99,6 +102,9 @@ func LoadOverrides(path string) (map[string]Override, error) {
 		o.SpotifyID = strings.TrimSpace(parts[2])
 		if len(parts) > 3 {
 			fmt.Sscanf(strings.TrimSpace(parts[3]), "%d", &o.ReleaseYear)
+		}
+		if len(parts) > 4 {
+			o.Album = strings.TrimSpace(parts[4])
 		}
 		out[key(parts[0], parts[1])] = o
 	}
@@ -170,6 +176,9 @@ func Merge(songs []csvio.Song, fetched map[string]Record, cached *File, override
 			}
 			if o.ReleaseYear != 0 {
 				rec.ReleaseYear = o.ReleaseYear
+			}
+			if o.Album != "" {
+				rec.Album = o.Album
 			}
 		}
 		if rec.MatchConfidence == "" {
