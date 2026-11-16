@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T17:23:13Z",
+  "generated_at": "2026-11-16T17:48:08Z",
   "songs": [
     {
       "song": "Regret",
@@ -17,7 +17,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:22:58Z"
+      "fetched_at": "2026-11-16T17:47:53Z"
     },
     {
       "song": "Smells like Teen Spirit",
@@ -35,7 +35,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:22:58Z"
+      "fetched_at": "2026-11-16T17:47:54Z"
     },
     {
       "song": "Home Sweet Home",
@@ -53,7 +53,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:22:59Z"
+      "fetched_at": "2026-11-16T17:47:54Z"
     },
     {
       "song": "Dreams",
@@ -71,7 +71,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:22:59Z"
+      "fetched_at": "2026-11-16T17:47:55Z"
     },
     {
       "song": "Summer",
@@ -89,7 +89,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:22:59Z"
+      "fetched_at": "2026-11-16T17:47:55Z"
     },
     {
       "song": "Heartspark Dollarsign",
@@ -107,7 +107,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:00Z"
+      "fetched_at": "2026-11-16T17:47:55Z"
     },
     {
       "song": "I'll Be",
@@ -120,12 +120,12 @@
       "spotify_url": "https://open.spotify.com/track/5K7AMlpc4796JRWXb26nCV",
       "release_year": 1997,
       "album": "Misguided Roses",
-      "lastfm_listeners": 382528,
-      "lastfm_playcount": 2360715,
+      "lastfm_listeners": 382588,
+      "lastfm_playcount": 2361095,
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:00Z"
+      "fetched_at": "2026-11-16T17:47:56Z"
     },
     {
       "song": "Hey Ya",
@@ -143,7 +143,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T17:23:01Z"
+      "fetched_at": "2026-11-16T17:47:56Z"
     },
     {
       "song": "Nightswimming",
@@ -161,7 +161,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:01Z"
+      "fetched_at": "2026-11-16T17:47:56Z"
     },
     {
       "song": "Joey",
@@ -179,7 +179,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:01Z"
+      "fetched_at": "2026-11-16T17:47:57Z"
     },
     {
       "song": "Freshman",
@@ -197,7 +197,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T17:23:02Z"
+      "fetched_at": "2026-11-16T17:47:57Z"
     },
     {
       "song": "Teenage Love",
@@ -210,12 +210,12 @@
       "spotify_url": "https://open.spotify.com/track/4nAukQPJhSwQMCAvRrQnb4",
       "release_year": 1988,
       "album": "The Great Adventures Of Slick Rick (Deluxe Edition)",
-      "lastfm_listeners": 44164,
-      "lastfm_playcount": 137033,
+      "lastfm_listeners": 44166,
+      "lastfm_playcount": 137044,
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:02Z"
+      "fetched_at": "2026-11-16T17:47:58Z"
     },
     {
       "song": "Deep Cover",
@@ -229,7 +229,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "unmatched",
-      "fetched_at": "2026-11-16T17:23:03Z"
+      "fetched_at": "2026-11-16T17:47:58Z"
     },
     {
       "song": "Welcome to the Terrordome",
@@ -247,7 +247,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:03Z"
+      "fetched_at": "2026-11-16T17:47:59Z"
     },
     {
       "song": "Papercut",
@@ -265,7 +265,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:03Z"
+      "fetched_at": "2026-11-16T17:47:59Z"
     },
     {
       "song": "Love Song",
@@ -283,7 +283,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T17:23:04Z"
+      "fetched_at": "2026-11-16T17:47:59Z"
     },
     {
       "song": "Here Comes a Regular",
@@ -301,7 +301,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:04Z"
+      "fetched_at": "2026-11-16T17:48:00Z"
     },
     {
       "song": "More than Words",
@@ -319,7 +319,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:04Z"
+      "fetched_at": "2026-11-16T17:48:00Z"
     },
     {
       "song": "Silent Running",
@@ -337,7 +337,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:05Z"
+      "fetched_at": "2026-11-16T17:48:00Z"
     },
     {
       "song": "Something's Always Wrong",
@@ -355,7 +355,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:05Z"
+      "fetched_at": "2026-11-16T17:48:01Z"
     },
     {
       "song": "Somewhere Only We Know",
@@ -373,7 +373,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:06Z"
+      "fetched_at": "2026-11-16T17:48:01Z"
     },
     {
       "song": "With or Without You",
@@ -391,7 +391,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:06Z"
+      "fetched_at": "2026-11-16T17:48:01Z"
     },
     {
       "song": "Would",
@@ -409,7 +409,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T17:23:06Z"
+      "fetched_at": "2026-11-16T17:48:02Z"
     },
     {
       "song": "Tiny Dancer",
@@ -422,12 +422,12 @@
       "spotify_url": "https://open.spotify.com/track/2TVxnKdb3tqe1nhQWwwZCO",
       "release_year": 1971,
       "album": "Madman Across The Water",
-      "lastfm_listeners": 1417741,
-      "lastfm_playcount": 9912992,
+      "lastfm_listeners": 1417861,
+      "lastfm_playcount": 9913818,
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:07Z"
+      "fetched_at": "2026-11-16T17:48:02Z"
     },
     {
       "song": "Brick",
@@ -445,7 +445,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:07Z"
+      "fetched_at": "2026-11-16T17:48:02Z"
     },
     {
       "song": "Scenario",
@@ -463,7 +463,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T17:23:07Z"
+      "fetched_at": "2026-11-16T17:48:03Z"
     },
     {
       "song": "Mayonaise",
@@ -481,7 +481,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T17:23:08Z"
+      "fetched_at": "2026-11-16T17:48:03Z"
     },
     {
       "song": "There is a light that never goes out",
@@ -499,7 +499,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T17:23:08Z"
+      "fetched_at": "2026-11-16T17:48:03Z"
     },
     {
       "song": "Someday I Suppose",
@@ -517,7 +517,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T17:23:09Z"
+      "fetched_at": "2026-11-16T17:48:04Z"
     },
     {
       "song": "So What'Cha Want",
@@ -535,7 +535,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "manual",
-      "fetched_at": "2026-11-16T17:23:09Z"
+      "fetched_at": "2026-11-16T17:48:04Z"
     },
     {
       "song": "The Old Apartment",
@@ -553,7 +553,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:09Z"
+      "fetched_at": "2026-11-16T17:48:04Z"
     },
     {
       "song": "Title and Registration",
@@ -571,7 +571,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:10Z"
+      "fetched_at": "2026-11-16T17:48:05Z"
     },
     {
       "song": "Demons",
@@ -584,12 +584,12 @@
       "spotify_url": "https://open.spotify.com/track/3LlAyCYU26dvFZBDUIMb7a",
       "release_year": 2012,
       "album": "Night Visions",
-      "lastfm_listeners": 1779746,
-      "lastfm_playcount": 18434403,
+      "lastfm_listeners": 1779999,
+      "lastfm_playcount": 18436217,
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:10Z"
+      "fetched_at": "2026-11-16T17:48:05Z"
     },
     {
       "song": "Colors",
@@ -602,12 +602,12 @@
       "spotify_url": "https://open.spotify.com/track/1TnUURhehaoMWKAqQtirm6",
       "release_year": 2015,
       "album": "BADLANDS",
-      "lastfm_listeners": 866578,
-      "lastfm_playcount": 9969124,
+      "lastfm_listeners": 866884,
+      "lastfm_playcount": 9973158,
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:10Z"
+      "fetched_at": "2026-11-16T17:48:05Z"
     },
     {
       "song": "I Write Sins Not Tragedies",
@@ -620,12 +620,12 @@
       "spotify_url": "https://open.spotify.com/track/4bPQs0PHn4xbipzdPfn6du",
       "release_year": 2005,
       "album": "A Fever You Can't Sweat Out",
-      "lastfm_listeners": 2321586,
-      "lastfm_playcount": 23932237,
+      "lastfm_listeners": 2321386,
+      "lastfm_playcount": 23929739,
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:11Z"
+      "fetched_at": "2026-11-16T17:48:06Z"
     },
     {
       "song": "Thnks fr th Mmrs",
@@ -643,7 +643,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:11Z"
+      "fetched_at": "2026-11-16T17:48:06Z"
     },
     {
       "song": "My Name Is Jonas",
@@ -661,7 +661,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:11Z"
+      "fetched_at": "2026-11-16T17:48:06Z"
     },
     {
       "song": "Monsters (feat. blackbear)",
@@ -679,7 +679,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:12Z"
+      "fetched_at": "2026-11-16T17:48:07Z"
     },
     {
       "song": "Enjoy the Silence",
@@ -697,7 +697,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:12Z"
+      "fetched_at": "2026-11-16T17:48:07Z"
     },
     {
       "song": "Barrel of a Gun",
@@ -715,7 +715,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T17:23:12Z"
+      "fetched_at": "2026-11-16T17:48:07Z"
     },
     {
       "song": "11 Minutes",
@@ -733,7 +733,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T17:23:13Z"
+      "fetched_at": "2026-11-16T17:48:08Z"
     }
   ]
 }
