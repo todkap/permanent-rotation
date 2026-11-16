@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T16:16:01Z",
+  "generated_at": "2026-11-16T16:49:16Z",
   "model": "gemini-3.5-flash-lite",
   "include_memory": true,
   "notes": {
@@ -35,6 +35,10 @@
       "note": "Released in 1990 on the landmark album Violator, Depeche Mode's 'Enjoy the Silence' became one of the defining synth-pop tracks of the MTV era with its iconic melodic guitar hook and striking video. For this listener, the song captures the feeling of graduating high school alongside the enduring memory of those classic music television broadcasts.",
       "source_url": "https://en.wikipedia.org/wiki/Enjoy_the_Silence"
     },
+    "freshman|verve pipe": {
+      "note": "Released as a single from The Verve Pipe's 1996 album Villains, \"The Freshman\" achieved major commercial success by peaking at number five on the Billboard Hot 100 chart. For this listener, the track is forever tied to a difficult night after college spent away at a friend's place while navigating a potential breakup.",
+      "source_url": "https://en.wikipedia.org/wiki/The_Freshman"
+    },
     "heartspark dollarsign|everclear": {
       "note": "Originally appearing on Everclear's 1995 major-label debut album Sparkle and Fade, \"Heartspark Dollarsign\" serves as a nostalgic anchor for the listener, recalling a bittersweet Boston Xmas rave concert that marked one of the final shows shared with a college roommate.",
       "source_url": "https://en.wikipedia.org/wiki/Sparkle_and_Fade"
@@ -54,6 +58,10 @@
     "i write sins not tragedies|panic! at the disco": {
       "note": "Released in 2005 as the lead single from Panic! At The Disco's debut album, the track became a defining mid-2000s alternative radio hit and reached number seven on the US Billboard Hot 100. This listener fondly connects its big hooks and theatrical sound to an era of new rock and emo-adjacent music, grouping it alongside Fall Out Boy.",
       "source_url": "https://en.wikipedia.org/wiki/I_Write_Sins_Not_Tragedies"
+    },
+    "i'll be|edwin mccain": {
+      "note": "Released in 1997 on Edwin McCain's album Messenger, 'I'll Be' became a enduring adult contemporary radio staple and a prominent backdrop for romantic and emotional television moments. This listener associates the song with the bittersweet transition of college roommates moving to different states, reminding them of both their shared past and the subsequent chapter of starting families.",
+      "source_url": "https://en.wikipedia.org/wiki/I%27ll_Be_(Edwin_McCain_song)"
     },
     "joey|concrete blonde": {
       "note": "Released in 1990 as the lead single from Concrete Blonde's album Bloodletting, \"Joey\" became a major alternative rock hit and spent several weeks at the top of the Billboard Modern Rock Tracks chart. For this listener, the track evokes memories of driving around southeastern Massachusetts on the way to see his then-girlfriend, a connection sparked after discovering the song through the early years of the television show 90210.",
@@ -79,9 +87,17 @@
       "note": "Serving as the explosive opening track to Weezer's 1994 self-titled debut, 'My Name Is Jonas' transitions seamlessly from gentle acoustic picking into a heavy, melodic rock anthem. This listener fondly recalls how those dynamic guitar shifts provided a fitting soundtrack just as their college years were coming to a close.",
       "source_url": "https://en.wikipedia.org/wiki/My_Name_Is_Jonas"
     },
+    "nightswimming|r.e.m.": {
+      "note": "Released in 1993 on the album Automatic for the People, R.E.M.'s \"Nightswimming\" features a poignant piano arrangement by bassist Mike Mills complemented by Michael Stipe's evocative vocals. For this listener, who first fell in love with alternative music through the band, the track served as close college friends' wedding song and continues to evoke deep memories of that joyful day alongside reflections on love and friendship.",
+      "source_url": "https://en.wikipedia.org/wiki/Nightswimming"
+    },
     "papercut|linkin park": {
       "note": "Released as the third single from Linkin Park's diamond-certified 2000 debut album Hybrid Theory, \"Papercut\" peaked at number 14 on the UK Singles Chart. For this listener, who transitioned from an urban rap background to grunge-loving private university peers during a period of major life changes, the track's unique blend of hip-hop and alternative rock perfectly bridged two different worlds.",
       "source_url": "https://en.wikipedia.org/wiki/Papercut_(Linkin_Park_song)"
+    },
+    "regret|new order": {
+      "note": "Released in 1993 as the lead single from New Order's album Republic, \"Regret\" became a major alternative radio hit and reached number 28 on the US Billboard Hot 100. This listener associates the track with being introduced to '80s British alternative music by a college roommate around 1993, blending those sounds with '90s rock and grunge.",
+      "source_url": "https://en.wikipedia.org/wiki/Regret_(New_Order_song)"
     },
     "scenario|a tribe called quest": {
       "note": "Released in 1992 on A Tribe Called Quest's album The Low End Theory, \"Scenario\" featured an iconic breakout guest verse by Busta Rhymes over hard-hitting production. This track soundtracked the listener's dorm life and college years, remaining in heavy rotation alongside grunge despite changing musical trends.",
@@ -115,9 +131,29 @@
       "note": "Released in 1988 on Slick Rick's acclaimed debut album The Great Adventures of Slick Rick, this classic hip-hop track captures the vulnerable and humorous side of teenage romance. For the listener, the song served as an anthem for an awkward high school era of self-discovery and yearning for a first relationship.",
       "source_url": "https://en.wikipedia.org/wiki/The_Great_Adventures_of_Slick_Rick"
     },
+    "the old apartment|barenaked ladies": {
+      "note": "Released as a single from Barenaked Ladies' 1996 album Born on a Gerrard Street, The Old Apartment serves as a nostalgic soundtrack for this listener's post-college years in Waltham and Arlington, evoking memories of attending a concert with friends to see the band alongside Guster.",
+      "source_url": "https://en.wikipedia.org/wiki/The_Old_Apartment"
+    },
+    "there is a light that never goes out|the smiths": {
+      "note": "Featured on the Smiths' 1986 album The Queen is Dead, \"There Is a Light That Never Goes Out\" has endured as one of the band's most celebrated tracks. This listener discovered the song through a college roommate during their junior year, instantly drawn to the intelligent lyrics and the singer's confident delivery.",
+      "source_url": "https://en.wikipedia.org/wiki/There_Is_a_Light_That_Never_Goes_Out"
+    },
     "thnks fr th mmrs|fall out boy": {
       "note": "Released in 2007 on Fall Out Boy's album Infinity on High, 'Thnks fr th Mmrs' became a prominent mid-2000s pop-punk radio hit and a defining anthem of the era. The listener associates this high-energy, catchy track with nostalgia, pairing it with other emo staples like 'I Write Sins Not Tragedies' and connecting its era to memories of watching One Tree Hill.",
       "source_url": "https://en.wikipedia.org/wiki/Thnks_fr_th_Mmrs"
+    },
+    "tiny dancer|elton john": {
+      "note": "Released on Elton John's 1971 album Madman Across the Water, \"Tiny Dancer\" features legendary backing vocals and instrumentation that elevate its sweeping melody. The listener connects this classic track to the iconic tour bus scene in the film Almost Famous, which evokes a bittersweet memory of feeling at home in North Carolina while bonding over the movie's unforgettable characters and music.",
+      "source_url": "https://en.wikipedia.org/wiki/Tiny_Dancer"
+    },
+    "title and registration|death cab for cutie": {
+      "note": "Title and Registration is a melodic track by Death Cab for Cutie from their acclaimed album Transatlanticism. The listener fondly connects the witty lyric about the glove compartment to discovering old souvenirs, reminiscent of how they first encountered the band through The O.C.",
+      "source_url": "https://en.wikipedia.org/wiki/Transatlanticism"
+    },
+    "welcome to the terrordome|public enemy": {
+      "note": "Propelled by a dense, high-energy beat and deeply layered lyrics, Public Enemy's track functioned almost like the work of a rock band. The listener fondly associates this anthem with a memorable car ride to an amusement park shared with their cousin, sister, and brother-in-law.",
+      "source_url": "https://en.wikipedia.org/wiki/Welcome_to_the_Terrordome"
     },
     "would|alice in chains": {
       "note": "Written by Jerry Cantrell as a tribute to the late Mother Love Bone singer Andrew Wood, Alice in Chains' \"Would?\" served as a standout track on the 1992 soundtrack for Cameron Crowe's Seattle-set film Singles. This listener fondly remembers how the song captured the quintessential grunge era of their sophomore year and seamlessly tied into the movie.",
