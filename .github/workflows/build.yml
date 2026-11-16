@@ -9,10 +9,13 @@ on:
         default: false
   push:
     branches: [main]
-    paths: # CSV-only triggers: the generated JSON this workflow commits can never retrigger it
+    paths: # CSV + code triggers: the generated JSON this workflow commits can never retrigger it
       - 'songs.csv'
       - 'examples/**/*.csv'
       - 'data/overrides.csv'
+      - 'internal/**'
+      - 'cmd/**'
+      - '.github/workflows/build.yml'
   # optional monthly refresh of the numbers; uncomment if wanted
   # schedule:
   #   - cron: '0 9 1 * *'
