@@ -30,6 +30,22 @@ func Key(song, artist string) string {
 	return strings.ToLower(strings.TrimSpace(song)) + "|" + strings.ToLower(strings.TrimSpace(artist))
 }
 
+// Migrate rekeys notes when a CSV title is corrected. It removes stale keys
+// only after their note has landed under the new key, so renaming a song does
+// not lose reviewed background text or force regeneration.
+func Migrate(n map[string]Note, oldSong, artist, newSong string) {
+	oldKey, newKey := Key(oldSong, artist), Key(newSong, artist)
+	if oldKey == newKey {
+		return
+	}
+	if note, ok := n[oldKey]; ok {
+		if _, exists := n[newKey]; !exists {
+			n[newKey] = note
+		}
+		delete(n, oldKey)
+	}
+}
+
 func Load(path string) (*Context, error) {
 	b, err := os.ReadFile(path)
 	if os.IsNotExist(err) {

@@ -19,7 +19,8 @@ const DefaultMinSongs = 25
 
 // Song is one row of the input CSV. Memory is the author's own words and is
 // rendered verbatim. Angle is an assistant drafting aid and is never
-// published or fed into generated text.
+// published or fed into generated text. SeenLive is the author's own
+// where/when note for shows they attended; also rendered verbatim.
 type Song struct {
 	Song     string
 	Artist   string
@@ -29,6 +30,7 @@ type Song struct {
 	Tags     string
 	Memory   string
 	Angle    string
+	SeenLive string
 }
 
 var (
@@ -70,10 +72,11 @@ var aliases = []struct {
 	{3, []string{"tag", "blah"}},
 	{4, []string{"memory", "source notes", "own words"}},
 	{5, []string{"angle", "draft angle"}},
+	{6, []string{"seen live", "seenlive", "live show"}},
 }
 
 func mapHeader(header []string) []int {
-	idx := make([]int, 6)
+	idx := make([]int, 7)
 	for i := range idx {
 		idx[i] = -1
 	}
@@ -142,12 +145,13 @@ func Read(r io.Reader, min int) ([]Song, error) {
 			return ""
 		}
 		s := Song{
-			Song:   get(0),
-			Artist: get(1),
-			Era:    get(2),
-			Tags:   strings.TrimSuffix(get(3), "/"),
-			Memory: get(4),
-			Angle:  get(5),
+			Song:     get(0),
+			Artist:   get(1),
+			Era:      get(2),
+			Tags:     strings.TrimSuffix(get(3), "/"),
+			Memory:   get(4),
+			Angle:    get(5),
+			SeenLive: get(6),
 		}
 		if s.Song == "" || s.Artist == "" {
 			continue

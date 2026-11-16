@@ -55,7 +55,14 @@ section:last-of-type{border-bottom:none}
 .song{display:block;padding:22px 4px;border-bottom:1px solid var(--line)}
 .song .row{display:flex;gap:22px;align-items:baseline}
 .song .when{flex:0 0 86px;color:var(--carolina);font-size:.82rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
-.song .body{flex:1}
+.song .body{flex:1;min-width:0;display:flow-root}
+.cover{float:right;width:96px;height:96px;object-fit:cover;margin:0 0 12px 20px;border-radius:6px;border:1px solid var(--line)}
+.cover-none{display:flex;align-items:center;justify-content:center;background:var(--navy-2);color:var(--muted);font-size:2rem}
+.song .seen-live{display:inline-block;color:var(--muted);font-size:.8rem;border:1px solid var(--line);border-radius:5px;padding:3px 8px;margin:7px 0}
+.stat-strip{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:40px}
+.chip{border:1px solid var(--line);background:var(--navy-2);border-radius:8px;padding:16px 22px;min-width:110px}
+.chip-num{display:block;color:var(--carolina-bright);font-size:1.5rem;font-weight:700}
+.chip-label{display:block;color:var(--muted);font-size:.85rem}
 .song h3{color:var(--ink);font-size:1.08rem;margin-bottom:4px}
 .song .byline{color:var(--carolina);font-size:.9rem;margin-bottom:8px}
 .song .memory{color:var(--muted);font-size:.95rem;margin:6px 0}
@@ -302,9 +309,11 @@ var indexTpl = template.Must(template.New("index").Parse(`<!doctype html>
 {{range .Songs}}<div class="song"><div class="row">
 <div class="when">{{.DecadeYear}}</div>
 <div class="body">
+{{if .AlbumArt}}<img class="cover" src="{{.AlbumArt}}" alt="{{.Album}} cover art" loading="lazy">{{else}}<div class="cover cover-none" aria-hidden="true">&#9835;</div>{{end}}
 <h3>{{.Song}}{{if .Tier}}<span class="tier {{.Tier}}" title="Canon / middle / deep-cut: most to least played of these songs, from Last.fm playcounts">{{.Tier}}</span>{{end}}</h3>
 <p class="byline">{{.Artist}}{{if .Album}} &middot; <em>{{.Album}}</em>{{end}}{{if .ReleaseYear}} &middot; {{.ReleaseYear}}{{end}}</p>
 {{if .Memory}}<p class="memory">{{.Memory}}</p>{{end}}
+{{if .SeenLive}}<p class="seen-live">Seen live: {{.SeenLive}}</p>{{end}}
 {{if .Note}}<div class="background"><span class="label">Background &middot; AI-researched &middot; source linked</span><p>{{.Note.Note}}</p><p class="src"><a href="{{.Note.SourceURL}}">Source</a></p></div>{{end}}
 {{if .SpotifyURL}}<p class="links"><a href="{{.SpotifyURL}}">Listen on Spotify</a></p>{{end}}
 </div></div></div>{{end}}
@@ -337,6 +346,17 @@ var statsTpl = template.Must(template.New("stats").Parse(`<!doctype html>
 </div></header>
 <main><div class="wrap">
 <section>
+<div class="stat-strip">
+<div class="chip"><span class="chip-num">{{.Count}}</span><span class="chip-label">songs</span></div>
+<div class="chip"><span class="chip-num">{{.EraCount}}</span><span class="chip-label">eras</span></div>
+{{if .YearSpan}}<div class="chip"><span class="chip-num">{{.YearSpan}}</span><span class="chip-label">release years</span></div>{{end}}
+{{if .SeenLiveCount}}<div class="chip"><span class="chip-num">{{.SeenLiveCount}}</span><span class="chip-label">seen live</span></div>{{end}}
+</div>
+<div class="stat-block">
+<div class="chapter-head"><p class="eyebrow">Eras</p><h2>Songs by era</h2></div>
+<table><tr><th>Era</th><th>Songs</th></tr>
+{{range .EraCounts}}<tr><td>{{.Name}}</td><td>{{.Count}}</td></tr>{{end}}</table>
+</div>
 <div class="stat-block">
 <div class="chapter-head"><p class="eyebrow">Tiers</p><h2>Canon vs deep cuts</h2></div>
 <table><tr><th>Tier</th><th>Songs</th></tr>
@@ -411,6 +431,39 @@ func Render(f *enrich.File, ctx *notes.Context, dir, base string, chapterOrder [
 		avgGap = float64(gapSum) / float64(gaps)
 	}
 
+	// headline stats strip + per-era counts
+	var eraCounts []kv
+	namedEras := 0
+	for _, e := range eras {
+		n := 0
+		for _, ch := range e.Chapters {
+			n += len(ch.Songs)
+		}
+		if e.Name != "" {
+			namedEras++
+		}
+		eraCounts = append(eraCounts, kv{e.Name, n})
+	}
+	seenLive := 0
+	oldest, newest := 0, 0
+	for _, r := range f.Songs {
+		if r.SeenLive != "" {
+			seenLive++
+		}
+		if r.ReleaseYear > 0 {
+			if oldest == 0 || r.ReleaseYear < oldest {
+				oldest = r.ReleaseYear
+			}
+			if r.ReleaseYear > newest {
+				newest = r.ReleaseYear
+			}
+		}
+	}
+	yearSpan := ""
+	if oldest > 0 && newest > 0 {
+		yearSpan = fmt.Sprintf("%d to %d", oldest, newest)
+	}
+
 	ogDesc := fmt.Sprintf("%d songs grouped by the chapter of life they arrived in. The memories are mine; the background notes are AI-researched, with sources linked.", len(f.Songs))
 	baseData := map[string]any{"CSS": template.CSS(pageCSS), "OGDesc": ogDesc, "Base": base} //nolint:gosec
 	pages := []struct {
@@ -419,7 +472,7 @@ func Render(f *enrich.File, ctx *notes.Context, dir, base string, chapterOrder [
 		data map[string]any
 	}{
 		{"index.html", indexTpl, merge(baseData, map[string]any{"Timeline": true, "Eras": eras, "Count": len(f.Songs), "GeneratedAt": f.GeneratedAt})},
-		{"stats.html", statsTpl, merge(baseData, map[string]any{"Timeline": false, "Tiers": tiers, "Decades": decades, "AvgGap": avgGap, "GeneratedAt": f.GeneratedAt})},
+		{"stats.html", statsTpl, merge(baseData, map[string]any{"Timeline": false, "Count": len(f.Songs), "EraCount": namedEras, "EraCounts": eraCounts, "YearSpan": yearSpan, "SeenLiveCount": seenLive, "Tiers": tiers, "Decades": decades, "AvgGap": avgGap, "GeneratedAt": f.GeneratedAt})},
 	}
 	for _, p := range pages {
 		w, err := os.Create(filepath.Join(dir, p.name))

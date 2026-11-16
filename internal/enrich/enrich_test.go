@@ -115,3 +115,26 @@ func TestOverridePinsAlbumAndYear(t *testing.T) {
 		t.Fatalf("confidence: %s", r.MatchConfidence)
 	}
 }
+
+func TestSeenLiveAndArtworkPassThrough(t *testing.T) {
+	songs := []csvio.Song{{Song: "A", Artist: "B", SeenLive: "Boston, 1995", Memory: "My words."}}
+	cached := &File{Songs: []Record{{Song: "A", Artist: "B", SpotifyID: "id1", AlbumArt: "https://example.com/one.jpg"}}}
+	out, _ := Merge(songs, nil, cached, nil, time.Now())
+	if out.Songs[0].SeenLive != "Boston, 1995" || out.Songs[0].AlbumArt != cached.Songs[0].AlbumArt || out.Songs[0].Memory != "My words." {
+		t.Fatal(out.Songs[0])
+	}
+	out, _ = Merge(songs, nil, cached, map[string]Override{"a|b": {SpotifyID: "id2"}}, time.Now())
+	if out.Songs[0].AlbumArt != "" {
+		t.Fatal("changing pinned ID must clear old artwork")
+	}
+}
+
+func TestTitleCorrectionCarriesPinnedRecord(t *testing.T) {
+	oldSong := "Freshman"
+	songs := []csvio.Song{{Song: "The Freshmen", Artist: "Verve Pipe", SeenLive: "Cincinnati, 2026", Memory: "My words."}}
+	cached := &File{Songs: []Record{{Song: oldSong, Artist: "Verve Pipe", SpotifyID: "pinned", Album: "Villains", ReleaseYear: 1996, AlbumArt: "https://example.com/art.jpg", LastfmListeners: 10, LastfmPlaycount: 20}}}
+	out, _ := Merge(songs, map[string]Record{"the freshmen|verve pipe": {Song: "The Freshmen", Artist: "Verve Pipe", SpotifyID: "pinned", Album: "Villains", ReleaseYear: 1996, AlbumArt: "https://example.com/art.jpg"}}, cached, nil, time.Now())
+	if out.Songs[0].SpotifyID != "pinned" || out.Songs[0].Album != "Villains" || out.Songs[0].AlbumArt == "" || out.Songs[0].SeenLive != "Cincinnati, 2026" || out.Songs[0].Memory != "My words." {
+		t.Fatal(out.Songs[0])
+	}
+}

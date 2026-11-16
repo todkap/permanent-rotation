@@ -28,6 +28,8 @@ type Record struct {
 	SpotifyURL        string `json:"spotify_url,omitempty"`
 	ReleaseYear       int    `json:"release_year,omitempty"`
 	Album             string `json:"album,omitempty"`
+	AlbumArt          string `json:"album_art,omitempty"`
+	SeenLive          string `json:"seen_live,omitempty"`
 	LastfmListeners   int64  `json:"lastfm_listeners"`
 	LastfmPlaycount   int64  `json:"lastfm_playcount"`
 	SpotifyPopularity *int   `json:"spotify_popularity"` // nil for post-Feb-2026 Dev Mode apps
@@ -168,8 +170,12 @@ func Merge(songs []csvio.Song, fetched map[string]Record, cached *File, override
 		rec.Song, rec.Artist = s.Song, s.Artist
 		rec.LifeYear, rec.Chapter = s.LifeYear, s.Chapter
 		rec.Memory, rec.Tags = s.Memory, s.Tags
+		rec.SeenLive = s.SeenLive
 		if o, hit := overrides[k]; hit {
 			if o.SpotifyID != "" {
+				if rec.SpotifyID != o.SpotifyID {
+					rec.AlbumArt = ""
+				}
 				rec.SpotifyID = o.SpotifyID
 				rec.SpotifyURL = "https://open.spotify.com/track/" + o.SpotifyID
 				rec.MatchConfidence = "manual"

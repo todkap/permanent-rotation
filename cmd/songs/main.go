@@ -76,6 +76,7 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 	if err != nil {
 		fail(err)
 	}
+	canonicalTitles(songs)
 	cached, err := enrich.LoadFile(outPath)
 	if err != nil {
 		fail(err)
@@ -108,6 +109,8 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 				rec.Album, rec.ReleaseYear = old.Album, old.ReleaseYear
 				rec.MatchConfidence = old.MatchConfidence
 				rec.SpotifyPopularity = old.SpotifyPopularity
+				rec.AlbumArt = old.AlbumArt
+				// Existing matches stay pinned, including while adding art.
 				needMatch = false
 				break
 			}
@@ -120,6 +123,7 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 				best := tracks[0]
 				rec.SpotifyID, rec.SpotifyURL = best.ID, best.URL
 				rec.Album = best.Album
+				rec.AlbumArt = best.AlbumArt
 				rec.SpotifyPopularity = best.Popularity
 				if len(best.ReleaseDate) >= 4 {
 					fmt.Sscanf(best.ReleaseDate[:4], "%d", &rec.ReleaseYear)
@@ -137,6 +141,21 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 				time.Sleep(time.Second) // musicbrainz courtesy
 			}
 		}
+		// Never invent a match. A CSV title correction with the same artist is a
+		// migration, not a new song: keep the pinned track data instead of
+		// rematching against the changed title.
+		if rec.SpotifyID == "" {
+			for _, old := range cached.Songs {
+				if strings.EqualFold(old.Artist, s.Artist) && !strings.EqualFold(old.Song, s.Song) && old.SpotifyID != "" {
+					rec.SpotifyID, rec.SpotifyURL = old.SpotifyID, old.SpotifyURL
+					rec.Album, rec.ReleaseYear = old.Album, old.ReleaseYear
+					rec.MatchConfidence = "manual"
+					rec.AlbumArt = old.AlbumArt
+					rec.SpotifyPopularity = old.SpotifyPopularity
+					break
+				}
+			}
+		}
 		// never invent a match: unmatched songs keep their CSV data and any
 		// Last.fm metrics, render without a Spotify link, and are flagged
 		if rec.SpotifyID == "" {
@@ -147,6 +166,22 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 	}
 
 	out, problems := enrich.Merge(songs, fetched, cached, overrides, time.Now())
+	// Fetch missing artwork by the FINAL pinned ID, never by rematching a
+	// cached song. This also respects manual album/track overrides.
+	if env("SPOTIFY_CLIENT_ID") != "" {
+		for i := range out.Songs {
+			r := &out.Songs[i]
+			if r.SpotifyID != "" && r.AlbumArt == "" {
+				art, err := sp.CoverArt(r.SpotifyID)
+				if err != nil {
+					fmt.Fprintln(os.Stderr, "warn: cover art:", r.Song, err)
+				} else {
+					r.AlbumArt = art
+				}
+				time.Sleep(250 * time.Millisecond)
+			}
+		}
+	}
 	if err := out.Save(outPath); err != nil {
 		fail(err)
 	}
@@ -160,6 +195,23 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 		}
 	}
 	fmt.Printf("enriched %d/%d songs (%d unmatched) -> %s\n", matched, len(songs), len(songs)-matched, outPath)
+}
+
+func canonicalTitles(songs []csvio.Song) {
+	// Keep display, enrichment, and note keys in sync after an official-title
+	// correction. Values here are exact, curated title changes.
+	for i := range songs {
+		switch strings.ToLower(songs[i].Song) + "|" + strings.ToLower(songs[i].Artist) {
+		case "smells like teen spirit|nirvana":
+			songs[i].Song = "Smells Like Teen Spirit"
+		case "there is a light that never goes out|the smiths":
+			songs[i].Song = "There Is a Light That Never Goes Out"
+		case "would|alice in chains":
+			songs[i].Song = "Would?"
+		case "freshman|verve pipe":
+			songs[i].Song = "The Freshmen"
+		}
+	}
 }
 
 func runSite(outPath, siteDir, contextPath, base string) {
@@ -184,6 +236,20 @@ func runSite(outPath, siteDir, contextPath, base string) {
 	fmt.Printf("rendered %d songs -> %s\n", len(f.Songs), siteDir)
 }
 
+func oldTitle(s csvio.Song) string {
+	switch strings.ToLower(s.Song) + "|" + strings.ToLower(s.Artist) {
+	case "smells like teen spirit|nirvana":
+		return "Smells like Teen Spirit"
+	case "there is a light that never goes out|the smiths":
+		return "There is a light that never goes out"
+	case "would|alice in chains":
+		return "Would"
+	case "the freshmen|verve pipe":
+		return "Freshman"
+	}
+	return ""
+}
+
 const notesPrompt = `You are writing a background note for a personal music page.
 
 Song: %s
@@ -194,7 +260,7 @@ Verified facts, sourced from Spotify and Wikipedia:
 %s
 Write exactly 2 sentences about the song. Sentence 1: release context, chart history, or musical context, using ONLY the verified facts above - never state an album name, year, chart position, or any other specific that is not written there; if the facts do not include one, write around it, a shorter accurate note is better than a detailed wrong one. If the verified facts name the album the song appears on, mention it in sentence 1. Sentence 2: how the song connects to the listener's memory above, or its lasting resonance if no memory was shared. %sNever invent facts about the listener's life; you may only reference what they wrote above.
 
-Style rules, no exceptions: write in the third person only; refer to the person as "this listener" or "the listener", never "you" or "your". No self-corrections, restarts, or hedges (never write "wait", "actually", "no,", or similar). No meta commentary about the writing itself.
+Style rules, no exceptions: write in the third person only; refer to the person as "this listener" or "the listener". NEVER write "you", "your", "yours", "you're", "you've", or "you'll" ANYWHERE in the response, including inside song titles, quoted lyrics, album titles, or band names. If the song or album title contains one of those words, still refer to the song only by the exact title from the Song line when quoting it, or avoid quotation marks. This validator has no exceptions for titles. No self-corrections, restarts, or hedges (never write "wait", "actually", "no,", or similar). No meta commentary about the writing itself.
 
 Respond with JSON only: {"note": "...", "source_url": "..."} where source_url is a real URL (Wikipedia, official chart archive, Last.fm) supporting the note. If you cannot give a real source URL, respond {"note": "", "source_url": ""}.`
 
@@ -218,9 +284,16 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 	if err != nil {
 		fail(err)
 	}
+	canonicalTitles(songs)
 	ctx, err := notes.Load(contextPath)
 	if err != nil {
 		fail(err)
+	}
+	for _, s := range songs {
+		old := oldTitle(s)
+		if old != "" {
+			notes.Migrate(ctx.Notes, old, s.Artist, s.Song)
+		}
 	}
 	g := gemini.New(env("GEMINI_API_KEY"), env("GEMINI_MODEL"))
 	wk := wikipedia.New()

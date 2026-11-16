@@ -56,3 +56,23 @@ Barenaked Ladies`
 		}
 	}
 }
+
+func TestMigrateTitleKeys(t *testing.T) {
+	n := map[string]Note{"freshman|verve pipe": {Note: "keep", SourceURL: "https://example.com"}}
+	Migrate(n, "Freshman", "Verve Pipe", "The Freshmen")
+	if _, ok := n["freshman|verve pipe"]; ok {
+		t.Fatal("old key left behind")
+	}
+	if n["the freshmen|verve pipe"].Note != "keep" {
+		t.Fatal(n)
+	}
+}
+
+func TestStyleOKRejectsSecondPerson(t *testing.T) {
+	if StyleOK("You heard it on MTV.") || StyleOK("your dorm") {
+		t.Fatal("second person passed")
+	}
+	if !StyleOK("The listener heard it on MTV.") {
+		t.Fatal("third person failed")
+	}
+}

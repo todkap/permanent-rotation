@@ -133,3 +133,70 @@ func TestParseEraFallsBackToLabelDigits(t *testing.T) {
 		t.Fatalf("empty-parens fallback = %d, want 2000", y)
 	}
 }
+
+func TestSeenLiveOptionalAndVerbatim(t *testing.T) {
+	csv := "Song,Band,Era,Tags,Memory,Angle,Seen live\nA,B,College (~1991),t,My memory.,,Boston 1995\n"
+	songs, err := Read(strings.NewReader(csv), 1)
+	if err != nil || songs[0].SeenLive != "Boston 1995" || songs[0].Memory != "My memory." {
+		t.Fatalf("seen-live column: %+v, %v", songs, err)
+	}
+	old, err := Read(strings.NewReader(genCSV(1)), 1)
+	if err != nil || old[0].SeenLive != "" {
+		t.Fatalf("old CSV compatibility: %+v, %v", old, err)
+	}
+}
+
+func TestToddSeenLiveCount(t *testing.T) {
+	songs, err := Load("../../examples/todd/songs.csv", 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	n := 0
+	for _, s := range songs {
+		if s.SeenLive != "" {
+			n++
+		}
+	}
+	if n != 17 || songs[0].Song != "Regret" {
+		t.Fatalf("seen live = %d, want 17", n)
+	}
+}
+
+func TestToddSeenLiveMappings(t *testing.T) {
+	songs, err := Load("../../examples/todd/songs.csv", 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]string{
+		"Something's Always Wrong":   "Orpheum, Boston, 1995",
+		"Someday I Suppose":          "The Middle East, Cambridge, 1998",
+		"Barrel of a Gun":            "Harborlights, Boston, 1997",
+		"I'll Be":                    "Jimmy V benefit concert, Raleigh, 2001",
+		"Tiny Dancer":                "IBM conference, Las Vegas, 2016",
+		"Papercut":                   "Saitama, Japan, 2025",
+		"Title and Registration":     "Deck the Hall Ball, Seattle, 2018",
+		"I Write Sins Not Tragedies": "Raleigh, 2016",
+		"Thnks fr th Mmrs":           "IBM conference, Las Vegas, 2014",
+		"Colors":                     "Raleigh, 2025",
+		"Nightswimming":              "", "Hey Ya": "", "Here Comes a Regular": "", "11 Minutes": "",
+	}
+	for _, s := range songs {
+		if w, ok := want[s.Song]; ok && s.SeenLive != w {
+			t.Errorf("%s: %q want %q", s.Song, s.SeenLive, w)
+		}
+	}
+}
+
+func TestToddOfficialFreshmenTitle(t *testing.T) {
+	songs, err := Load("../../examples/todd/songs.csv", 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, s := range songs {
+		if s.Artist == "Verve Pipe" {
+			if s.Song != "The Freshmen" || s.SeenLive != "Cincinnati, 2026" {
+				t.Fatalf("%+v", s)
+			}
+		}
+	}
+}
