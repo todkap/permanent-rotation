@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T14:16:14Z",
+  "generated_at": "2026-11-16T16:00:05Z",
   "songs": [
     {
       "song": "Regret",
@@ -17,7 +17,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:15:58Z"
+      "fetched_at": "2026-11-16T15:59:49Z"
     },
     {
       "song": "Smells like Teen Spirit",
@@ -35,7 +35,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:15:58Z"
+      "fetched_at": "2026-11-16T15:59:50Z"
     },
     {
       "song": "Home Sweet Home",
@@ -53,7 +53,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:15:59Z"
+      "fetched_at": "2026-11-16T15:59:50Z"
     },
     {
       "song": "Dreams",
@@ -71,7 +71,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:15:59Z"
+      "fetched_at": "2026-11-16T15:59:50Z"
     },
     {
       "song": "Summer",
@@ -89,7 +89,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:15:59Z"
+      "fetched_at": "2026-11-16T15:59:51Z"
     },
     {
       "song": "Heartspark Dollarsign",
@@ -107,7 +107,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:15:59Z"
+      "fetched_at": "2026-11-16T15:59:51Z"
     },
     {
       "song": "I'll Be",
@@ -125,7 +125,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:00Z"
+      "fetched_at": "2026-11-16T15:59:51Z"
     },
     {
       "song": "Hey Ya",
@@ -143,7 +143,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T14:16:00Z"
+      "fetched_at": "2026-11-16T15:59:52Z"
     },
     {
       "song": "Nightswimming",
@@ -161,7 +161,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:00Z"
+      "fetched_at": "2026-11-16T15:59:52Z"
     },
     {
       "song": "Joey",
@@ -179,7 +179,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:01Z"
+      "fetched_at": "2026-11-16T15:59:52Z"
     },
     {
       "song": "Freshman",
@@ -197,7 +197,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T14:16:01Z"
+      "fetched_at": "2026-11-16T15:59:53Z"
     },
     {
       "song": "Teenage Love",
@@ -215,7 +215,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:01Z"
+      "fetched_at": "2026-11-16T15:59:53Z"
     },
     {
       "song": "Deep Cover",
@@ -229,13 +229,13 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "unmatched",
-      "fetched_at": "2026-11-16T14:16:02Z"
+      "fetched_at": "2026-11-16T15:59:54Z"
     },
     {
       "song": "Welcome to the Terrordome",
       "artist": "Public Enemy",
       "life_year": 1990,
-      "chapter": "High School / College Transition",
+      "chapter": "High School to College Transition",
       "memory": "PE had many great hits, but this was super high energy and one they owned, versus the other amazing one, Bring the Noise with Anthrax. They felt like a rock band in many regards. Amazing depth and deep lyrics. I listened to PE with my cousin, who introduced me to rap. This is one of the songs I remember playing on the way to an amusement park with my sister and her then-husband.",
       "tags": "Amazing mix of lyrical rapper alongside a heavy beat.   Finding my sweetspot on the intersection of music",
       "spotify_id": "2HlKSufhcnPDZAS1S7jLg6",
@@ -247,7 +247,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:03Z"
+      "fetched_at": "2026-11-16T15:59:54Z"
     },
     {
       "song": "Papercut",
@@ -265,7 +265,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:03Z"
+      "fetched_at": "2026-11-16T15:59:55Z"
     },
     {
       "song": "Love Song",
@@ -283,7 +283,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T14:16:03Z"
+      "fetched_at": "2026-11-16T15:59:55Z"
     },
     {
       "song": "Here Comes a Regular",
@@ -301,7 +301,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:05Z"
+      "fetched_at": "2026-11-16T15:59:55Z"
     },
     {
       "song": "More than Words",
@@ -319,7 +319,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:05Z"
+      "fetched_at": "2026-11-16T15:59:56Z"
     },
     {
       "song": "Silent Running",
@@ -337,7 +337,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:06Z"
+      "fetched_at": "2026-11-16T15:59:56Z"
     },
     {
       "song": "Something's Always Wrong",
@@ -355,7 +355,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:06Z"
+      "fetched_at": "2026-11-16T15:59:57Z"
     },
     {
       "song": "Somewhere Only We Know",
@@ -373,7 +373,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:07Z"
+      "fetched_at": "2026-11-16T15:59:57Z"
     },
     {
       "song": "With or Without You",
@@ -391,7 +391,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:07Z"
+      "fetched_at": "2026-11-16T15:59:57Z"
     },
     {
       "song": "Would",
@@ -409,7 +409,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T14:16:08Z"
+      "fetched_at": "2026-11-16T15:59:58Z"
     },
     {
       "song": "Tiny Dancer",
@@ -427,7 +427,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:08Z"
+      "fetched_at": "2026-11-16T15:59:58Z"
     },
     {
       "song": "Brick",
@@ -445,7 +445,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:08Z"
+      "fetched_at": "2026-11-16T15:59:58Z"
     },
     {
       "song": "Scenario",
@@ -463,7 +463,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T14:16:09Z"
+      "fetched_at": "2026-11-16T15:59:59Z"
     },
     {
       "song": "Mayonaise",
@@ -481,7 +481,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T14:16:09Z"
+      "fetched_at": "2026-11-16T15:59:59Z"
     },
     {
       "song": "There is a light that never goes out",
@@ -499,7 +499,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T14:16:09Z"
+      "fetched_at": "2026-11-16T16:00:00Z"
     },
     {
       "song": "Someday I Suppose",
@@ -517,7 +517,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T14:16:10Z"
+      "fetched_at": "2026-11-16T16:00:00Z"
     },
     {
       "song": "So What'Cha Want",
@@ -526,16 +526,16 @@
       "chapter": "College / Musical Evolution",
       "memory": "This was the Beastie Boys going back to their punk roots after rap was their rise to fame. I loved the alternative-like music combined with rap. Sort of a precursor to what Linkin Park did later. It was a reintroduction to the band after a short hiatus and how they adapted to the industry's shift toward grunge. I found it myself, then saw them at the same Lollapalooza concert.",
       "tags": "Rap / Rock / Alternative / growing up from rap to alternative with the band",
-      "spotify_id": "25pl7kV4OxafIc9wPAggYf",
-      "spotify_url": "https://open.spotify.com/track/25pl7kV4OxafIc9wPAggYf",
-      "release_year": 1999,
-      "album": "Anthology: The Sounds Of Science",
+      "spotify_id": "5h9mwffuipb2TSeTFp8Pu0",
+      "spotify_url": "https://open.spotify.com/track/5h9mwffuipb2TSeTFp8Pu0",
+      "release_year": 1992,
+      "album": "Check Your Head",
       "lastfm_listeners": 423226,
       "lastfm_playcount": 2037342,
       "spotify_popularity": null,
       "tier": "middle",
-      "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:10Z"
+      "match_confidence": "manual",
+      "fetched_at": "2026-11-16T16:00:00Z"
     },
     {
       "song": "The Old Apartment",
@@ -553,7 +553,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:10Z"
+      "fetched_at": "2026-11-16T16:00:01Z"
     },
     {
       "song": "Title and Registration",
@@ -571,7 +571,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:11Z"
+      "fetched_at": "2026-11-16T16:00:02Z"
     },
     {
       "song": "Demons",
@@ -589,7 +589,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:11Z"
+      "fetched_at": "2026-11-16T16:00:02Z"
     },
     {
       "song": "Colors",
@@ -607,7 +607,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:11Z"
+      "fetched_at": "2026-11-16T16:00:02Z"
     },
     {
       "song": "I Write Sins Not Tragedies",
@@ -625,7 +625,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:12Z"
+      "fetched_at": "2026-11-16T16:00:03Z"
     },
     {
       "song": "Thnks fr th Mmrs",
@@ -643,7 +643,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:12Z"
+      "fetched_at": "2026-11-16T16:00:03Z"
     },
     {
       "song": "My Name Is Jonas",
@@ -661,7 +661,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:12Z"
+      "fetched_at": "2026-11-16T16:00:03Z"
     },
     {
       "song": "Monsters (feat. blackbear)",
@@ -679,7 +679,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:13Z"
+      "fetched_at": "2026-11-16T16:00:04Z"
     },
     {
       "song": "Enjoy the Silence",
@@ -697,7 +697,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:13Z"
+      "fetched_at": "2026-11-16T16:00:04Z"
     },
     {
       "song": "Barrel of a Gun",
@@ -715,7 +715,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T14:16:13Z"
+      "fetched_at": "2026-11-16T16:00:04Z"
     },
     {
       "song": "11 Minutes",
@@ -733,7 +733,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T14:16:14Z"
+      "fetched_at": "2026-11-16T16:00:05Z"
     }
   ]
 }
