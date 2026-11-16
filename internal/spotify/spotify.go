@@ -66,6 +66,7 @@ type Track struct {
 	Name        string
 	Artist      string
 	Album       string
+	AlbumArt    string // ~300px cover image URL on Spotify's CDN
 	ReleaseDate string
 	Popularity  *int // nil for Dev Mode apps created after Feb 2026
 	IsVarious   bool // compilation flag, deprioritized in matching
@@ -103,6 +104,11 @@ func (c *Client) Search(title, artist string) ([]Track, error) {
 				Album struct {
 					Name        string `json:"name"`
 					ReleaseDate string `json:"release_date"`
+					Images      []struct {
+						URL    string `json:"url"`
+						Width  int    `json:"width"`
+						Height int    `json:"height"`
+					} `json:"images"`
 				} `json:"album"`
 				Popularity *int `json:"popularity"`
 			} `json:"items"`
@@ -124,7 +130,52 @@ func (c *Client) Search(title, artist string) ([]Track, error) {
 		if len(it.Artists) > 0 {
 			t.Artist = it.Artists[0].Name
 		}
+		// Spotify returns large/medium/small; the middle size fits a card.
+		if len(it.Album.Images) > 0 {
+			img := it.Album.Images[0]
+			if len(it.Album.Images) > 1 {
+				img = it.Album.Images[1]
+			}
+			t.AlbumArt = img.URL
+		}
 		tracks = append(tracks, t)
 	}
 	return tracks, nil
+}
+
+// CoverArt reads artwork for an existing track ID without changing its match.
+func (c *Client) CoverArt(id string) (string, error) {
+	if err := c.authorize(); err != nil {
+		return "", err
+	}
+	req, err := http.NewRequest("GET", "https://api.spotify.com/v1/tracks/"+url.PathEscape(id), nil)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Authorization", "Bearer "+c.token)
+	resp, err := c.hc.Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("track artwork: %s", resp.Status)
+	}
+	var out struct {
+		Album struct {
+			Images []struct {
+				URL string `json:"url"`
+			} `json:"images"`
+		} `json:"album"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {
+		return "", err
+	}
+	if len(out.Album.Images) > 1 {
+		return out.Album.Images[1].URL, nil
+	}
+	if len(out.Album.Images) == 1 {
+		return out.Album.Images[0].URL, nil
+	}
+	return "", nil
 }

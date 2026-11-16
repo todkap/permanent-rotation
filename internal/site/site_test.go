@@ -1,6 +1,9 @@
 package site
 
 import (
+	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/todkap/permanent-rotation/internal/enrich"
@@ -178,5 +181,33 @@ func TestUnlistedChapterInheritsPreviousEra(t *testing.T) {
 	eras := groupEras(chs, eraOf)
 	if len(eras) != 2 || len(eras[0].Chapters) != 2 || eras[0].Chapters[1].Name != "New" {
 		t.Fatalf("inheritance: %+v", eras)
+	}
+}
+
+func TestArtworkLiveTagsAndStats(t *testing.T) {
+	dir := t.TempDir()
+	f := &enrich.File{Songs: []enrich.Record{
+		{Song: "With art", Artist: "A", Chapter: "One", ReleaseYear: 1971, Album: "Album", AlbumArt: "https://example.com/art.jpg", SeenLive: "Boston, 1995", Memory: "My exact memory."},
+		{Song: "Deep Cover", Artist: "B", Chapter: "Two", ReleaseYear: 2020},
+	}}
+	if err := Render(f, &notes.Context{}, dir, "", []string{"## School", "One", "## College", "Two"}); err != nil {
+		t.Fatal(err)
+	}
+	b, _ := os.ReadFile(filepath.Join(dir, "index.html"))
+	h := string(b)
+	for _, want := range []string{`src="https://example.com/art.jpg"`, `Seen live: Boston, 1995`, `My exact memory.`, `class="cover cover-none"`} {
+		if !strings.Contains(h, want) {
+			t.Errorf("missing %s", want)
+		}
+	}
+	if strings.Count(h, `class="cover cover-none"`) != 1 {
+		t.Fatal("wrong art fallback count")
+	}
+	b, _ = os.ReadFile(filepath.Join(dir, "stats.html"))
+	h = string(b)
+	for _, want := range []string{`1971 to 2020`, `>2</span>`, `>1</span><span class="chip-label">seen live`, `<td>School</td><td>1</td>`, `<td>College</td><td>1</td>`} {
+		if !strings.Contains(h, want) {
+			t.Errorf("missing %s", want)
+		}
 	}
 }
