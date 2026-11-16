@@ -58,7 +58,7 @@ section:last-of-type{border-bottom:none}
 .tier.deep-cut{border-color:var(--muted);color:var(--muted)}
 .tier.middle{border-color:var(--line);color:var(--muted)}
 .background{margin-top:12px;background:var(--navy-2);border:1px solid var(--line);border-left:3px solid var(--carolina);border-radius:6px;padding:14px 16px;font-size:.9rem}
-.background .label{color:var(--red);text-transform:uppercase;letter-spacing:.14em;font-size:.68rem;font-weight:700;display:block;margin-bottom:6px}
+.background .label{color:var(--muted);text-transform:uppercase;letter-spacing:.14em;font-size:.68rem;font-weight:700;display:block;margin-bottom:6px}
 .background p{color:var(--muted)}
 .background .src{margin-top:8px;font-size:.85rem}
 table{border-collapse:collapse;margin-top:16px}
@@ -120,15 +120,42 @@ func groupByChapter(recs []enrich.Record, ctx *notes.Context) []chapter {
 		}
 		if _, ok := byName[name]; !ok {
 			order = append(order, name)
-			yearOf[name] = r.LifeYear
+		}
+		// chapters sort by their earliest known song year
+		if r.LifeYear > 0 {
+			if cur, ok := yearOf[name]; !ok || r.LifeYear < cur {
+				yearOf[name] = r.LifeYear
+			}
 		}
 		byName[name] = append(byName[name], sv)
 	}
-	sort.SliceStable(order, func(i, j int) bool { return yearOf[order[i]] < yearOf[order[j]] })
+	sort.SliceStable(order, func(i, j int) bool {
+		yi, iok := yearOf[order[i]]
+		yj, jok := yearOf[order[j]]
+		if !iok {
+			return false // unknown year sinks to the end
+		}
+		if !jok {
+			return true
+		}
+		if yi != yj {
+			return yi < yj
+		}
+		return order[i] < order[j] // same year: alphabetical
+	})
 	var out []chapter
 	for _, name := range order {
 		songs := byName[name]
-		sort.SliceStable(songs, func(i, j int) bool { return songs[i].LifeYear < songs[j].LifeYear })
+		sort.SliceStable(songs, func(i, j int) bool {
+			a, b := songs[i].LifeYear, songs[j].LifeYear
+			if a == 0 {
+				return false // unknown year sinks within the chapter too
+			}
+			if b == 0 {
+				return true
+			}
+			return a < b
+		})
 		out = append(out, chapter{Name: name, Songs: songs})
 	}
 	return out
@@ -138,13 +165,22 @@ var indexTpl = template.Must(template.New("index").Parse(`<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Permanent Rotation</title>
-<meta name="description" content="{{.Count}} songs that stayed. A personal timeline, not a ranking.">
+<meta name="description" content="{{.OGDesc}}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Permanent Rotation">
+<meta property="og:title" content="Permanent Rotation">
+<meta property="og:description" content="{{.OGDesc}}">
+{{if .Base}}<meta property="og:url" content="{{.Base}}/">
+<meta property="og:image" content="{{.Base}}/og.png">{{end}}
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <style>{{.CSS}}</style></head><body>
 ` + navHTML + `
 <header class="hero"><div class="wrap">
 <p class="kicker">A list, not a ranking</p>
 <h1>Permanent <span class="accent">Rotation</span></h1>
-<p class="lede">{{.Count}} songs grouped by the chapter of life they arrived in. The memories are mine; the background notes are AI-written, sourced and labeled.</p>
+<p class="lede">{{.Count}} songs grouped by the chapter of life they arrived in. The memories are mine; the background notes are AI-researched, with sources linked.</p>
 </div></header>
 <main><div class="wrap">
 <section>
@@ -156,7 +192,7 @@ var indexTpl = template.Must(template.New("index").Parse(`<!doctype html>
 <h3>{{.Song}}{{if .Tier}}<span class="tier {{.Tier}}">{{.Tier}}</span>{{end}}</h3>
 <p class="byline">{{.Artist}}{{if .Album}} &middot; <em>{{.Album}}</em>{{end}}{{if .ReleaseYear}} &middot; {{.ReleaseYear}}{{end}}</p>
 {{if .Memory}}<p class="memory">{{.Memory}}</p>{{end}}
-{{if .Note}}<div class="background"><span class="label">Background &middot; AI-written, reviewed</span><p>{{.Note.Note}}</p><p class="src"><a href="{{.Note.SourceURL}}">Source</a></p></div>{{end}}
+{{if .Note}}<div class="background"><span class="label">Background &middot; AI-researched &middot; source linked</span><p>{{.Note.Note}}</p><p class="src"><a href="{{.Note.SourceURL}}">Source</a></p></div>{{end}}
 {{if .SpotifyURL}}<p class="links"><a href="{{.SpotifyURL}}">Listen on Spotify</a></p>{{end}}
 </div></div></div>{{end}}
 {{end}}
@@ -168,7 +204,18 @@ var indexTpl = template.Must(template.New("index").Parse(`<!doctype html>
 var statsTpl = template.Must(template.New("stats").Parse(`<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Stats - Permanent Rotation</title><style>{{.CSS}}</style></head><body>
+<title>Stats - Permanent Rotation</title>
+<meta name="description" content="{{.OGDesc}}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Permanent Rotation">
+<meta property="og:title" content="Stats - Permanent Rotation">
+<meta property="og:description" content="{{.OGDesc}}">
+{{if .Base}}<meta property="og:url" content="{{.Base}}/stats.html">
+<meta property="og:image" content="{{.Base}}/og.png">{{end}}
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>{{.CSS}}</style></head><body>
 ` + navHTML + `
 <header class="hero"><div class="wrap">
 <p class="kicker">The numbers</p>
@@ -205,10 +252,14 @@ var tierLabel = map[string]string{"canon": "Canon", "middle": "Middle", "deep-cu
 
 // Render writes index.html and stats.html into dir. An empty data file
 // renders a valid placeholder site so forks can run this step with no keys.
-func Render(f *enrich.File, ctx *notes.Context, dir string) error {
+// base is the absolute published URL (for og:image and link previews);
+// leave it empty for a relative-only build. Files in an assets/ directory
+// next to the repo root (og.png, favicon.png, ...) are copied into dir.
+func Render(f *enrich.File, ctx *notes.Context, dir, base string) error {
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return err
 	}
+	copyAssets("assets", dir)
 	chapters := groupByChapter(f.Songs, ctx)
 
 	tierCount := map[string]int{"canon": 0, "middle": 0, "deep-cut": 0}
@@ -244,14 +295,15 @@ func Render(f *enrich.File, ctx *notes.Context, dir string) error {
 		avgGap = float64(gapSum) / float64(gaps)
 	}
 
-	base := map[string]any{"CSS": template.CSS(pageCSS)} //nolint:gosec
+	ogDesc := fmt.Sprintf("%d songs grouped by the chapter of life they arrived in. The memories are mine; the background notes are AI-researched, with sources linked.", len(f.Songs))
+	baseData := map[string]any{"CSS": template.CSS(pageCSS), "OGDesc": ogDesc, "Base": base} //nolint:gosec
 	pages := []struct {
 		name string
 		tpl  *template.Template
 		data map[string]any
 	}{
-		{"index.html", indexTpl, merge(base, map[string]any{"Timeline": true, "Chapters": chapters, "Count": len(f.Songs), "GeneratedAt": f.GeneratedAt})},
-		{"stats.html", statsTpl, merge(base, map[string]any{"Timeline": false, "Tiers": tiers, "Decades": decades, "AvgGap": avgGap, "GeneratedAt": f.GeneratedAt})},
+		{"index.html", indexTpl, merge(baseData, map[string]any{"Timeline": true, "Chapters": chapters, "Count": len(f.Songs), "GeneratedAt": f.GeneratedAt})},
+		{"stats.html", statsTpl, merge(baseData, map[string]any{"Timeline": false, "Tiers": tiers, "Decades": decades, "AvgGap": avgGap, "GeneratedAt": f.GeneratedAt})},
 	}
 	for _, p := range pages {
 		w, err := os.Create(filepath.Join(dir, p.name))
@@ -265,6 +317,25 @@ func Render(f *enrich.File, ctx *notes.Context, dir string) error {
 		w.Close()
 	}
 	return nil
+}
+
+// copyAssets copies any committed assets (og image, favicons) into the
+// output directory. Missing assets dir is fine - forks may not have any.
+func copyAssets(src, dst string) {
+	entries, err := os.ReadDir(src)
+	if err != nil {
+		return
+	}
+	for _, e := range entries {
+		if e.IsDir() {
+			continue
+		}
+		b, err := os.ReadFile(filepath.Join(src, e.Name()))
+		if err != nil {
+			continue
+		}
+		os.WriteFile(filepath.Join(dst, e.Name()), b, 0o644)
+	}
 }
 
 func merge(a, b map[string]any) map[string]any {

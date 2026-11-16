@@ -11,7 +11,7 @@ A small Go tool plus a GitHub Action. It reads your songs CSV, enriches each son
 1. **Fork this repo.**
 2. **Replace `songs.csv` with your list.** A template (`songs.template.csv`) shows the six columns: `song, artist, era, tags, memory, angle`. Only `song` and `artist` are required. `era` accepts anything like `College Freshman Year (~1991)`; the year in parentheses is when the song entered your life. `memory` is your own words and is published verbatim. `angle` is a private drafting aid and is never published.
 3. **Pick at least 25 songs. No maximum.** The number is the constraint that makes you dig past the obvious ones. Go as high as you like. (The template ships with 3 example rows; try it with `--min 3`.)
-4. **Point the Action at your list:** in `.github/workflows/build.yml`, set `CSV_PATH` to `songs.csv` and `OUT_PATH` to `data/enriched.json`.
+4. **Point the Action at your list:** in `.github/workflows/build.yml`, set `CSV_PATH` to `songs.csv`, `OUT_PATH` to `data/enriched.json`, and `SITE_BASE` to your published URL (it powers the social preview tags). Replace the images in `assets/` (`og.png` link preview, `favicon.png`, `apple-touch-icon.png`) with your own if you like; they are copied into the site on every render.
 5. **Get your keys** (below) and add them as GitHub secrets.
 6. **Run the Action** (Actions tab, "build", Run workflow). It enriches your list, commits `enriched.json`, and deploys the site to GitHub Pages.
 7. **Optional:** run `songs playlist` locally to create your own Spotify playlist.
@@ -67,7 +67,7 @@ songs playlist # create/update your Spotify playlist (local run, your login)
 songs notes    # opt-in Gemini background notes (reviewed before commit)
 ```
 
-- **Matching is deterministic and cached.** Only new or changed rows search Spotify. Anything fuzzy is printed for you to confirm; pin a match by hand in `data/overrides.csv`. Overrides always win. A song that cannot be matched is listed and skipped - never invented.
+- **Matching is deterministic and cached.** Only new or changed rows search Spotify. Anything fuzzy is printed for you to confirm; pin a match by hand in `data/overrides.csv`. Overrides always win. A song that cannot be matched is flagged in the run output and still renders - your words and its background note intact, just without a Spotify link. Nothing is ever invented.
 - **Metrics are fresh every build.** Last.fm listeners and play counts are refetched on every run, and the canon / middle / deep-cut tiers are recomputed from them (top third vs bottom third of your list, so the split scales with any song count). The Action commits `enriched.json` only when it changed; the diff is your audit trail, and the page footer shows "data as of".
 - **Forks without keys still work.** `songs site` renders from the committed `enriched.json`; a fork's Action simply skips enrichment until its owner adds keys.
 - **Background notes are opt-in and labeled.** Notes are paced at one request every 5 seconds by default (the free tier allows 15/minute, and 429 responses with a `Retry-After` header are honored). On a paid tier, speed it up with `--pace 1`. Run the Action manually with "Regenerate Gemini background notes" checked to (re)write `context.json` via Gemini. The diff is your review gate - the site only renders what you commit. Notes appear in their own labeled block, never mixed into your words. Every note must carry a source URL or it is dropped. Your memory text is included in the prompt by default (`-include-memory=false` opts out).
