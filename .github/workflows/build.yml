@@ -59,7 +59,7 @@ jobs:
           # Optional: Settings > Secrets and variables > Actions > Variables tab.
           # Unset = empty = the tool's built-in default model.
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
-        run: go run ./cmd/songs notes --csv "$CSV_PATH" --context "$CONTEXT_PATH"
+        run: go run ./cmd/songs notes --csv "$CSV_PATH" --context "$CONTEXT_PATH" --out "$OUT_PATH"
       - name: render site
         run: go run ./cmd/songs site --out "$OUT_PATH" --context "$CONTEXT_PATH" --site "$SITE_DIR" --base "$SITE_BASE"
       - name: commit data changes
