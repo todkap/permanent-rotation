@@ -28,6 +28,8 @@ env:
   OUT_PATH: examples/todd/enriched.json
   CONTEXT_PATH: examples/todd/context.json
   SITE_DIR: site
+  # Forks: set this to your published site URL (used for link-preview tags)
+  SITE_BASE: https://todkap.github.io/permanent-rotation
 
 concurrency:
   group: pages
@@ -59,7 +61,7 @@ jobs:
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
         run: go run ./cmd/songs notes --csv "$CSV_PATH" --context "$CONTEXT_PATH"
       - name: render site
-        run: go run ./cmd/songs site --out "$OUT_PATH" --context "$CONTEXT_PATH" --site "$SITE_DIR"
+        run: go run ./cmd/songs site --out "$OUT_PATH" --context "$CONTEXT_PATH" --site "$SITE_DIR" --base "$SITE_BASE"
       - name: commit data changes
         uses: stefanzweifel/git-auto-commit-action@v5
         with:

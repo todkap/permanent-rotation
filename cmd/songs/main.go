@@ -41,6 +41,7 @@ func main() {
 	csvPath := fs.String("csv", "songs.csv", "input songs CSV")
 	outPath := fs.String("out", "data/enriched.json", "enriched data file")
 	siteDir := fs.String("site", "site", "output directory for the rendered site")
+	baseURL := fs.String("base", "", "absolute URL of the published site, for og:image and link previews")
 	minSongs := fs.Int("min", csvio.DefaultMinSongs, "minimum valid songs required")
 	contextPath := fs.String("context", "data/context.json", "background notes file")
 	includeMemory := fs.Bool("include-memory", true, "send memory text to the model (opt out with -include-memory=false)")
@@ -51,7 +52,7 @@ func main() {
 	case "enrich":
 		runEnrich(*csvPath, *outPath, *minSongs)
 	case "site":
-		runSite(*outPath, *siteDir, *contextPath)
+		runSite(*outPath, *siteDir, *contextPath, *baseURL)
 	case "playlist":
 		fmt.Println("playlist is not implemented in this skeleton yet.")
 		fmt.Println("Design (spec section 6): local run only, browser consent once,")
@@ -132,14 +133,13 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 				time.Sleep(time.Second) // musicbrainz courtesy
 			}
 		}
-		// never invent a match: unmatched songs are listed and skipped by Merge,
-		// unless an override pins them by hand
-		if rec.SpotifyID != "" {
-			rec.FetchedAt = time.Now().UTC().Format(time.RFC3339)
-			fetched[k] = rec
-		} else if _, pinned := overrides[k]; pinned {
-			fetched[k] = rec
+		// never invent a match: unmatched songs keep their CSV data and any
+		// Last.fm metrics, render without a Spotify link, and are flagged
+		if rec.SpotifyID == "" {
+			rec.MatchConfidence = "unmatched"
 		}
+		rec.FetchedAt = time.Now().UTC().Format(time.RFC3339)
+		fetched[k] = rec
 	}
 
 	out, problems := enrich.Merge(songs, fetched, cached, overrides, time.Now())
@@ -149,10 +149,16 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 	for _, p := range append(problems, lowConf...) {
 		fmt.Println(p)
 	}
-	fmt.Printf("enriched %d/%d songs -> %s\n", len(out.Songs), len(songs), outPath)
+	matched := 0
+	for _, r := range out.Songs {
+		if r.SpotifyID != "" {
+			matched++
+		}
+	}
+	fmt.Printf("enriched %d/%d songs (%d unmatched) -> %s\n", matched, len(songs), len(songs)-matched, outPath)
 }
 
-func runSite(outPath, siteDir, contextPath string) {
+func runSite(outPath, siteDir, contextPath, base string) {
 	f, err := enrich.LoadFile(outPath)
 	if err != nil {
 		fail(err)
@@ -161,7 +167,7 @@ func runSite(outPath, siteDir, contextPath string) {
 	if err != nil {
 		fail(err)
 	}
-	if err := site.Render(f, ctx, siteDir); err != nil {
+	if err := site.Render(f, ctx, siteDir, base); err != nil {
 		fail(err)
 	}
 	fmt.Printf("rendered %d songs -> %s\n", len(f.Songs), siteDir)
