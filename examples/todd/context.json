@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T17:55:21Z",
+  "generated_at": "2026-11-16T18:17:51Z",
   "model": "gemini-3.5-flash-lite",
   "include_memory": true,
   "notes": {
@@ -34,10 +34,6 @@
     "enjoy the silence|depeche mode": {
       "note": "Released in 1990 on the landmark album Violator, Depeche Mode's 'Enjoy the Silence' became one of the defining synth-pop tracks of the MTV era with its iconic melodic guitar hook and striking video. For this listener, the song captures the feeling of graduating high school alongside the enduring memory of those classic music television broadcasts.",
       "source_url": "https://en.wikipedia.org/wiki/Enjoy_the_Silence"
-    },
-    "freshman|verve pipe": {
-      "note": "\"The Freshmen\" by the American alternative rock band the Verve Pipe was released as the third single from their second studio album Villains, becoming the group's breakthrough hit and highest-charting single. For this listener, the track is permanently intertwined with a painful breakup period in 1996 when a then-girlfriend considered ending the relationship and the listener went to stay at a friend's place for the first time after college.",
-      "source_url": "https://en.wikipedia.org/wiki/The_Freshmen_(song)"
     },
     "heartspark dollarsign|everclear": {
       "note": "Originally appearing on Everclear's 1995 major-label debut album Sparkle and Fade, \"Heartspark Dollarsign\" serves as a nostalgic anchor for the listener, recalling a bittersweet Boston Xmas rave concert that marked one of the final shows shared with a college roommate.",
@@ -127,6 +123,10 @@
       "note": "Released in 1988 on Slick Rick's acclaimed debut album The Great Adventures of Slick Rick, this classic hip-hop track captures the vulnerable and humorous side of teenage romance. For the listener, the song served as an anthem for an awkward high school era of self-discovery and yearning for a first relationship.",
       "source_url": "https://en.wikipedia.org/wiki/The_Great_Adventures_of_Slick_Rick"
     },
+    "the freshmen|verve pipe": {
+      "note": "\"The Freshmen\" by the American alternative rock band the Verve Pipe was released as the third single from their second studio album Villains, becoming the group's breakthrough hit and highest-charting single. For this listener, the track is permanently intertwined with a painful breakup period in 1996 when a then-girlfriend considered ending the relationship and the listener went to stay at a friend's place for the first time after college.",
+      "source_url": "https://en.wikipedia.org/wiki/The_Freshmen_(song)"
+    },
     "the old apartment|barenaked ladies": {
       "note": "Featured on the albums Born on a Pirate Ship, Rock Spectacle and Disc One: All Their Greatest Hits, this track by the Canadian alternative rock group Barenaked Ladies became the band's first entry on the US Billboard Hot 100. The listener connects the song to their post-college years in Arlington and Waltham, remembering a concert attended with friends who loved the band and saw them perform alongside Guster.",
       "source_url": "https://en.wikipedia.org/wiki/The_Old_Apartment"
@@ -150,6 +150,14 @@
     "welcome to the terrordome|public enemy": {
       "note": "Public Enemy recorded \"Welcome to the Terrordome\" for their 1990 album Fear of a Black Planet, and released it as a single in January 1990 according to discographer Martin C. Strong. This high-energy track resonates with the listener's fond memories of playing it on the way to an amusement park and being introduced to rap music by their cousin.",
       "source_url": "https://en.wikipedia.org/wiki/Welcome_to_the_Terrordome"
+    },
+    "with or without you|u2": {
+      "note": "Released as the lead single from The Joshua Tree, this rock ballad features sustained guitar parts played with a prototype of the Infinite Guitar alongside Bono's vocals and Adam Clayton's bassline. While living in a heavily Irish Boston, this listener felt that U2 was adopted by the local music scene and experienced the song as extremely powerful in both its lyrics and musical arrangement.",
+      "source_url": "https://en.wikipedia.org/wiki/With_or_Without_You"
+    },
+    "would?|alice in chains": {
+      "note": "Written by Jerry Cantrell as a tribute to Andrew Wood and featured on the Singles: Original Motion Picture Soundtrack and the album Dirt, \"Would?\" became a definitive grunge anthem. The listener fondly recalls this track as their favorite from the Cameron Crowe movie's soundtrack, perfectly capturing the spirit of the era.",
+      "source_url": "https://en.wikipedia.org/wiki/Would?"
     },
     "would|alice in chains": {
       "note": "Written by Jerry Cantrell as a tribute to Mother Love Bone singer Andrew Wood, \"Would?\" appeared on the Singles soundtrack and the album Dirt, and was later performed acoustically on MTV Unplugged. The listener associates this quintessential grunge track with their sophomore year, remembering how it captured the era and perfectly tied into Cameron Crowe's film.",
