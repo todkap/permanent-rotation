@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 )
 
@@ -59,4 +60,16 @@ func (c *Context) Save(path string) error {
 // dropped.
 func Valid(n Note) bool {
 	return strings.TrimSpace(n.Note) != "" && strings.HasPrefix(n.SourceURL, "http")
+}
+
+var (
+	secondPerson   = regexp.MustCompile(`(?i)\b(you|your|yours|you're|you've|you'll)\b`)
+	selfCorrection = regexp.MustCompile(`(?i)(wait\s*[,.…]|\.\.\.\s*wait|\bactually,|\boops\b)`)
+)
+
+// StyleOK enforces the voice contract: third person only (the person is
+// "this listener", never "you"), and no self-corrections or hedged restarts
+// left in the text. Notes failing this are retried once, then dropped.
+func StyleOK(note string) bool {
+	return !secondPerson.MatchString(note) && !selfCorrection.MatchString(note)
 }
