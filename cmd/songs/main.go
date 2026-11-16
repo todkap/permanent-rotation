@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
@@ -63,7 +64,7 @@ func main() {
 		fmt.Println("Order follows life chapters, no ranking.")
 		os.Exit(1)
 	case "notes":
-		runNotes(*csvPath, *contextPath, *minSongs, *includeMemory, *forceNotes, time.Duration(*paceSecs)*time.Second)
+		runNotes(*csvPath, *contextPath, *outPath, *minSongs, *includeMemory, *forceNotes, time.Duration(*paceSecs)*time.Second)
 	default:
 		fmt.Fprintln(os.Stderr, "unknown command:", cmd)
 		os.Exit(2)
@@ -189,15 +190,30 @@ Song: %s
 Artist: %s
 Tags from the listener: %s
 %s
-Verified facts, sourced from MusicBrainz and Wikipedia:
+Verified facts, sourced from Spotify and Wikipedia:
 %s
-Write exactly 2 sentences about the song. Sentence 1: release context, chart history, or musical context, using ONLY the verified facts above - never state an album name, year, chart position, or any other specific that is not written there; if the facts do not include one, write around it, a shorter accurate note is better than a detailed wrong one. Sentence 2: how the song connects to the listener's memory above, or its lasting resonance if no memory was shared. %sNever invent facts about the listener's life; you may only reference what they wrote above.
+Write exactly 2 sentences about the song. Sentence 1: release context, chart history, or musical context, using ONLY the verified facts above - never state an album name, year, chart position, or any other specific that is not written there; if the facts do not include one, write around it, a shorter accurate note is better than a detailed wrong one. If the verified facts name the album the song appears on, mention it in sentence 1. Sentence 2: how the song connects to the listener's memory above, or its lasting resonance if no memory was shared. %sNever invent facts about the listener's life; you may only reference what they wrote above.
 
 Style rules, no exceptions: write in the third person only; refer to the person as "this listener" or "the listener", never "you" or "your". No self-corrections, restarts, or hedges (never write "wait", "actually", "no,", or similar). No meta commentary about the writing itself.
 
 Respond with JSON only: {"note": "...", "source_url": "..."} where source_url is a real URL (Wikipedia, official chart archive, Last.fm) supporting the note. If you cannot give a real source URL, respond {"note": "", "source_url": ""}.`
 
-func runNotes(csvPath, contextPath string, minSongs int, includeMemory, force bool, pace time.Duration) {
+// reissueSuffix matches trailing reissue markers on album titles from
+// Spotify (Deluxe Edition, 2022 Remaster, ...) so notes name the album,
+// not the reissue. Parentheticals that are part of the title survive.
+var reissueSuffix = regexp.MustCompile(`(?i)\s*\((?:[^)]*(?:remaster|deluxe|edition|expanded|reissue|bonus|anniversary)[^)]*)\)\s*$`)
+
+func cleanAlbum(title string) string {
+	for {
+		out := strings.TrimSpace(reissueSuffix.ReplaceAllString(title, ""))
+		if out == title {
+			return out
+		}
+		title = out
+	}
+}
+
+func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMemory, force bool, pace time.Duration) {
 	songs, err := csvio.Load(csvPath, minSongs)
 	if err != nil {
 		fail(err)
@@ -207,8 +223,15 @@ func runNotes(csvPath, contextPath string, minSongs int, includeMemory, force bo
 		fail(err)
 	}
 	g := gemini.New(env("GEMINI_API_KEY"), env("GEMINI_MODEL"))
-	mb := musicbrainz.New()
 	wk := wikipedia.New()
+	enriched := map[string]enrich.Record{}
+	if ef, err := enrich.LoadFile(enrichedPath); err != nil {
+		fmt.Fprintln(os.Stderr, "warn: enriched data:", err, "(notes will lack album facts)")
+	} else {
+		for _, r := range ef.Songs {
+			enriched[notes.Key(r.Song, r.Artist)] = r
+		}
+	}
 
 	type reply struct {
 		Note      string `json:"note"`
@@ -232,12 +255,15 @@ func runNotes(csvPath, contextPath string, minSongs int, includeMemory, force bo
 		// Grounding: pull sourced facts first so the model is only ever
 		// handed real album names, years and chart history.
 		var factsLines []string
-		if album, mbYear, err := mb.FirstRelease(s.Artist, s.Song); err != nil {
-			fmt.Fprintln(os.Stderr, "warn: musicbrainz:", s.Song, "-", err)
-		} else if album != "" || mbYear > 0 {
-			factsLines = append(factsLines, fmt.Sprintf("- MusicBrainz earliest release group, single or album: %q (%d)", album, mbYear))
+		if rec, ok := enriched[notes.Key(s.Song, s.Artist)]; ok && rec.Album != "" {
+			album := cleanAlbum(rec.Album)
+			if strings.EqualFold(album, s.Song) {
+				// title matches the song: the release is the single itself
+				factsLines = append(factsLines, fmt.Sprintf("- Release (Spotify data): %q (%d), a single", album, rec.ReleaseYear))
+			} else {
+				factsLines = append(factsLines, fmt.Sprintf("- Album (Spotify data): %q (%d)", album, rec.ReleaseYear))
+			}
 		}
-		time.Sleep(1100 * time.Millisecond) // MusicBrainz allows one request per second
 		wikiURL := ""
 		if wTitle, wURL, wExtract, err := wk.Lookup(s.Song, s.Artist); err != nil {
 			fmt.Fprintln(os.Stderr, "warn: wikipedia:", s.Song, "-", err)
