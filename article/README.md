@@ -82,8 +82,6 @@ The README walks through getting each key step by step.
 
 ### Wrapping up the year
 
-Every year I write one of these, and the theme ends up the same: the best way to understand a technology is to build something you care about with it. This year I learned more about agents from watching one confidently invent a Barenaked Ladies album than from anything I read. My list is live at https://todkap.github.io/permanent-rotation/index.html if you want to see what 50 songs look like with their notes, canon labels and all.
-
-If you liked this one, the earlier entries in the series are [One developer's career inflection point](https://www.linkedin.com/pulse/one-developers-career-inflection-point-todd-kaplinger/) and [Surviving the technical jungle](https://medium.com/@todkap/surviving-the-technical-jungle-7f28333fa8d8).
+The habit underneath these articles is simple: I reserve December to invest in my own technical growth. Most years that becomes an article, some years it is just a project. The theme ends up the same: the best way to understand a technology is to build something you care about with it. This year I learned more about agents from watching one confidently invent a Barenaked Ladies album than from anything I read. My list is live at https://todkap.github.io/permanent-rotation/index.html if you want to see what 50 songs look like with their notes, canon labels and all.
 
 Happy holidays. Go make your list.
