@@ -85,7 +85,23 @@ func (c *Client) Search(title, artist string) ([]Track, error) {
 // album, and this asks Spotify for that album's version of the track
 // directly, since the plain search may not surface it in 10 results.
 func (c *Client) SearchAlbum(title, artist, album string) ([]Track, error) {
-	return c.searchPaginated(fmt.Sprintf("track:%s artist:%s album:%s", title, artist, album), 3)
+	return c.searchPaginated(fmt.Sprintf("track:%s artist:%s album:%s", title, artist, querySafe(album)), 3)
+}
+
+// SearchISRC finds every catalog instance of one recording (ISRCs identify
+// the recording, not the release). The most precise rescue pool: it surfaces
+// the original pressing even when album/year field filters miss it, and when
+// it returns only compilations, that confirms the original is simply not in
+// Spotify's catalog.
+func (c *Client) SearchISRC(isrc string) ([]Track, error) {
+	return c.searchPaginated("isrc:"+querySafe(isrc), 2)
+}
+
+// querySafe strips characters that are query syntax to Spotify (colons,
+// quotes) from a field value and collapses whitespace.
+func querySafe(s string) string {
+	s = strings.NewReplacer(":", " ", "\"", " ", "\u201c", " ", "\u201d", " ").Replace(s)
+	return strings.Join(strings.Fields(s), " ")
 }
 
 // SearchYear narrows the search to one release year; the fallback when the
@@ -340,6 +356,10 @@ var titleSuffixes = []*regexp.Regexp{
 	regexp.MustCompile(`(?i)\s*\((\d{4}\s+)?remaster(ed)?\)\s*$`),
 	regexp.MustCompile(`(?i)\s*-\s*(radio edit|single version|album version|mono version|stereo version|mono|stereo)\s*$`),
 	regexp.MustCompile(`(?i)\s*\((radio edit|single version|album version|mono version|stereo version|mono|stereo)\)\s*$`),
+	// Soundtrack branding on the same recording: `Footloose - From
+	// "Footloose" Soundtrack` is the 1984 OST master, not a new version.
+	regexp.MustCompile(`(?i)\s*-\s*From\s+["'\x{201c}\x{2018}][^"'\x{201d}\x{2019}]*["'\x{201d}\x{2019}]\s+Soundtrack\s*$`),
+	regexp.MustCompile(`(?i)\s*\(From\s+["'\x{201c}\x{2018}][^"'\x{201d}\x{2019}]*["'\x{201d}\x{2019}]\s+Soundtrack\)\s*$`),
 }
 
 // normalizeTitle strips recording-neutral suffixes; if stripping would

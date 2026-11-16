@@ -133,7 +133,10 @@ func adoptPin(rec *enrich.Record, best spotify.Track, why string) {
 // the first earlier hit can still miss the original pressing. The pin moves
 // only to an exact title+artist match that is strictly better than the
 // cached pin.
-func rescueCompilationPin(sp *spotify.Client, song, artist, mbAlbum string, mbYear int, rec *enrich.Record) {
+// rescueCompilationPin returns the size of the candidate pool it searched,
+// so the caller can distinguish "original not in Spotify's catalog" from
+// "candidates found but none better than the pin".
+func rescueCompilationPin(sp *spotify.Client, mb *musicbrainz.Client, song, artist, mbAlbum string, mbYear int, rec *enrich.Record) int {
 	var pool []spotify.Track
 	seen := map[string]bool{rec.SpotifyID: true}
 	add := func(tracks []spotify.Track) {
@@ -158,14 +161,28 @@ func rescueCompilationPin(sp *spotify.Client, song, artist, mbAlbum string, mbYe
 			add(tracks)
 		}
 	}
+	// ISRC pool: MusicBrainz identifies the recording itself, and Spotify
+	// lists every catalog instance of it - the original pressing surfaces
+	// even when album/year filters miss it (Footloose sits on the 1984 OST
+	// under a "- From ... Soundtrack" track title).
+	if isrc, err := mb.RecordingISRC(artist, song); err != nil {
+		fmt.Fprintln(os.Stderr, "warn:", err)
+	} else if isrc != "" {
+		time.Sleep(time.Second) // musicbrainz courtesy
+		if tracks, err := sp.SearchISRC(isrc); err != nil {
+			fmt.Fprintln(os.Stderr, "warn:", err)
+		} else {
+			add(tracks)
+		}
+	}
 	if len(pool) == 0 {
-		return
+		return 0
 	}
 	best, exact := spotify.PickBest(pool, song, artist)
-	if !exact || !spotify.StrictlyBetter(best, rec.Album, rec.ReleaseYear) {
-		return
+	if exact && spotify.StrictlyBetter(best, rec.Album, rec.ReleaseYear) {
+		adoptPin(rec, best, "targeted rescue via MusicBrainz original release")
 	}
-	adoptPin(rec, best, "targeted rescue via MusicBrainz original release")
+	return len(pool)
 }
 
 func runEnrich(csvPath, outPath string, minSongs int) {
@@ -216,6 +233,11 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 				rec.SpotifyPopularity = old.SpotifyPopularity
 				rec.AlbumArt = old.AlbumArt
 				rec.YearConflict = old.YearConflict
+				// A pin moved in an earlier build keeps its marker until the
+				// notes run regenerates that song's note; the reason text is
+				// preserved the same way.
+				rec.ReleaseChanged = old.ReleaseChanged
+				rec.MatchReason = old.MatchReason
 				// Existing matches stay pinned, including while adding art.
 				needMatch = false
 				break
@@ -268,9 +290,13 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 			if mbErr == nil && mbYear > 0 {
 				if rec.ReleaseYear > mbYear || spotify.LooksLikeCompilation(rec.Album) {
 					before := rec.SpotifyID
-					rescueCompilationPin(sp, s.Song, s.Artist, mbAlbum, mbYear, &rec)
+					poolSize := rescueCompilationPin(sp, mb, s.Song, s.Artist, mbAlbum, mbYear, &rec)
 					if rec.SpotifyID == before {
-						report("rescue: %s - %s: no album/year-targeted hit beats %s %d (original: %s %d)", s.Song, s.Artist, rec.Album, rec.ReleaseYear, mbAlbum, mbYear)
+						if poolSize == 0 {
+							report("rescue: %s - %s: original (%s %d) not in Spotify's catalog, keeping %s %d", s.Song, s.Artist, mbAlbum, mbYear, rec.Album, rec.ReleaseYear)
+						} else {
+							report("rescue: %s - %s: none of %d targeted candidates beats %s %d (original: %s %d)", s.Song, s.Artist, poolSize, rec.Album, rec.ReleaseYear, mbAlbum, mbYear)
+						}
 					}
 				}
 				rec.YearConflict = rec.ReleaseYear > mbYear
@@ -307,7 +333,7 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 				// original album, and any remaining disagreement is flagged,
 				// never silently resolved
 				if mbAlbum, mbYear, err := mb.FirstRelease(s.Artist, s.Song); err == nil && mbYear > 0 && rec.ReleaseYear > 0 && mbYear < rec.ReleaseYear {
-					rescueCompilationPin(sp, s.Song, s.Artist, mbAlbum, mbYear, &rec)
+					rescueCompilationPin(sp, mb, s.Song, s.Artist, mbAlbum, mbYear, &rec)
 					rec.YearConflict = rec.ReleaseYear > mbYear
 				}
 				time.Sleep(time.Second) // musicbrainz courtesy

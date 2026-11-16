@@ -334,3 +334,45 @@ func TestSearchPaginatedPageErrorKeepsResults(t *testing.T) {
 		t.Fatalf("page-one results must survive a page-two error: %+v %v", got, err)
 	}
 }
+
+func TestNormalizeTitleSoundtrackBranding(t *testing.T) {
+	// Footloose sits on the 1984 OST under a soundtrack-branded track name;
+	// it is the same master and must exact-match the catalog title.
+	cases := map[string]string{
+		`Footloose - From "Footloose" Soundtrack`: "Footloose",
+		`Footloose (From "Footloose" Soundtrack)`: "Footloose",
+		"Footloose - From \u201cFootloose\u201d Soundtrack": "Footloose",
+	}
+	for in, want := range cases {
+		if got := normalizeTitle(in); got != want {
+			t.Fatalf("normalizeTitle(%q) = %q, want %q", in, got, want)
+		}
+	}
+	tracks := []Track{
+		{ID: "ost", Name: `Footloose - From "Footloose" Soundtrack`, Artist: "Kenny Loggins", Album: "Footloose (Original Motion Picture Soundtrack)", AlbumType: "compilation", ReleaseDate: "1984-01-23"},
+	}
+	best, exact := PickBest(tracks, "Footloose", "Kenny Loggins")
+	if !exact || best.ID != "ost" {
+		t.Fatalf("OST master must exact-match, got %+v exact=%v", best, exact)
+	}
+}
+
+func TestQuerySafeStripsColons(t *testing.T) {
+	var gotQ string
+	c := &Client{token: "test", tokenExp: time.Now().Add(time.Hour), hc: &http.Client{Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+		gotQ = r.URL.Query().Get("q")
+		return &http.Response{StatusCode: 200, Status: "200 OK", Body: io.NopCloser(strings.NewReader(`{"tracks":{"items":[]}}`)), Header: make(http.Header)}, nil
+	})}}
+	if _, err := c.SearchAlbum("Title and Registration", "Death Cab for Cutie", "Transatlanticism: 10th Anniversary"); err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(gotQ, "album:Transatlanticism:") {
+		t.Fatalf("colon leaked into query: %q", gotQ)
+	}
+	if _, err := c.SearchISRC("USEE10001993"); err != nil {
+		t.Fatal(err)
+	}
+	if gotQ != "isrc:USEE10001993" {
+		t.Fatalf("isrc query = %q", gotQ)
+	}
+}
