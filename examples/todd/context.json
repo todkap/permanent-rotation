@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T16:16:01Z",
+  "generated_at": "2026-11-16T16:33:52Z",
   "model": "gemini-3.5-flash-lite",
   "include_memory": true,
   "notes": {
@@ -146,6 +146,10 @@
     "tiny dancer|elton john": {
       "note": "Released in 1972 on Elton John's album \"Madman Across the Water,\" \"Tiny Dancer\" became an enduring classic known for its soaring harmonies and piano-driven melody. The listener associates this track with the memorable tour bus scene from the film \"Almost Famous,\" capturing a bittersweet period of transition that evokes the feeling of finally finding a home.",
       "source_url": "https://en.wikipedia.org/wiki/Tiny_Dancer"
+    },
+    "title and registration|death cab for cutie": {
+      "note": "Title and Registration is a track by the alternative rock band Death Cab for Cutie from their acclaimed 2003 album Transatlanticism. The listener fondly connects the song's witty lyrics about a glove compartment to their own introduction to the band through The O.C., appreciating the smooth vocals and the way simple paperwork unearths souvenirs from a past life.",
+      "source_url": "https://en.wikipedia.org/wiki/Title_and_Registration"
     },
     "welcome to the terrordome|public enemy": {
       "note": "Released in 1989 as the lead single from Public Enemy's landmark third album Fear of a Black Planet, \"Welcome to the Terrordome\" pairs a dense, aggressive sonic backdrop with rapid-fire lyricism. This listener fondly recalls cranking this high-energy track on the way to an amusement park with family, cementing a lifelong appreciation for rap music introduced by their cousin.",
