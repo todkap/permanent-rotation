@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T18:17:51Z",
+  "generated_at": "2026-11-16T18:55:22Z",
   "model": "gemini-3.5-flash-lite",
   "include_memory": true,
   "notes": {
@@ -19,6 +19,10 @@
       "note": "Released as a single from her debut studio album Badlands, Colors showcases the modern synth-pop style that initially drew this listener to Halsey's music. The listener appreciates how the catchy, synth-heavy track echoes the 1980s alternative sounds of their youth as part of their enduring fandom across the artist's diverse musical eras.",
       "source_url": "https://en.wikipedia.org/wiki/Colors_(Halsey_song)"
     },
+    "crazy for you|madonna": {
+      "note": "Originally released in 1985 from the soundtrack to the film Vision Quest and later included on the compilation album Celebration, this pop ballad marked a departure from Madonna's earlier dance-oriented material and became her second number-one single on the US Billboard Hot 100. This listener remembers it as one of the first early love ballads they loved, standing out in the collection mostly because of Madonna's singing voice.",
+      "source_url": "https://en.wikipedia.org/wiki/Crazy_for_You_(Madonna_song)"
+    },
     "deep cover|dr. dre and snoop dogg": {
       "note": "Released in 1992 as the lead single from the soundtrack to the film of the same name, this hardcore track marked the explosive solo debut of Snoop Dogg over a hypnotic Dr. Dre beat. For this listener, who started college while remaining attached to their hometown and following a different path than their childhood pals, the song preserves the thrill of Snoop's arrival alongside the enduring legacy of N.W.A from their high school years.",
       "source_url": "https://en.wikipedia.org/wiki/Deep_Cover_(Dr._Dre_song)"
@@ -34,6 +38,14 @@
     "enjoy the silence|depeche mode": {
       "note": "Released in 1990 on the landmark album Violator, Depeche Mode's 'Enjoy the Silence' became one of the defining synth-pop tracks of the MTV era with its iconic melodic guitar hook and striking video. For this listener, the song captures the feeling of graduating high school alongside the enduring memory of those classic music television broadcasts.",
       "source_url": "https://en.wikipedia.org/wiki/Enjoy_the_Silence"
+    },
+    "eye of the tiger|survivor": {
+      "note": "Written by Frankie Sullivan and Jim Peterik as the theme song for the 1982 film Rocky III and released that May as a single from Survivor's third album, Eye of the Tiger, the track combines hard rock with a post-disco beat and reached number one on the charts of many countries. This listener associates the arena rock track with early musical memories tied to movies, specifically recalling boxing scenes and a later film featuring Ivan Drago.",
+      "source_url": "https://en.wikipedia.org/wiki/Eye_of_the_Tiger"
+    },
+    "footloose|kenny loggins": {
+      "note": "Released in January 1984 from the film of the same name, Kenny Loggins recorded the track Footloose, which spent three weeks at number one on the US Billboard Hot 100 and later appeared on the 1997 album Yesterday, Today, Tomorrow - The Greatest Hits Of Kenny Loggins. This listener fondly connects the song to childhood memories living on Prospect Street, capturing a small town feel and the joyful spirit of the movie's dance ending.",
+      "source_url": "https://en.wikipedia.org/wiki/Footloose_(song)"
     },
     "heartspark dollarsign|everclear": {
       "note": "Originally appearing on Everclear's 1995 major-label debut album Sparkle and Fade, \"Heartspark Dollarsign\" serves as a nostalgic anchor for the listener, recalling a bittersweet Boston Xmas rave concert that marked one of the final shows shared with a college roommate.",
@@ -157,10 +169,6 @@
     },
     "would?|alice in chains": {
       "note": "Written by Jerry Cantrell as a tribute to Andrew Wood and featured on the Singles: Original Motion Picture Soundtrack and the album Dirt, \"Would?\" became a definitive grunge anthem. The listener fondly recalls this track as their favorite from the Cameron Crowe movie's soundtrack, perfectly capturing the spirit of the era.",
-      "source_url": "https://en.wikipedia.org/wiki/Would?"
-    },
-    "would|alice in chains": {
-      "note": "Written by Jerry Cantrell as a tribute to Mother Love Bone singer Andrew Wood, \"Would?\" appeared on the Singles soundtrack and the album Dirt, and was later performed acoustically on MTV Unplugged. The listener associates this quintessential grunge track with their sophomore year, remembering how it captured the era and perfectly tied into Cameron Crowe's film.",
       "source_url": "https://en.wikipedia.org/wiki/Would?"
     }
   }
