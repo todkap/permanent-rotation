@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T21:04:27Z",
+  "generated_at": "2026-11-16T21:51:49Z",
   "model": "gemini-3.5-flash-lite",
   "include_memory": true,
   "notes": {
@@ -11,9 +11,17 @@
       "note": "Featured on the 1999 album Lost and Gone Forever, where all the drums were played by hand without sticks, this track captures the listener's memory of seeing the Boston band open for Barenaked Ladies in the mid-'90s with their signature hand percussion and '4, 3, 2, 1' hook. The listener places this song around 1999 in their own life.",
       "source_url": "https://en.wikipedia.org/wiki/Lost_and_Gone_Forever"
     },
+    "basket case|green day": {
+      "note": "\"Basket Case\" is a song by the American rock band Green Day, released on August 1, 1994, by Reprise Records as the second single from the band's third studio album, Dookie. This listener associates the track with the early fall of dating a now-wife at the Boston Hatch Shell, where a free concert overwhelmed security and was cut short after barely playing one song.",
+      "source_url": "https://en.wikipedia.org/wiki/Basket_Case_(song)",
+      "album": "Dookie",
+      "release_year": 1994
+    },
     "brick|ben folds five": {
-      "note": "Released in 1997 as part of Ben Folds Five's sophomore album Whatever and Ever Amen, this piano-driven alternative rock track became a signature hit that stood out during the height of the grunge era. For this listener, the song carries a nostalgic NC tie-in that felt like a personal sign about their move to the region, while also sparking an appreciation for the artist's geek-like humor.",
-      "source_url": "https://en.wikipedia.org/wiki/Brick_(Ben_Folds_Five_song)"
+      "note": "Released by alternative rock group Ben Folds Five as a single from their album Whatever and Ever Amen, Brick became one of the band's biggest hits with mainstream radio play in the US, the UK, and Australia. This listener connected the piano-based rock track to an unexpected geographical tie-in, feeling that the song served as a sign about relocating to North Carolina.",
+      "source_url": "https://en.wikipedia.org/wiki/Brick_(song)",
+      "album": "Whatever and Ever Amen",
+      "release_year": 1997
     },
     "colors|halsey": {
       "note": "Released as a single from her debut studio album Badlands, Colors showcases the modern synth-pop style that initially drew this listener to Halsey's music. The listener appreciates how the catchy, synth-heavy track echoes the 1980s alternative sounds of their youth as part of their enduring fandom across the artist's diverse musical eras.",
@@ -40,16 +48,20 @@
       "source_url": "https://en.wikipedia.org/wiki/Dreams_(Van_Halen_song)"
     },
     "enjoy the silence|depeche mode": {
-      "note": "Released in 1990 on the landmark album Violator, Depeche Mode's 'Enjoy the Silence' became one of the defining synth-pop tracks of the MTV era with its iconic melodic guitar hook and striking video. For this listener, the song captures the feeling of graduating high school alongside the enduring memory of those classic music television broadcasts.",
-      "source_url": "https://en.wikipedia.org/wiki/Enjoy_the_Silence"
+      "note": "Released as the second single from the album Violator, this track became Depeche Mode's best-selling single and won Best British Single at the Brit Awards 1991. The listener associates the song with the end of high school, remembering its great guitar riff over electronic beats and the classic MTV video featuring a king with a deck chair.",
+      "source_url": "https://en.wikipedia.org/wiki/Enjoy_the_Silence",
+      "album": "Violator",
+      "release_year": 1990
     },
     "eye of the tiger|survivor": {
       "note": "Written by Frankie Sullivan and Jim Peterik as the theme song for the 1982 film Rocky III and released that May as a single from Survivor's third album, Eye of the Tiger, the track combines hard rock with a post-disco beat and reached number one on the charts of many countries. This listener associates the arena rock track with early musical memories tied to movies, specifically recalling boxing scenes and a later film featuring Ivan Drago.",
       "source_url": "https://en.wikipedia.org/wiki/Eye_of_the_Tiger"
     },
     "footloose|kenny loggins": {
-      "note": "Released in January 1984 from the film of the same name, Kenny Loggins recorded the track Footloose, which spent three weeks at number one on the US Billboard Hot 100 and later appeared on the 1997 album Yesterday, Today, Tomorrow - The Greatest Hits Of Kenny Loggins. This listener fondly connects the song to childhood memories living on Prospect Street, capturing a small town feel and the joyful spirit of the movie's dance ending.",
-      "source_url": "https://en.wikipedia.org/wiki/Footloose_(song)"
+      "note": "Released in January 1984 as the first of two singles by Kenny Loggins from the film of the same name, \"Footloose\" spent three weeks at number one on the US Billboard Hot 100. This listener associates the track with childhood memories on prospect street, capturing a small town feel and the joy of the movie's dance ending.",
+      "source_url": "https://en.wikipedia.org/wiki/Footloose_(song)",
+      "album": "Footloose",
+      "release_year": 1984
     },
     "heartspark dollarsign|everclear": {
       "note": "Originally appearing on Everclear's 1995 major-label debut album Sparkle and Fade, \"Heartspark Dollarsign\" serves as a nostalgic anchor for the listener, recalling a bittersweet Boston Xmas rave concert that marked one of the final shows shared with a college roommate.",
@@ -111,6 +123,18 @@
       "note": "Released in 1993 as the lead single from New Order's album Republic, \"Regret\" became a major alternative radio hit and reached number 28 on the US Billboard Hot 100. This listener associates the track with being introduced to '80s British alternative music by a college roommate around 1993, blending those sounds with '90s rock and grunge.",
       "source_url": "https://en.wikipedia.org/wiki/Regret_(New_Order_song)"
     },
+    "rock of ages|def leppard": {
+      "note": "Rock of Ages is a song by Def Leppard from their 1983 album Pyromania. This listener connects the track to fond memories of their friend Peter and the historical resilience of the band's drummer.",
+      "source_url": "https://en.wikipedia.org/wiki/Rock_of_Ages_(Def_Leppard_song)",
+      "album": "Pyromania",
+      "release_year": 1983
+    },
+    "running from my shadow|mike shinoda (feat. grandson)": {
+      "note": "This track appears on the 2018 debut solo album Post Traumatic, which consists of songs about Mike Shinoda's feelings following the death of Chester Bennington, his Linkin Park bandmate. The listener fondly recalls hearing this album shortly after Chester's death as a meaningful expression of pain, cherishing the memory of seeing the artist play live in Raleigh with a spouse.",
+      "source_url": "https://en.wikipedia.org/wiki/Mike_Shinoda",
+      "album": "Post Traumatic",
+      "release_year": 2018
+    },
     "scenario|a tribe called quest": {
       "note": "Released in 1992 on A Tribe Called Quest's album The Low End Theory, \"Scenario\" featured an iconic breakout guest verse by Busta Rhymes over hard-hitting production. This track soundtracked the listener's dorm life and college years, remaining in heavy rotation alongside grunge despite changing musical trends.",
       "source_url": "https://en.wikipedia.org/wiki/Scenario_(A_Tribe_Called_Quest_song)"
@@ -164,8 +188,10 @@
       "source_url": "https://en.wikipedia.org/wiki/Tiny_Dancer"
     },
     "title and registration|death cab for cutie": {
-      "note": "Title and Registration is a melodic track by Death Cab for Cutie from their acclaimed album Transatlanticism. The listener fondly connects the witty lyric about the glove compartment to discovering old souvenirs, reminiscent of how they first encountered the band through The O.C.",
-      "source_url": "https://en.wikipedia.org/wiki/Transatlanticism"
+      "note": "Title and Registration is a song by indie rock band Death Cab for Cutie, appearing on their fourth studio album Transatlanticism. This listener connected with the track's witty opening observation about glove compartments and souvenirs, recalling their introduction to the band around 2003.",
+      "source_url": "https://en.wikipedia.org/wiki/Title_and_Registration",
+      "album": "Transatlanticism",
+      "release_year": 2003
     },
     "welcome to the terrordome|public enemy": {
       "note": "Public Enemy recorded \"Welcome to the Terrordome\" for their 1990 album Fear of a Black Planet, and released it as a single in January 1990 according to discographer Martin C. Strong. This high-energy track resonates with the listener's fond memories of playing it on the way to an amusement park and being introduced to rap music by their cousin.",
@@ -180,8 +206,10 @@
       "source_url": "https://en.wikipedia.org/wiki/Would?"
     },
     "zombie|the cranberries": {
-      "note": "Written by Dolores O'Riordan as a protest song about the Troubles, the track appears on Stars: The Best Of The Cranberries 1992-2002 and became known for its grunge-style distorted guitar and shouted vocals. For this listener in the spring of 1995, the track soundtracked a surreal graduation week memory when the listener's brother-in-law unexpectedly found himself in a mosh pit during a performance.",
-      "source_url": "https://en.wikipedia.org/wiki/Zombie_(The_Cranberries_song)"
+      "note": "Zombie is a protest song by the Irish alternative rock band the Cranberries from their second studio album, No Need to Argue, featuring grunge-style distorted guitar and shouted vocals. This listener connects the track to the spring of 1995 in Rhode Island during college graduation week, when a surreal mosh pit broke out with the listener's brother-in-law.",
+      "source_url": "https://en.wikipedia.org/wiki/Zombie_(The_Cranberries_song)",
+      "album": "Zombie",
+      "release_year": 1994
     }
   }
 }
