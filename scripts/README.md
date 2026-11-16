@@ -1,182 +1,175 @@
-# Create the Permanent Rotation playlist on your Mac
+# Make a Spotify playlist on your Mac
 
-This script uses a browser sign-in, not your Spotify Client Secret. It reads
-the live timeline and presents every track in the same order. The default
-name is read from the current article title, currently:
+Create a playlist from your Permanent Rotation timeline, from the tracks linked on your site. Browser sign-in uses your **Client ID, not your Client Secret**. Nothing is created until you type `confirm`.
 
-Permanent Rotation: an agentic project for the end of the year
+[Live sample site](https://todkap.github.io/permanent-rotation/index.html) · [Todd's public playlist](https://open.spotify.com/playlist/3Mx9a5o9ZQW5v6nqoKUllO) · [Project README](../README.md)
 
-The default visibility is PUBLIC, as requested. Both are shown before you
-must type `confirm`. The description includes the site link and a small
-recovery label. Nothing is created if you do not confirm.
+## On this page
 
-## What you need
+- [Requirements](#requirements)
+- [1. Check Python](#1-check-python)
+- [2. Add the callback once](#2-add-the-callback-once)
+- [3. Preview without changing Spotify](#3-preview-without-changing-spotify)
+- [4. Create once](#4-create-once)
+- [Safe retries](#safe-retries)
+- [Use your own fork](#use-your-own-fork)
+- [Troubleshooting](#troubleshooting)
+- [What has been checked](#what-has-been-checked)
 
-- Your Mac, an internet connection and a browser.
-- Spotify Premium on the app owner's account, the existing Spotify app,
-  and its Client ID. Do not enter the Client Secret anywhere in this script.
-- Python 3.8 or later, using its standard library. The script also uses
-  macOS's built-in `open` command. No pip packages, git, Homebrew or curl
-  setup is needed. Python 3 is NOT guaranteed on every stock macOS install.
+## Requirements
 
-## 1. Check Python first
+| You need | Notes |
+| --- | --- |
+| macOS, internet and a browser | The script uses macOS's built-in `open` command. |
+| Python 3.8+ | Not guaranteed to be installed on every Mac. Standard library only; no pip packages. |
+| A Spotify developer app and its Client ID | The app owner needs Premium. Development Mode permits up to five authorized users. Forkers need their own app. |
+
+No Homebrew, git or curl setup is required. Script version: **v4**.
+
+## 1. Check Python
 
 Press Command-Space, type Terminal, press Return. Copy this and press Return:
 
-    python3 --version
+```bash
+python3 --version
+```
 
-If it prints Python 3.8 or newer, continue. If macOS offers to install
-Command Line Tools, cancel for now unless you want that installation.
-If Python is missing, stop and ask for help installing Python from
-https://www.python.org/downloads/macos/ . Do not run more commands hoping
-it will fix itself. A Python.org install includes Install Certificates.command;
-if needed, run it as the installer explains. Never disable HTTPS checks.
+Continue if it prints Python 3.8 or newer. If macOS offers Command Line Tools, cancel unless you want that installation. If Python is missing, use [the Python.org Mac installer](https://www.python.org/downloads/macos/) or ask for help; do not keep running commands hoping they will fix it.
+
+> [!IMPORTANT]
+> If you install Python from python.org, run **Applications > Python 3.x > Install Certificates.command** before using HTTPS. Homebrew Python normally needs no separate certificate-install step. [Check your installation](#python-certificate-errors) if you are unsure. Never disable HTTPS verification.
 
 ## 2. Add the callback once
 
-1. Open https://developer.spotify.com/dashboard and select the app you
-   already use for this project.
-2. Open Settings and edit its Redirect URIs.
-3. Add this EXACT value, then save:
+1. Open the [Spotify developer dashboard](https://developer.spotify.com/dashboard) and select your app.
+2. Open Settings and edit Redirect URIs.
+3. Add this exact value, then save:
 
-       http://127.0.0.1:8888/callback
+   ```text
+   http://127.0.0.1:8888/callback
+   ```
 
-   This is your own Mac's loopback address. Do not replace 127.0.0.1 with
-   localhost. Do not paste an access token, refresh token or Client Secret.
-4. Copy the app's Client ID. It is an identifier, not the Client Secret.
-5. If Spotify rejects the account later with 403, check the app's User
-   Management allowlist and that its owner still has Premium. Development
-   Mode permits up to five authorized users. Forkers need their own app.
+4. Copy the app's Client ID. Do not copy its Client Secret.
 
-## 3. Run a preview with no Spotify changes
+The callback is your Mac's loopback address. Keep `127.0.0.1`, not `localhost`. Do not paste a token or secret into the callback setting.
 
-Unzip the delivered folder in Downloads. Find make-playlist.sh. In Terminal:
+## 3. Preview without changing Spotify
 
-- Type `chmod +x ` with a space after the x, drag make-playlist.sh from
-  Finder into Terminal, press Return.
-- Drag the same file into Terminal again, type a space and `--dry-run`,
-  then press Return.
+From a downloaded repository, open Terminal in the repository folder and run:
 
-It should list the songs in displayed chapter order. At the time of testing:
-49 Spotify tracks from 50 cards, with Deep Cover omitted. No substitutions.
-The source is live, so review the actual list you see. Dry run does not ask
-for credentials, save recovery state or contact Spotify.
+```bash
+bash scripts/make-playlist.sh --dry-run
+```
+
+For the standalone download, unzip it in Downloads. Type `bash ` (including the space), drag `make-playlist.sh` from Finder into Terminal, type a space and `--dry-run`, then press Return. Dragging the file fills in its path safely.
+
+The preview shows the exact name, visibility, description, artist/album labels and Spotify IDs. The default name is read from the current article title:
+
+> Permanent Rotation: an agentic project for the end of the year
+
+The default visibility is **PUBLIC**. Todd's sample has 49 tracks from 50 cards; Deep Cover is omitted because it has no Spotify match. No substitutions. The source is live, so review the list you see.
+
+> [!NOTE]
+> Dry-run does not ask for credentials, save recovery state or contact Spotify. A web-uploaded script may not have executable permission; using `bash` as above avoids that issue. Alternatively run `chmod +x scripts/make-playlist.sh` before using `./scripts/make-playlist.sh`.
 
 ## 4. Create once
 
-Drag make-playlist.sh into Terminal and press Return (without --dry-run).
-It shows the preview, asks for your Client ID, and opens Spotify in your
-browser. Sign into the account that should own the playlist and approve
-playlist permissions. Come back to Terminal.
+From the repository folder:
 
-Check the account, exact name, PUBLIC setting, description, recovery label
-and track list. Type the single word `confirm` and press Return only if
-all are right. Any other answer cancels. On success it prints a Spotify URL
-and verifies the exact track count/order and ownership. Open that URL to
-check playback before putting it in the article.
+```bash
+bash scripts/make-playlist.sh
+```
 
-OAuth credentials stay in process memory. No Client Secret is needed.
-No refresh token is kept. The short-lived access token is not printed or
-written to disk. An optional SPOTIFY_CLIENT_ID environment variable can
-supply the non-secret Client ID; you can simply use the prompt instead.
-Do not run with bash -x, a debugger or terminal session recording.
+For the standalone download, repeat the drag-and-drop command without `--dry-run`.
 
-## Retry safely
+1. Review the preview and enter your Client ID at the Terminal prompt.
+2. Sign into the intended Spotify account in the browser and approve playlist permissions. Return to Terminal.
+3. Check the account, name, PUBLIC/private setting, description, recovery label and track list.
+4. Type the single word `confirm` only if all are right. Any other answer cancels.
 
-Run the SAME script again. You will sign in again; no login is saved.
-The script uses this local non-secret recovery file:
+The script prints the playlist URL after checking ownership and the track count and IDs. Open the link to check playback before sharing it. Availability can vary by region/account even when the IDs match.
 
-    ~/Library/Application Support/Permanent Rotation/playlist-state.json
+### Credentials and local state
 
-It contains the approved manifest, playlist ID/URL, owner ID and progress,
-not tokens. Keep it even after success. Completed reruns verify the same
-playlist, not create another. Edits made in Spotify after completion are
-not overwritten. This is not an ongoing sync tool.
+| Stays in memory only | Saved locally, without secrets |
+| --- | --- |
+| PKCE verifier and short-lived access token | Approved manifest, playlist ID/URL, owner ID and progress |
+| No Client Secret needed; no refresh token kept | Non-secret recovery label appended to the playlist description |
 
-Track writing uses an exact-set operation on ONLY the newly created,
-recorded playlist. Repeating that operation does not append duplicates.
-Unexpected contents stop rather than overwrite. If creation's response is
-lost, the state is marked ambiguous BEFORE sending; the script refuses to
-create another. Inspect Spotify for the printed recovery label and ask for
-help recovering the playlist ID. Do not delete the state file to retry.
-There is no safe claim that any network program can atomically create a
-playlist and save a local receipt; stopping is the safe fallback.
+The optional `SPOTIFY_CLIENT_ID` environment variable can supply the non-secret Client ID; the prompt is simpler. Never run with `bash -x`, a debugger or terminal session recording.
 
-A crash may leave playlist-state.lock in the same folder. First ensure no
-copy of the script is still running. Remove only that empty .lock folder,
-never playlist-state.json, then run again. If unsure, ask for help.
+## Safe retries
 
-Spotify may return 429, 403, unavailable tracks or an expired authorization.
-The script stops, keeps state and prints a short explanation without token
-contents. Do not keep hammering Run. Wait if rate limited. Playback can
-vary by region/account even when count/order verification succeeds.
+Run the same script again. You will sign in again because no login is saved. Keep this non-secret recovery file, even after success:
 
-## For a fork
+```text
+~/Library/Application Support/Permanent Rotation/playlist-state.json
+```
 
-Use your own Spotify app and callback configuration. Pass your own generated
-site and name; do not create a copy of Todd's playlist accidentally:
+| Situation | What the script does |
+| --- | --- |
+| Completed run | Verifies the same playlist, not a new one. Later Spotify edits are not overwritten. |
+| Interrupted track write | Uses an exact-set operation on the recorded new playlist, so retry cannot append duplicates. Unexpected contents stop the run. |
+| Lost creation response | Marks the attempt before sending and refuses another create. Check Spotify for the printed `[pr-...]` label and ask for help recovering the playlist ID. |
+| Crash leaves `playlist-state.lock` | Confirm no copy is running, then remove only the empty `.lock` folder. Keep `playlist-state.json`. Ask for help if unsure. |
 
-    ./make-playlist.sh --site https://YOURNAME.github.io/YOURREPO/index.html --name "Your playlist name" --private
+> [!WARNING]
+> Do not delete the state file to retry. A remote create and a local receipt cannot be saved atomically; stopping on an ambiguous result is the safe fallback. This is a one-time creation tool, not ongoing sync.
 
-Omit --private only when you want PUBLIC visibility. The same preview and
-confirmation apply. The script reads the generated .body card structure,
-not arbitrary playlists. Up to 100 tracks; no duplicate IDs. A state file
-from another site is not overwritten. Keep each completed state intact.
+## Use your own fork
 
-## Verified boundaries
+Use your own Spotify app, generated site and playlist name:
 
-Dry run and mocked API/retry tests were run without Spotify credentials.
-Actual user authorization, endpoint permissions and live playlist creation
-remain to be tested by the owner. The script is not the Go `songs playlist`
-command; that command is still not implemented.
+```bash
+bash scripts/make-playlist.sh \
+  --site https://YOURNAME.github.io/YOURREPO/index.html \
+  --name "Your playlist name" \
+  --private
+```
 
-## Version 2: safe network diagnostics
+Omit `--private` only if you want PUBLIC visibility. Preview and confirmation still apply. The script reads generated `.body` cards, not arbitrary playlists. It supports up to 100 tracks with no duplicate IDs. A state file from another site is never overwritten; keep each completed receipt intact.
 
-If dry run stops, use:
+## Troubleshooting
 
-    ./make-playlist.sh --dry-run --debug
+### Python certificate errors
 
-It prints Python/SSL versions, the current public-source step, HTTP status
-and exception class. It never prints request headers, tokens or credentials.
-For Python.org certificate errors, run Applications > Python 3.x >
-Install Certificates.command and retry. Never disable HTTPS verification.
+For `SSL: CERTIFICATE_VERIFY_FAILED`, check which Python is running:
 
-## Version 3: Terminal prompt fix
+```bash
+python3 -c "import sys; print(sys.executable)"
+```
 
-Version 3 opens separate read/write handles for Terminal prompts, avoiding
-non-seekable-stream errors on macOS Python. Verify your extracted copy with
-`./make-playlist.sh --version`; it must print v3. Then use
-`./make-playlist.sh --debug` for the real run. Debug never prints tokens.
-Dry-run does not save state. Keep any existing recovery file intact.
+| Installation/path | What to do |
+| --- | --- |
+| Python.org: usually `/Library/Frameworks/Python.framework/` | Run **Applications > Python 3.x > Install Certificates.command**, let it finish, then retry. |
+| Homebrew: usually `/opt/homebrew/` on Apple Silicon or `/usr/local/Cellar/` on Intel | No separate certificate command is normally needed. Persistent errors need a CA/proxy/VPN check. |
+| Apple/Xcode or another path | Do not assume either fix applies. Share the path and safe debug output, never credentials. |
 
-## Python HTTPS troubleshooting (Python.org vs Homebrew)
+`which python3` can show a symlink rather than the actual installation. A working Python.org installation is fine after its certificate step; there is no need to install Homebrew just for this script.
 
-If you see `SSL: CERTIFICATE_VERIFY_FAILED`, first check which Python
-is running:
+> [!CAUTION]
+> Never disable certificate verification or use an unverified-SSL workaround.
 
-    python3 -c "import sys; print(sys.executable)"
+### Safe debug output
 
-- Python.org installer: the path usually contains
-  `/Library/Frameworks/Python.framework/`. Open Applications, your Python
-  3.x folder, then double-click **Install Certificates.command**. Let it
-  finish, then rerun `./make-playlist.sh --dry-run --debug`.
-- Homebrew: the resolved path usually begins `/opt/homebrew/` (Apple
-  Silicon) or `/usr/local/Cellar/` (Intel). A separate Install
-  Certificates.command step is normally not needed. If certificate errors
-  persist, ask for help checking Homebrew's CA setup or your network's
-  proxy/VPN, rather than switching off certificate checks.
-- An Apple/Xcode or other path: do not assume either fix applies. Share
-  the path and safe `--dry-run --debug` output, never credentials.
+```bash
+bash scripts/make-playlist.sh --version
+bash scripts/make-playlist.sh --dry-run --debug
+```
 
-`which python3` alone can show a symlink rather than the actual install.
-You do not need to install Homebrew just to run this script. A working
-Python.org installation is fine after the certificate setup step.
-Never use an unverified-SSL workaround.
+The first command should print v4. Debug prints Python/SSL versions, the public-source step, HTTP status and exception class, not headers, tokens or credentials. For the real run, use `--debug` without `--dry-run`. v4 includes the fix for non-seekable Terminal prompt errors on some Mac Python versions.
 
-Current script version: v4 (`./make-playlist.sh --version`).
+### Spotify errors
 
-### GitHub web-upload permission note
+| Error | Next step |
+| --- | --- |
+| 403 | Check the app's user allowlist, the owner's Premium status and granted permissions. |
+| 429 | Stop and wait before retrying. Do not keep hammering Run. |
+| Expired authorization | Rerun and sign in again, keeping the receipt. |
+| Port 8888 busy | Close another copy/local server using that port, then rerun. |
 
-A web-uploaded script may not have its executable bit set. Either follow
-the chmod step above or run `bash scripts/make-playlist.sh --dry-run` from
-the repository root. This does not change the Python or OAuth requirements.
+## What has been checked
+
+The launcher dry-run, mocked API/retry tests and Terminal prompt were tested without credentials during development. Todd then used the script to create the linked public 49-song playlist. Public checks confirm its title/count and the first 25 exposed track IDs; regional playback and the remaining IDs require owner-side read-back.
+
+The script is separate from the Go `songs playlist` subcommand, which remains an unimplemented placeholder.

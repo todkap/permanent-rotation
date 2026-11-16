@@ -1,7 +1,5 @@
 # Permanent Rotation: an agentic project for the end of the year
 
-[Listen to the public Spotify playlist](https://open.spotify.com/playlist/3Mx9a5o9ZQW5v6nqoKUllO) - 49 songs in life-chapter order. Deep Cover is omitted because it has no Spotify match.
-
 ![The Boston skyline from the Longfellow Bridge at golden hour](../assets/article-header-boston.jpg)
 
 *Photo: [King of Hearts](https://commons.wikimedia.org/wiki/File:Boston_skyline_from_Longfellow_Bridge_September_2017_panorama_2.jpg), CC BY-SA 4.0, via Wikimedia Commons*
@@ -25,7 +23,7 @@ A few decisions shaped everything else:
 - Your words are the source of truth. The APIs only add labeled context around them. My memory text is published verbatim, and anything the machine adds sits in its own labeled block.
 - The CSV is the thing you edit, not a database or a config format. It opens in Sheets, and the bar for forking stays low.
 - The Action commits the enriched data only when something changed. The diff is your audit trail, and the page footer shows "data as of".
-- There is no ranking. The order follows the chapters of your life, which is the whole point.
+- There is no ranking. The site groups songs by the chapters of your life.
 
 The final round made the site itself more visual. Every card now carries its album cover from Spotify, there is a stats page (50 songs across five eras, 1971 to 2020, 25 seen live), and the titles are the official ones. That last one sounds small, but it matters to anyone who knows the songs: it is The Freshmen, not Freshman, and There Is a Light That Never Goes Out.
 
@@ -85,6 +83,12 @@ Part of the fun was putting my own taste on the internet, every song with its st
 4. Run the Action.
 
 The README walks through getting each key step by step.
+
+### Listen to it
+
+[The playlist is on Spotify](https://open.spotify.com/playlist/3Mx9a5o9ZQW5v6nqoKUllO), public, with 49 songs. Deep Cover never matched a Spotify track, so it stays on the site with its note but is not in the playlist.
+
+![Todd Kaplinger's public Permanent Rotation playlist on Spotify, showing 49 songs and the first tracks: Eye of the Tiger, Rock of Ages and Footloose.](../assets/spotify-playlist-public.png)
 
 ### Wrapping up the year
 

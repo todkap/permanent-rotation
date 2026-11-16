@@ -1,19 +1,38 @@
 # permanent-rotation
 
-Make your own songs page and playlist from a spreadsheet of the songs that stayed with you.
+Turn a spreadsheet of songs that stayed with you into a personal music timeline. A small Go tool and GitHub Action add labeled music data; an optional local Mac script creates the Spotify playlist. Your words stay the source of truth.
 
-A small Go tool plus a GitHub Action. It reads your songs CSV, enriches each song with public music data (Spotify links, Last.fm listeners and play counts), and builds a static site. An optional local macOS script creates a Spotify playlist after your browser sign-in and explicit confirmation. Your words are the source of truth; the APIs only add labeled context.
+[Live sample site](https://todkap.github.io/permanent-rotation/index.html) · [Public Spotify playlist](https://open.spotify.com/playlist/3Mx9a5o9ZQW5v6nqoKUllO) · [Todd's sample data](examples/todd/) · [Local playlist guide](scripts/README.md)
 
-**Sample:** [Todd's list](examples/todd/) - an example, made with this tool. Live site: https://todkap.github.io/permanent-rotation
+The sample has 50 songs and a 49-track playlist. Deep Cover is omitted from Spotify because it has no match.
 
-[Listen to Todd's public Spotify playlist](https://open.spotify.com/playlist/3Mx9a5o9ZQW5v6nqoKUllO) - 49 songs in displayed chapter order. Deep Cover is omitted because it has no Spotify match.
+## On this page
+
+- [Make your own](#make-your-own)
+- [Getting your keys](#getting-your-keys)
+- [How it works](#how-it-works)
+- [Known limits](#known-limits)
+- [Requirements](#requirements)
+- [Local Python certificate help](#local-python-certificate-help)
+- [License](#license)
+
+> [!IMPORTANT]
+> Your `memory` text is rendered on the site. The `angle` field is not rendered, but it is still readable in a public CSV/repository. Keep private writing and credentials out of commits.
 
 ## Make your own
 
-1. **Fork this repo.** Work in your fork, not the sample owner's repository. A public fork makes your CSV and repository files readable by anyone. Do not put private memories or credentials in files you plan to commit.
-2. **Replace `songs.csv` with your list.** Use `songs.template.csv` for the six columns: `song, artist, era, tags, memory, angle`. Only `song` and `artist` are required. `era` accepts text such as `College Freshman Year (~1991)`; the year is when the song entered your life. `memory` is your own writing and is rendered verbatim. `angle` is a drafting aid not rendered on the site, but remains visible in a public CSV/repo.
-3. **Pick at least 25 songs.** The site has no fixed maximum. The template's three rows can be tested locally with `--min 3`; the supplied Action uses the 25-song minimum. The optional one-shot playlist script supports at most 100 tracks.
-4. **Point the Action at your files.** Edit the `env:` section of `.github/workflows/build.yml`:
+### 1. Fork this repo
+
+Work in your fork, not the sample owner's repository. A public fork makes your CSV and repository files readable by anyone. Do not put private memories or credentials in files you plan to commit.
+### 2. Replace `songs.csv` with your list
+
+Use `songs.template.csv` for the six columns: `song, artist, era, tags, memory, angle`. Only `song` and `artist` are required. `era` accepts text such as `College Freshman Year (~1991)`; the year is when the song entered your life. `memory` is your own writing and is rendered verbatim. `angle` is a drafting aid not rendered on the site, but remains visible in a public CSV/repo.
+### 3. Pick at least 25 songs
+
+The site has no fixed maximum. The template's three rows can be tested locally with `--min 3`; the supplied Action uses the 25-song minimum. The optional one-shot playlist script supports at most 100 tracks.
+### 4. Point the Action at your files
+
+Edit the `env:` section of `.github/workflows/build.yml`:
 
    ```yaml
    CSV_PATH: songs.csv
@@ -24,12 +43,24 @@ A small Go tool plus a GitHub Action. It reads your songs CSV, enriches each son
    ```
 
    Set all three data paths, including `CONTEXT_PATH`, so your site does not reuse Todd's background notes. Start your own `data/context.json` as `{"notes":{}}` if you do not have notes yet. Start your own enriched output rather than copying Todd's song records. Replace the artwork in `assets/` (`og.png`, `favicon.png`, `apple-touch-icon.png`) with your own; assets are copied into the rendered site.
-5. **Set your chapter order.** Add `data/chapter_order.txt`, beside your configured `OUT_PATH`, using [the sample](examples/todd/chapter_order.txt) as a format guide. One chapter per line, matching the CSV era text before `(~year)`. `## Era name` starts a larger era heading. Unlisted chapters use the fallback order; omit the file if you want the fallback throughout. It is read relative to the enriched JSON, not from the repo root.
-6. **Personalize the generated pages.** In `internal/site/site.go`, replace the two footer author links/names (Timeline and Stats), and review the hero copy and navigation. Keep project credit if you like, but do not present Todd as the author of your memories. Changing generated HTML directly will be undone on the next build. Todd's playlist navigation link is shown only for Todd's published `SITE_BASE`; add your own link after creating your playlist.
-7. **Enable Actions and Pages in the fork.** Open the Actions tab and enable workflows if GitHub asks. Under Settings > Actions > General, allow the workflow/actions needed by this repo if they are restricted. Under Settings > Pages > Build and deployment, choose **GitHub Actions** as the source, not a branch. The supplied workflow requests contents, Pages and OIDC permissions; organization policy can still restrict them. See [GitHub's Pages instructions](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
-8. **Add your own keys** as repository secrets (below). Secrets do not transfer with a fork. The local playlist script uses your Client ID only; do not give it your Client Secret.
-9. **Run and inspect the build.** Actions > build > Run workflow, with notes unchecked for the first run. The Action enriches, commits changed data and deploys the site automatically. Open the Pages deployment URL, verify your songs/art/chapters, then optionally run again with notes enabled. There is no built-in pause for human note approval before publishing. To review before publication, generate notes locally or add a branch/PR review gate to your own workflow first.
-10. **Optional: create your playlist locally.** Follow [scripts/README.md](scripts/README.md), using `--site` with your own live index URL and `--name` with your own title. The Mac script opens Spotify authorization, shows the intended account/name/visibility/tracks and requires typed `confirm`. It defaults to PUBLIC unless you use `--private`. It is not the unimplemented Go `songs playlist` command.
+### 5. Set your chapter order
+
+Add `data/chapter_order.txt`, beside your configured `OUT_PATH`, using [the sample](examples/todd/chapter_order.txt) as a format guide. One chapter per line, matching the CSV era text before `(~year)`. `## Era name` starts a larger era heading. Unlisted chapters use the fallback order; omit the file if you want the fallback throughout. It is read relative to the enriched JSON, not from the repo root.
+### 6. Personalize the generated pages
+
+In `internal/site/site.go`, replace the two footer author links/names (Timeline and Stats), and review the hero copy and navigation. Keep project credit if you like, but do not present Todd as the author of your memories. Changing generated HTML directly will be undone on the next build. Todd's playlist navigation link is shown only for Todd's published `SITE_BASE`; add your own link after creating your playlist.
+### 7. Enable Actions and Pages in the fork
+
+Open the Actions tab and enable workflows if GitHub asks. Under Settings > Actions > General, allow the workflow/actions needed by this repo if they are restricted. Under Settings > Pages > Build and deployment, choose **GitHub Actions** as the source, not a branch. The supplied workflow requests contents, Pages and OIDC permissions; organization policy can still restrict them. See [GitHub's Pages instructions](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
+### 8. Add your own keys
+
+as repository secrets (below). Secrets do not transfer with a fork. The local playlist script uses your Client ID only; do not give it your Client Secret.
+### 9. Run and inspect the build
+
+Actions > build > Run workflow, with notes unchecked for the first run. The Action enriches, commits changed data and deploys the site automatically. Open the Pages deployment URL, verify your songs/art/chapters, then optionally run again with notes enabled. There is no built-in pause for human note approval before publishing. To review before publication, generate notes locally or add a branch/PR review gate to your own workflow first.
+### 10. Optional: create your playlist locally
+
+Follow [scripts/README.md](scripts/README.md), using `--site` with your own live index URL and `--name` with your own title. The Mac script opens Spotify authorization, shows the intended account/name/visibility/tracks and requires typed `confirm`. It defaults to PUBLIC unless you use `--private`. It is not the unimplemented Go `songs playlist` command.
 
 After editing only chapter order, notes JSON, artwork or documentation, run the workflow manually: those paths are not all included in its automatic push triggers. Inspect generated diffs and the published pages; a green workflow is not a fact-check.
 
@@ -77,17 +108,27 @@ Docs: https://aistudio.google.com/docs/api-key
 
 ## How it works
 
-```
+```bash
 songs enrich   # match songs.csv against Spotify + Last.fm, write enriched.json
 songs site     # render the static site from enriched.json
 songs notes    # opt-in Gemini background notes (review the output yourself)
 ```
 
-- **Existing matches are cached, then checked.** With Spotify credentials, every automatic pin is searched again each build for an exact-title/artist candidate that is earlier or the same year in plainer packaging. A better candidate can replace a pin; release changes are recorded for note refresh. Manual pins/overrides are retained, not automatically rematched. New or unmatched rows are searched too. Inspect logs and generated diffs: fuzzy matches are reported, not paused for interactive approval. A song without a match still renders without a Spotify link. `data/overrides.csv` is an explicit manual escape hatch, not a required editing step.
-- **Metrics are fresh every build.** With a Last.fm key, listener/play counts are requested on each run, and the canon / middle / deep-cut tiers are recomputed from them (top third vs bottom third of your list, so the split scales with any song count). The Action commits `enriched.json` only when it changed; the diff is your audit trail, and the page footer shows "data as of".
-- **Rendering needs no API keys.** `songs site` can render committed enriched JSON without credentials. The Action still runs enrichment, but API calls require their corresponding keys; it does not magically replace Todd's sample with your own matched data. Configure your paths and inspect the output before publishing.
-- **Background notes are opt-in and labeled.** Notes are paced at one request every 5 seconds by default (the free tier allows 15/minute, and 429 responses with a `Retry-After` header are honored). On a paid tier, speed it up with `--pace 1`. Run the Action manually with "Regenerate Gemini background notes" checked to (re)write `context.json` via Gemini. The supplied Action commits and deploys the resulting notes in the same run; there is no human approval gate. Inspect the generated diff and facts yourself, or change your workflow to require review before deployment. Notes appear in their own labeled block, never mixed into your words. The validator requires a source URL, but a link does not by itself prove that every claim is correct. Your memory text is included in the prompt by default (`-include-memory=false` opts out).
-- **Playlist creation is optional and local, not in the Action.** [scripts/make-playlist.sh](scripts/make-playlist.sh) is a self-contained macOS bash launcher with embedded Python 3. It reads your generated site in displayed chapter order, shows a preview, signs in with PKCE and requires `confirm` before creating. It keeps only non-secret recovery state, not tokens. An ambiguous create response stops rather than risking a second playlist. See [setup, privacy and retry instructions](scripts/README.md). The Go `songs playlist` subcommand remains an unimplemented placeholder; do not use it.
+### Existing matches are cached, then checked
+
+With Spotify credentials, every automatic pin is searched again each build for an exact-title/artist candidate that is earlier or the same year in plainer packaging. A better candidate can replace a pin; release changes are recorded for note refresh. Manual pins/overrides are retained, not automatically rematched. New or unmatched rows are searched too. Inspect logs and generated diffs: fuzzy matches are reported, not paused for interactive approval. A song without a match still renders without a Spotify link. `data/overrides.csv` is an explicit manual escape hatch, not a required editing step.
+### Metrics are fresh every build
+
+With a Last.fm key, listener/play counts are requested on each run, and the canon / middle / deep-cut tiers are recomputed from them (top third vs bottom third of your list, so the split scales with any song count). The Action commits `enriched.json` only when it changed; the diff is your audit trail, and the page footer shows "data as of".
+### Rendering needs no API keys
+
+`songs site` can render committed enriched JSON without credentials. The Action still runs enrichment, but API calls require their corresponding keys; it does not magically replace Todd's sample with your own matched data. Configure your paths and inspect the output before publishing.
+### Background notes are opt-in and labeled
+
+Notes are paced at one request every 5 seconds by default (the free tier allows 15/minute, and 429 responses with a `Retry-After` header are honored). On a paid tier, speed it up with `--pace 1`. Run the Action manually with "Regenerate Gemini background notes" checked to (re)write `context.json` via Gemini. The supplied Action commits and deploys the resulting notes in the same run; there is no human approval gate. Inspect the generated diff and facts yourself, or change your workflow to require review before deployment. Notes appear in their own labeled block, never mixed into your words. The validator requires a source URL, but a link does not by itself prove that every claim is correct. Your memory text is included in the prompt by default (`-include-memory=false` opts out).
+### Playlist creation is optional and local, not in the Action
+
+[scripts/make-playlist.sh](scripts/make-playlist.sh) is a self-contained macOS bash launcher with embedded Python 3. It reads your generated site from the tracks linked on your site, shows a preview, signs in with PKCE and requires `confirm` before creating. It keeps only non-secret recovery state, not tokens. An ambiguous create response stops rather than risking a second playlist. See [setup, privacy and retry instructions](scripts/README.md). The Go `songs playlist` subcommand remains an unimplemented placeholder; do not use it.
 
 ## Known limits
 
@@ -100,12 +141,26 @@ songs notes    # opt-in Gemini background notes (review the output yourself)
 
 Go 1.22+ for local Go commands. No Go dependencies beyond the standard library. The optional local playlist script requires macOS and Python 3.8+ (not guaranteed to be preinstalled); it needs no pip packages.
 
+
+## Local Python certificate help
+
+> [!IMPORTANT]
+> **Python.org installation:** if you see `CERTIFICATE_VERIFY_FAILED`, run **Applications > Python 3.x > Install Certificates.command** and retry. **Homebrew Python:** no separate certificate step is normally needed. Never disable HTTPS checks.
+
+Check the active installation:
+
+```bash
+python3 -c "import sys; print(sys.executable)"
+```
+
+| Python path usually contains | Installation |
+| --- | --- |
+| `/Library/Frameworks/Python.framework/` | Python.org installer |
+| `/opt/homebrew/` or `/usr/local/Cellar/` | Homebrew |
+| Another path | Check before assuming either fix applies |
+
+See [the playlist troubleshooting guide](scripts/README.md#python-certificate-errors) for persistent errors and safe debug output. Todd's sample playlist link appears on the generated site only for Todd's `SITE_BASE`; forks should add their own link after creation.
+
 ## License
 
 MIT. Your list, your words, your data.
-
-### Local playlist: Python certificate help
-
-If Python was installed from python.org and reports `CERTIFICATE_VERIFY_FAILED`, run **Applications > Python 3.x > Install Certificates.command** and retry. Homebrew Python normally needs no separate certificate-install step. Check the active install with `python3 -c "import sys; print(sys.executable)"`: Python.org paths usually contain `/Library/Frameworks/Python.framework/`; Homebrew paths usually start `/opt/homebrew/` or `/usr/local/Cellar/`. For other paths or persistent errors, see [the troubleshooting guide](scripts/README.md#python-https-troubleshooting-pythonorg-vs-homebrew). Never disable HTTPS checks.
-
-The sample site shows Todd's Spotify link only when built with Todd's SITE_BASE. Forks do not inherit that playlist link on their own published URL; add your own once created.
