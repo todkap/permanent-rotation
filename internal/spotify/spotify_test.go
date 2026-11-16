@@ -1,6 +1,7 @@
 package spotify
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -149,5 +150,187 @@ func TestLooksLikeCompilation(t *testing.T) {
 		if LooksLikeCompilation(a) {
 			t.Fatalf("false positive: %q", a)
 		}
+	}
+}
+
+func TestTargetedSearchQueries(t *testing.T) {
+	// The compilation rescue depends on asking Spotify for the original
+	// album or year directly; assert the query fields are formed right.
+	var gotQ string
+	c := &Client{token: "test", tokenExp: time.Now().Add(time.Hour), hc: &http.Client{Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+		gotQ = r.URL.Query().Get("q")
+		return &http.Response{StatusCode: 200, Status: "200 OK", Body: io.NopCloser(strings.NewReader(`{"tracks":{"items":[]}}`)), Header: make(http.Header)}, nil
+	})}}
+	if _, err := c.SearchAlbum("Zombie", "The Cranberries", "No Need To Argue"); err != nil {
+		t.Fatal(err)
+	}
+	if gotQ != "track:Zombie artist:The Cranberries album:No Need To Argue" {
+		t.Fatalf("album query = %q", gotQ)
+	}
+	if _, err := c.SearchYear("Zombie", "The Cranberries", 1994); err != nil {
+		t.Fatal(err)
+	}
+	if gotQ != "track:Zombie artist:The Cranberries year:1994" {
+		t.Fatalf("year query = %q", gotQ)
+	}
+	if _, err := c.Search("Zombie", "The Cranberries"); err != nil {
+		t.Fatal(err)
+	}
+	if gotQ != "track:Zombie artist:The Cranberries" {
+		t.Fatalf("plain query = %q", gotQ)
+	}
+}
+
+func TestSearchParsesAlbumTypeAndCompilationFlag(t *testing.T) {
+	c := fixtureClient(`{"tracks":{"items":[{"id":"x","name":"A","artists":[{"name":"B"}],"album":{"name":"Gold","album_type":"compilation","release_date":"2008","images":[]}},{"id":"y","name":"A","artists":[{"name":"B"}],"album":{"name":"Studio","album_type":"album","release_date":"1994","images":[]}}]}}`)
+	got, err := c.Search("A", "B")
+	if err != nil || len(got) != 2 {
+		t.Fatalf("%+v %v", got, err)
+	}
+	if got[0].AlbumType != "compilation" || !got[0].IsVarious {
+		t.Fatalf("compilation not flagged: %+v", got[0])
+	}
+	if got[1].AlbumType != "album" || got[1].IsVarious {
+		t.Fatalf("album misflagged: %+v", got[1])
+	}
+}
+
+func TestPickBestMatchesRemasteredSuffix(t *testing.T) {
+	// A remastered pressing of the same recording still exact-matches the
+	// catalog title, so the original album can win.
+	tracks := []Track{
+		{ID: "rem", Name: "Zombie - 2011 Remaster", Artist: "The Cranberries", Album: "No Need To Argue", AlbumType: "album", ReleaseDate: "1994-10-03"},
+	}
+	best, exact := PickBest(tracks, "Zombie", "The Cranberries")
+	if !exact || best.ID != "rem" {
+		t.Fatalf("want remaster exact match, got %+v exact=%v", best, exact)
+	}
+}
+
+func TestPickBestKeepsVersionsDistinct(t *testing.T) {
+	// Live, acoustic, remix and re-recorded versions are different
+	// recordings: never silently pin them as the original.
+	for _, name := range []string{"Zombie - Live", "Zombie (Acoustic Version)", "Zombie (Remix)", "Zombie (Re-Recorded)"} {
+		tracks := []Track{{ID: "v", Name: name, Artist: "The Cranberries", Album: "Some Live Album", AlbumType: "album", ReleaseDate: "1994"}}
+		if _, exact := PickBest(tracks, "Zombie", "The Cranberries"); exact {
+			t.Fatalf("%q must not exact-match the studio title", name)
+		}
+	}
+}
+
+func TestNormalizeTitle(t *testing.T) {
+	cases := map[string]string{
+		"Zombie - 2011 Remaster":            "Zombie",
+		"Zombie - Remastered":               "Zombie",
+		"Zombie (Remastered)":               "Zombie",
+		"Zombie - Radio Edit":               "Zombie",
+		"Zombie (Single Version)":           "Zombie",
+		"Zombie - Mono":                     "Zombie",
+		"Zombie":                            "Zombie",
+		"Zombie - Live":                     "Zombie - Live",
+		"Zombie (Acoustic Version)":         "Zombie (Acoustic Version)",
+		"Version 2.0":                       "Version 2.0",
+		"Enjoy the Silence":                 "Enjoy the Silence",
+		"Enjoy the Silence - 2006 Remaster": "Enjoy the Silence",
+	}
+	for in, want := range cases {
+		if got := normalizeTitle(in); got != want {
+			t.Fatalf("normalizeTitle(%q) = %q, want %q", in, got, want)
+		}
+	}
+}
+
+func TestStrictlyBetter(t *testing.T) {
+	pin := Track{Album: "Violator (Deluxe)"}
+	if !StrictlyBetter(Track{Album: "Earlier Album", ReleaseDate: "1989"}, "Violator", 1990) {
+		t.Fatal("earlier year must win")
+	}
+	if StrictlyBetter(Track{Album: "Later Album", ReleaseDate: "1991"}, "Violator", 1990) {
+		t.Fatal("later year must lose")
+	}
+	if !StrictlyBetter(Track{Album: "Violator", ReleaseDate: "1990"}, pin.Album, 1990) {
+		t.Fatal("same year, plainer packaging must win")
+	}
+	if StrictlyBetter(Track{Album: "Violator (Deluxe)", ReleaseDate: "1990"}, "Violator", 1990) {
+		t.Fatal("same year, worse packaging must lose")
+	}
+	if StrictlyBetter(Track{Album: "No Date"}, "Violator", 1990) {
+		t.Fatal("unknown date must never win")
+	}
+}
+
+// offsetClient answers search requests page by page.
+func offsetClient(pages map[int]string, calls *[]int) *Client {
+	return &Client{token: "test", tokenExp: time.Now().Add(time.Hour), hc: &http.Client{Transport: roundTripFunc(func(r *http.Request) (*http.Response, error) {
+		off := 0
+		fmt.Sscanf(r.URL.Query().Get("offset"), "%d", &off)
+		*calls = append(*calls, off)
+		body, ok := pages[off]
+		if !ok {
+			return &http.Response{StatusCode: 500, Status: "500", Body: io.NopCloser(strings.NewReader("boom")), Header: make(http.Header)}, nil
+		}
+		return &http.Response{StatusCode: 200, Status: "200 OK", Body: io.NopCloser(strings.NewReader(body)), Header: make(http.Header)}, nil
+	})}}
+}
+
+func item(id, album, date string) string {
+	return fmt.Sprintf(`{"id":%q,"name":"Zombie","artists":[{"name":"The Cranberries"}],"album":{"name":%q,"album_type":"album","release_date":%q,"images":[]}}`, id, album, date)
+}
+
+func TestSearchAlbumPaginatesAndDedupes(t *testing.T) {
+	// The original pressing sits on page two; page one repeats one ID.
+	var page1 []string
+	for i := 0; i < 9; i++ {
+		page1 = append(page1, item(fmt.Sprintf("c%d", i), "Gold", "2008"))
+	}
+	page1 = append(page1, item("dup", "Stars", "2002"))
+	pages := map[int]string{
+		0:  `{"tracks":{"items":[` + strings.Join(page1, ",") + `]}}`,
+		10: `{"tracks":{"items":[` + item("dup", "Stars", "2002") + `,` + item("nnta", "No Need To Argue", "1994-10-03") + `]}}`,
+	}
+	var calls []int
+	c := offsetClient(pages, &calls)
+	got, err := c.SearchAlbum("Zombie", "The Cranberries", "No Need To Argue")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(got) != 11 {
+		t.Fatalf("want 11 deduped tracks, got %d", len(got))
+	}
+	best, exact := PickBest(got, "Zombie", "The Cranberries")
+	if !exact || best.ID != "nnta" {
+		t.Fatalf("original on page two must win, got %+v", best)
+	}
+	if len(calls) != 2 {
+		t.Fatalf("want 2 page requests, got %v", calls)
+	}
+}
+
+func TestSearchPaginatedStopsOnShortPage(t *testing.T) {
+	pages := map[int]string{
+		0: `{"tracks":{"items":[` + item("a", "Album", "1994") + `]}}`,
+	}
+	var calls []int
+	c := offsetClient(pages, &calls)
+	got, err := c.SearchYear("Zombie", "The Cranberries", 1994)
+	if err != nil || len(got) != 1 {
+		t.Fatalf("%+v %v", got, err)
+	}
+	if len(calls) != 1 {
+		t.Fatalf("short page must end the scan, got %v", calls)
+	}
+}
+
+func TestSearchPaginatedPageErrorKeepsResults(t *testing.T) {
+	var page1 []string
+	for i := 0; i < 10; i++ {
+		page1 = append(page1, item(fmt.Sprintf("c%d", i), "Gold", "2008"))
+	}
+	pages := map[int]string{0: `{"tracks":{"items":[` + strings.Join(page1, ",") + `]}}`} // offset 10 errors
+	var calls []int
+	c := offsetClient(pages, &calls)
+	got, err := c.SearchAlbum("Zombie", "The Cranberries", "No Need To Argue")
+	if err != nil || len(got) != 10 {
+		t.Fatalf("page-one results must survive a page-two error: %+v %v", got, err)
 	}
 }

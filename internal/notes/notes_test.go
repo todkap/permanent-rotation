@@ -76,3 +76,25 @@ func TestStyleOKRejectsSecondPerson(t *testing.T) {
 		t.Fatal("third person failed")
 	}
 }
+
+func TestV2RejectReasonsAndAlbumBoundary(t *testing.T) {
+	facts := `Basket Case Green Day album Dookie (1994).`
+	text := `Basket Case appeared on the album Dookie in 1994 and became popular.`
+	if issue := ClaimIssue(text, facts); issue != "" {
+		t.Fatal("lowercase prose swallowed into album claim:", issue)
+	}
+	if issue := ClaimIssue(`Released in 1988.`, facts); issue != "unsupported year: 1988" {
+		t.Fatal(issue)
+	}
+	if issue := ClaimIssue(`From the album Fake Record.`, facts); issue == "" {
+		t.Fatal("invented album passed")
+	}
+}
+func TestV2TitlePronounsAreNotNarration(t *testing.T) {
+	if issue := StyleIssue(`"Crazy for You" was released in 1985.`, "Crazy for You", "Madonna"); issue != "" {
+		t.Fatal(issue)
+	}
+	if issue := StyleIssue(`"Crazy for You" reminds you of school.`, "Crazy for You", "Madonna"); issue == "" {
+		t.Fatal("second person passed")
+	}
+}

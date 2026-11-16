@@ -11,6 +11,8 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -75,13 +77,63 @@ type Track struct {
 
 // Search looks up one song and returns up to 10 candidates (Dev Mode cap).
 func (c *Client) Search(title, artist string) ([]Track, error) {
+	return c.searchPaginated(fmt.Sprintf("track:%s artist:%s", title, artist), 1)
+}
+
+// SearchAlbum narrows the search to one album title. Used to rescue catalog
+// songs whose top hits are all compilations: MusicBrainz names the original
+// album, and this asks Spotify for that album's version of the track
+// directly, since the plain search may not surface it in 10 results.
+func (c *Client) SearchAlbum(title, artist, album string) ([]Track, error) {
+	return c.searchPaginated(fmt.Sprintf("track:%s artist:%s album:%s", title, artist, album), 3)
+}
+
+// SearchYear narrows the search to one release year; the fallback when the
+// album-targeted rescue finds nothing (album titles differ across services).
+func (c *Client) SearchYear(title, artist string, year int) ([]Track, error) {
+	return c.searchPaginated(fmt.Sprintf("track:%s artist:%s year:%d", title, artist, year), 3)
+}
+
+// searchPaginated pages a query by offset (10 per page, the Dev Mode cap)
+// and dedupes by track ID. Targeted album/year searches page deeper because
+// the original pressing is often buried past the first page of hits. A
+// failed later page returns the results already collected rather than
+// losing them, and a short page ends the scan.
+func (c *Client) searchPaginated(query string, pages int) ([]Track, error) {
+	var all []Track
+	seen := map[string]bool{}
+	for p := 0; p < pages; p++ {
+		tracks, err := c.search(query, p*10)
+		if err != nil {
+			if len(all) > 0 {
+				return all, nil
+			}
+			return nil, err
+		}
+		for _, t := range tracks {
+			if !seen[t.ID] {
+				seen[t.ID] = true
+				all = append(all, t)
+			}
+		}
+		if len(tracks) < 10 {
+			break
+		}
+	}
+	return all, nil
+}
+
+func (c *Client) search(query string, offset int) ([]Track, error) {
 	if err := c.authorize(); err != nil {
 		return nil, err
 	}
 	q := url.Values{}
-	q.Set("q", fmt.Sprintf("track:%s artist:%s", title, artist))
+	q.Set("q", query)
 	q.Set("type", "track")
 	q.Set("limit", "10")
+	if offset > 0 {
+		q.Set("offset", strconv.Itoa(offset))
+	}
 	req, _ := http.NewRequest("GET", searchURL+"?"+q.Encode(), nil)
 	req.Header.Set("Authorization", "Bearer "+c.token)
 	resp, err := c.hc.Do(req)
@@ -91,7 +143,7 @@ func (c *Client) Search(title, artist string) ([]Track, error) {
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
 		b, _ := io.ReadAll(io.LimitReader(resp.Body, 512))
-		return nil, fmt.Errorf("spotify search %q: %s: %s", title, resp.Status, b)
+		return nil, fmt.Errorf("spotify search %q: %s: %s", query, resp.Status, b)
 	}
 	var out struct {
 		Tracks struct {
@@ -224,9 +276,10 @@ func PickBest(tracks []Track, title, artist string) (Track, bool) {
 		return Track{}, false
 	}
 	wantArtist := strings.ToLower(strings.TrimSpace(stripFeaturing(artist)))
+	wantTitle := normalizeTitle(title)
 	var exact []int
 	for i, tr := range tracks {
-		if !strings.EqualFold(strings.TrimSpace(tr.Name), strings.TrimSpace(title)) {
+		if !strings.EqualFold(normalizeTitle(tr.Name), wantTitle) {
 			continue
 		}
 		if strings.ToLower(strings.TrimSpace(stripFeaturing(tr.Artist))) == wantArtist {
@@ -274,6 +327,58 @@ func releaseKey(date string) string {
 		return date + "-01-01"
 	}
 	return "9999-99-99"
+}
+
+// titleSuffixes are recording-neutral reissue markers Spotify appends to
+// track names. They are stripped before identity comparison so a remastered
+// or mono pressing of the same recording still exact-matches the catalog
+// title. Live, remix, acoustic, demo and re-recorded versions are NOT
+// stripped: those are different recordings and must never pin as the
+// original.
+var titleSuffixes = []*regexp.Regexp{
+	regexp.MustCompile(`(?i)\s*-\s*(\d{4}\s+)?remaster(ed)?\s*$`),
+	regexp.MustCompile(`(?i)\s*\((\d{4}\s+)?remaster(ed)?\)\s*$`),
+	regexp.MustCompile(`(?i)\s*-\s*(radio edit|single version|album version|mono version|stereo version|mono|stereo)\s*$`),
+	regexp.MustCompile(`(?i)\s*\((radio edit|single version|album version|mono version|stereo version|mono|stereo)\)\s*$`),
+}
+
+// normalizeTitle strips recording-neutral suffixes; if stripping would
+// leave nothing, the unstripped title stands.
+func normalizeTitle(title string) string {
+	out := strings.TrimSpace(title)
+	for {
+		next := out
+		for _, re := range titleSuffixes {
+			next = re.ReplaceAllString(next, "")
+		}
+		next = strings.TrimSpace(next)
+		if next == "" {
+			return out
+		}
+		if next == out {
+			return out
+		}
+		out = next
+	}
+}
+
+// StrictlyBetter reports whether a candidate deserves to replace the cached
+// pin: an earlier release year wins outright; the same year wins only with
+// plainer packaging (the original pressing over a deluxe or hits reissue).
+// Anything later or equally packaged keeps the pin, so a shuffled Spotify
+// result order can never move a card backwards.
+func StrictlyBetter(c Track, album string, year int) bool {
+	cy := 0
+	if len(c.ReleaseDate) >= 4 {
+		fmt.Sscanf(c.ReleaseDate[:4], "%d", &cy)
+	}
+	if cy == 0 {
+		return false
+	}
+	if cy != year {
+		return cy < year
+	}
+	return compilationPenalty(c) < compilationPenalty(Track{Album: album})
 }
 
 // stripFeaturing drops " (feat. ...)"-style suffixes so a CSV credit like

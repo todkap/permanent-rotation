@@ -71,6 +71,103 @@ func main() {
 	}
 }
 
+// report prints one per-song decision to the run log and remembers it for
+// the GitHub job summary, so a run explains every move it made and every
+// song it left alone. flushSummary writes the collected lines to
+// GITHUB_STEP_SUMMARY when the workflow provides it.
+var reportLines []string
+
+func report(format string, args ...any) {
+	line := fmt.Sprintf(format, args...)
+	fmt.Println(line)
+	reportLines = append(reportLines, line)
+}
+
+// mdEsc escapes Markdown punctuation in album, title and artist names that
+// come from Spotify, MusicBrainz or Wikipedia, so external text cannot break
+// the job-summary rendering. The run log keeps the plain text.
+var mdEsc = strings.NewReplacer("\\", "\\\\", "`", "\\`", "*", "\\*", "_", "\\_", "[", "\\[", "]", "\\]", "|", "\\|")
+
+func flushSummary(section string) {
+	path := os.Getenv("GITHUB_STEP_SUMMARY")
+	if path == "" || len(reportLines) == 0 {
+		return
+	}
+	f, err := os.OpenFile(path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0o644)
+	if err != nil {
+		return
+	}
+	defer f.Close()
+	fmt.Fprintf(f, "\n### %s\n\n", section)
+	for _, l := range reportLines {
+		fmt.Fprintf(f, "- %s\n", mdEsc.Replace(l))
+	}
+	reportLines = nil
+}
+
+// adoptPin moves a record's pin to a better candidate, records why, and
+// marks the release changed so the notes run regenerates any note written
+// against the old album/year.
+func adoptPin(rec *enrich.Record, best spotify.Track, why string) {
+	y := 0
+	if len(best.ReleaseDate) >= 4 {
+		fmt.Sscanf(best.ReleaseDate[:4], "%d", &y)
+	}
+	report("re-matched: %s - %s (%s %d -> %s %d; %s)", rec.Song, rec.Artist, rec.Album, rec.ReleaseYear, best.Album, y, why)
+	rec.SpotifyID, rec.SpotifyURL = best.ID, best.URL
+	rec.Album, rec.ReleaseYear = best.Album, y
+	rec.AlbumArt = best.AlbumArt
+	rec.SpotifyPopularity = best.Popularity
+	rec.MatchConfidence = "exact"
+	rec.MatchReason = why
+	rec.ReleaseChanged = true
+	rec.YearConflict = false
+}
+
+// rescueCompilationPin gives a pinned compilation or late re-release one
+// targeted retry: MusicBrainz names the original album and year, and Spotify
+// is asked for that album's version of the track directly, because a plain
+// search's 10 hits can be all compilations (Zombie surfaced only Gold and
+// Stars until asked for No Need To Argue). Both the album-targeted and the
+// year-targeted searches run, and the combined pool competes: stopping at
+// the first earlier hit can still miss the original pressing. The pin moves
+// only to an exact title+artist match that is strictly better than the
+// cached pin.
+func rescueCompilationPin(sp *spotify.Client, song, artist, mbAlbum string, mbYear int, rec *enrich.Record) {
+	var pool []spotify.Track
+	seen := map[string]bool{rec.SpotifyID: true}
+	add := func(tracks []spotify.Track) {
+		for _, t := range tracks {
+			if !seen[t.ID] {
+				seen[t.ID] = true
+				pool = append(pool, t)
+			}
+		}
+	}
+	if mbAlbum != "" {
+		if tracks, err := sp.SearchAlbum(song, artist, mbAlbum); err != nil {
+			fmt.Fprintln(os.Stderr, "warn:", err)
+		} else {
+			add(tracks)
+		}
+	}
+	if mbYear > 0 {
+		if tracks, err := sp.SearchYear(song, artist, mbYear); err != nil {
+			fmt.Fprintln(os.Stderr, "warn:", err)
+		} else {
+			add(tracks)
+		}
+	}
+	if len(pool) == 0 {
+		return
+	}
+	best, exact := spotify.PickBest(pool, song, artist)
+	if !exact || !spotify.StrictlyBetter(best, rec.Album, rec.ReleaseYear) {
+		return
+	}
+	adoptPin(rec, best, "targeted rescue via MusicBrainz original release")
+}
+
 func runEnrich(csvPath, outPath string, minSongs int) {
 	songs, err := csvio.Load(csvPath, minSongs)
 	if err != nil {
@@ -84,6 +181,14 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 	overrides, err := enrich.LoadOverrides("data/overrides.csv")
 	if err != nil {
 		fail(err)
+	}
+	overrideKeys := map[string]bool{}
+	for k := range overrides {
+		overrideKeys[k] = true
+	}
+	currentRows := map[string]bool{}
+	for _, s := range songs {
+		currentRows[strings.ToLower(s.Song)+"|"+strings.ToLower(s.Artist)] = true
 	}
 	sp := spotify.New(env("SPOTIFY_CLIENT_ID"), env("SPOTIFY_CLIENT_SECRET"))
 	lf := lastfm.New(env("LASTFM_API_KEY"))
@@ -116,29 +221,62 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 				break
 			}
 		}
-		// Re-resolve cached matches that landed on a hits package or expanded
-		// re-release: Spotify's top hit for a catalog song is often a later
-		// compilation (e.g. Zombie pinned to Gold 2008 instead of No Need To
-		// Argue 1994). One live search per flagged song; the pin only moves
-		// when the same title+artist exists on an earlier release, and every
-		// move is printed so the run log shows what changed.
-		if !needMatch && env("SPOTIFY_CLIENT_ID") != "" && (spotify.LooksLikeCompilation(rec.Album) || rec.YearConflict) {
-			if tracks, err := sp.Search(s.Song, s.Artist); err != nil {
-				fmt.Fprintln(os.Stderr, "warn:", err)
-			} else if best, exact := spotify.PickBest(tracks, s.Song, s.Artist); exact {
-				by := 0
-				if len(best.ReleaseDate) >= 4 {
-					fmt.Sscanf(best.ReleaseDate[:4], "%d", &by)
+		// Re-evaluate every automatic pin against the earliest-original rule,
+		// every build: a pin can sit on a compilation without any keyword flag
+		// (Crazy for You sat on Something to Remember), so a flag gate misses
+		// real cases. Manual pins (overrides, carried-over title corrections)
+		// are never rematched. The pin moves only when the search produces an
+		// exact title+artist match that is strictly better - earlier, or the
+		// same year in plainer packaging - so Spotify result-order churn can
+		// never move a card backwards.
+		manual := strings.EqualFold(rec.MatchConfidence, "manual") || overrideKeys[k]
+		switch {
+		case needMatch:
+			// handled below
+		case manual:
+			if rec.MatchReason == "" {
+				rec.MatchReason = "kept: manual pin, never rematched"
+			}
+			report("re-check: %s - %s: manual pin, keeping %s %d", s.Song, s.Artist, rec.Album, rec.ReleaseYear)
+		case env("SPOTIFY_CLIENT_ID") == "":
+			if rec.MatchReason == "" {
+				rec.MatchReason = "kept: cached pin (no Spotify credentials this run)"
+			}
+		default:
+			tracks, err := sp.Search(s.Song, s.Artist)
+			switch {
+			case err != nil:
+				report("re-check: %s - %s: search failed (%v), keeping %s %d", s.Song, s.Artist, err, rec.Album, rec.ReleaseYear)
+			default:
+				best, exact := spotify.PickBest(tracks, s.Song, s.Artist)
+				switch {
+				case !exact:
+					report("re-check: %s - %s: no exact title+artist in search results, keeping %s %d", s.Song, s.Artist, rec.Album, rec.ReleaseYear)
+				case best.ID == rec.SpotifyID:
+					report("re-check: %s - %s: pin confirmed %s %d", s.Song, s.Artist, rec.Album, rec.ReleaseYear)
+				case spotify.StrictlyBetter(best, rec.Album, rec.ReleaseYear):
+					adoptPin(&rec, best, "earlier or plainer original in plain search")
+				default:
+					report("re-check: %s - %s: search offered nothing better, keeping %s %d", s.Song, s.Artist, rec.Album, rec.ReleaseYear)
 				}
-				if by > 0 && by < rec.ReleaseYear {
-					fmt.Printf("re-matched: %s - %s (%s %d -> %s %d)\n", s.Song, s.Artist, rec.Album, rec.ReleaseYear, best.Album, by)
-					rec.SpotifyID, rec.SpotifyURL = best.ID, best.URL
-					rec.Album, rec.ReleaseYear = best.Album, by
-					rec.AlbumArt = best.AlbumArt
-					rec.SpotifyPopularity = best.Popularity
-					rec.MatchConfidence = "exact"
-					rec.YearConflict = false
+			}
+			// MusicBrainz names the original release; if the pin still sits
+			// later than it (or still reads like a compilation), one targeted
+			// rescue asks Spotify for that album/year directly.
+			mbAlbum, mbYear, mbErr := mb.FirstRelease(s.Artist, s.Song)
+			time.Sleep(time.Second) // musicbrainz courtesy
+			if mbErr == nil && mbYear > 0 {
+				if rec.ReleaseYear > mbYear || spotify.LooksLikeCompilation(rec.Album) {
+					before := rec.SpotifyID
+					rescueCompilationPin(sp, s.Song, s.Artist, mbAlbum, mbYear, &rec)
+					if rec.SpotifyID == before {
+						report("rescue: %s - %s: no album/year-targeted hit beats %s %d (original: %s %d)", s.Song, s.Artist, rec.Album, rec.ReleaseYear, mbAlbum, mbYear)
+					}
 				}
+				rec.YearConflict = rec.ReleaseYear > mbYear
+			}
+			if rec.MatchReason == "" {
+				rec.MatchReason = "kept: no better original found"
 			}
 		}
 		if needMatch && env("SPOTIFY_CLIENT_ID") != "" {
@@ -156,39 +294,65 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 				}
 				if exactMatch {
 					rec.MatchConfidence = "exact"
+					rec.MatchReason = "matched: exact title+artist, earliest original in search"
+					report("matched: %s - %s -> %s %d (exact)", s.Song, s.Artist, rec.Album, rec.ReleaseYear)
 				} else {
 					rec.MatchConfidence = "fuzzy"
+					rec.MatchReason = "matched: no exact title+artist, top search result"
+					report("matched: %s - %s -> %s %d (fuzzy: %s - %s)", s.Song, s.Artist, rec.Album, rec.ReleaseYear, best.Name, best.Artist)
 					lowConf = append(lowConf, fmt.Sprintf("fuzzy: %s - %s matched to %s - %s", s.Song, s.Artist, best.Name, best.Artist))
 				}
-				// cross-check the release year; flag disagreement, never resolve silently
-				if y, err := mb.FirstReleaseYear(s.Artist, s.Song); err == nil && y > 0 && rec.ReleaseYear > 0 && y < rec.ReleaseYear {
-					rec.YearConflict = true
+				// cross-check the release year against MusicBrainz; a later
+				// Spotify year gets one targeted rescue search for the
+				// original album, and any remaining disagreement is flagged,
+				// never silently resolved
+				if mbAlbum, mbYear, err := mb.FirstRelease(s.Artist, s.Song); err == nil && mbYear > 0 && rec.ReleaseYear > 0 && mbYear < rec.ReleaseYear {
+					rescueCompilationPin(sp, s.Song, s.Artist, mbAlbum, mbYear, &rec)
+					rec.YearConflict = rec.ReleaseYear > mbYear
 				}
 				time.Sleep(time.Second) // musicbrainz courtesy
 			}
 		}
-		// Never invent a match. A CSV title correction with the same artist is a
-		// migration, not a new song: keep the pinned track data instead of
-		// rematching against the changed title.
+		// Never invent a match. A CSV title correction with the same artist is
+		// a migration, not a new song - but only when the titles are clearly
+		// the same song (Would -> Would?, Freshman -> The Freshmen), never
+		// merely because the artist matches, and never from a title that is
+		// still in the CSV as its own row.
 		if rec.SpotifyID == "" {
 			for _, old := range cached.Songs {
-				if strings.EqualFold(old.Artist, s.Artist) && !strings.EqualFold(old.Song, s.Song) && old.SpotifyID != "" {
-					rec.SpotifyID, rec.SpotifyURL = old.SpotifyID, old.SpotifyURL
-					rec.Album, rec.ReleaseYear = old.Album, old.ReleaseYear
-					rec.MatchConfidence = "manual"
-					rec.AlbumArt = old.AlbumArt
-					rec.SpotifyPopularity = old.SpotifyPopularity
-					break
+				if !strings.EqualFold(old.Artist, s.Artist) || strings.EqualFold(old.Song, s.Song) || old.SpotifyID == "" {
+					continue
 				}
+				if currentRows[strings.ToLower(old.Song)+"|"+strings.ToLower(old.Artist)] {
+					continue // old title still exists as its own CSV row
+				}
+				if !similarTitles(s.Song, old.Song) {
+					continue
+				}
+				rec.SpotifyID, rec.SpotifyURL = old.SpotifyID, old.SpotifyURL
+				rec.Album, rec.ReleaseYear = old.Album, old.ReleaseYear
+				rec.MatchConfidence = "manual"
+				rec.MatchReason = fmt.Sprintf("carried over pin from corrected title %q", old.Song)
+				rec.AlbumArt = old.AlbumArt
+				rec.SpotifyPopularity = old.SpotifyPopularity
+				report("migration: %s - %s: carried over pin from %q (%s %d)", s.Song, s.Artist, old.Song, rec.Album, rec.ReleaseYear)
+				break
 			}
 		}
 		// never invent a match: unmatched songs keep their CSV data and any
 		// Last.fm metrics, render without a Spotify link, and are flagged
 		if rec.SpotifyID == "" {
 			rec.MatchConfidence = "unmatched"
+			rec.MatchReason = "unmatched: no Spotify result accepted"
 		}
 		rec.FetchedAt = time.Now().UTC().Format(time.RFC3339)
 		fetched[k] = rec
+		// one terminal line per card, every build: the final pin and why
+		if rec.SpotifyID == "" {
+			report("card: %s - %s -> (no Spotify match)", s.Song, s.Artist)
+		} else {
+			report("card: %s - %s -> %s %d [%s]", s.Song, s.Artist, rec.Album, rec.ReleaseYear, rec.MatchReason)
+		}
 	}
 
 	out, problems := enrich.Merge(songs, fetched, cached, overrides, time.Now())
@@ -214,6 +378,7 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 	for _, p := range append(problems, lowConf...) {
 		fmt.Println(p)
 	}
+	flushSummary("Enrich: matching decisions")
 	matched := 0
 	for _, r := range out.Songs {
 		if r.SpotifyID != "" {
@@ -221,6 +386,57 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 		}
 	}
 	fmt.Printf("enriched %d/%d songs (%d unmatched) -> %s\n", matched, len(songs), len(songs)-matched, outPath)
+}
+
+// similarTitles reports whether two titles plausibly name the same song
+// after normalization (case, punctuation, leading articles): the guard for
+// carrying a pin across a CSV title correction. A ratio of 0.7 accepts
+// Would/Would? and Freshman/The Freshmen while keeping genuinely different
+// songs by the same artist apart.
+func similarTitles(a, b string) bool {
+	norm := func(s string) string {
+		s = strings.ToLower(s)
+		var sb strings.Builder
+		for _, r := range s {
+			if r >= 'a' && r <= 'z' || r >= '0' && r <= '9' {
+				sb.WriteRune(r)
+			}
+		}
+		return strings.TrimPrefix(sb.String(), "the")
+	}
+	na, nb := norm(a), norm(b)
+	if na == "" || nb == "" {
+		return false
+	}
+	if na == nb {
+		return true
+	}
+	d := levenshtein(na, nb)
+	longest := len(na)
+	if len(nb) > longest {
+		longest = len(nb)
+	}
+	return float64(longest-d)/float64(longest) >= 0.7
+}
+
+func levenshtein(a, b string) int {
+	prev := make([]int, len(b)+1)
+	for j := range prev {
+		prev[j] = j
+	}
+	for i := 1; i <= len(a); i++ {
+		cur := make([]int, len(b)+1)
+		cur[0] = i
+		for j := 1; j <= len(b); j++ {
+			cost := 1
+			if a[i-1] == b[j-1] {
+				cost = 0
+			}
+			cur[j] = min(prev[j]+1, cur[j-1]+1, prev[j-1]+cost)
+		}
+		prev = cur
+	}
+	return prev[len(b)]
 }
 
 func canonicalTitles(songs []csvio.Song) {
@@ -323,11 +539,14 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 	}
 	g := gemini.New(env("GEMINI_API_KEY"), env("GEMINI_MODEL"))
 	wk := wikipedia.New()
-	enriched := map[string]enrich.Record{}
-	if ef, err := enrich.LoadFile(enrichedPath); err != nil {
+	var ef *enrich.File
+	enriched := map[string]*enrich.Record{}
+	if f, err := enrich.LoadFile(enrichedPath); err != nil {
 		fmt.Fprintln(os.Stderr, "warn: enriched data:", err, "(notes will lack album facts)")
 	} else {
-		for _, r := range ef.Songs {
+		ef = f
+		for i := range ef.Songs {
+			r := &ef.Songs[i]
 			enriched[notes.Key(r.Song, r.Artist)] = r
 		}
 	}
@@ -336,15 +555,39 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 		Note      string `json:"note"`
 		SourceURL string `json:"source_url"`
 	}
-	var added, dropped, kept, skipped, retried int
+	var added, dropped, kept, skipped, retried, clearedMarkers int
 	for _, s := range songs {
 		k := notes.Key(s.Song, s.Artist)
-		if !force {
-			if old, ok := ctx.Notes[k]; ok && notes.Valid(old) {
+		rec, haveRec := enriched[k]
+		old, hasOld := ctx.Notes[k]
+
+		// Skip logic: an existing note survives while the facts it was
+		// written against still hold. Stamped notes compare their recorded
+		// album/year to the current pin; legacy unstamped notes rely on the
+		// release_changed marker set by enrich when a pin moves. Anything
+		// else is preserved untouched.
+		regenReason := ""
+		if force {
+			regenReason = "forced regeneration"
+		}
+		if !force && hasOld && notes.Valid(old) {
+			stamped := old.Album != "" || old.ReleaseYear != 0
+			switch {
+			case stamped && haveRec && rec.Album != "" && (cleanAlbum(rec.Album) != old.Album || rec.ReleaseYear != old.ReleaseYear):
+				regenReason = fmt.Sprintf("pin moved since the note was written (%s %d -> %s %d)", old.Album, old.ReleaseYear, cleanAlbum(rec.Album), rec.ReleaseYear)
+			case stamped:
 				skipped++
-				continue // existing note preserved; use --force to regenerate
+				report("note: skipped (existing note, facts current): %s - %s", s.Song, s.Artist)
+				continue
+			case haveRec && rec.ReleaseChanged:
+				regenReason = "release changed since this legacy note was written"
+			default:
+				skipped++
+				report("note: skipped (existing note): %s - %s", s.Song, s.Artist)
+				continue
 			}
 		}
+
 		memCtx, memRule := "", "The listener did not share a personal memory for this one. "
 		if includeMemory && s.Memory != "" {
 			memCtx = "The listener's own words about it: " + s.Memory + "\n"
@@ -354,7 +597,7 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 		// Grounding: pull sourced facts first so the model is only ever
 		// handed real album names, years and chart history.
 		var factsLines []string
-		if rec, ok := enriched[notes.Key(s.Song, s.Artist)]; ok && rec.Album != "" {
+		if haveRec && rec.Album != "" {
 			album := cleanAlbum(rec.Album)
 			if strings.EqualFold(album, s.Song) {
 				// title matches the song: the release is the single itself
@@ -381,57 +624,79 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 		// facts plus the song's own title/artist (quoting them is fine).
 		claimsText := factsBlock + "\n" + s.Song + "\n" + s.Artist + "\n" + s.Memory + "\n" + s.Tags
 		prompt := fmt.Sprintf(notesPrompt, s.Song, s.Artist, s.Tags, memCtx, factsBlock, memRule)
-		text, err := g.Generate(prompt)
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "warn:", s.Song, "-", err)
-			dropped++
-			time.Sleep(pace)
-			continue
-		}
-		text = strings.TrimSpace(strings.Trim(strings.TrimSpace(text), "`"))
-		text = strings.TrimPrefix(text, "json")
-		var r reply
-		if err := json.Unmarshal([]byte(strings.TrimSpace(text)), &r); err != nil {
-			fmt.Printf("dropped (unparseable): %s - %s\n", s.Song, s.Artist)
-			dropped++
-			time.Sleep(pace)
-			continue
-		}
-		n := notes.Note{Note: strings.TrimSpace(r.Note), SourceURL: strings.TrimSpace(r.SourceURL)}
-		if notes.Valid(n) && (!notes.StyleOK(n.Note) || !notes.ClaimsOK(n.Note, claimsText)) {
-			// one retry for voice slips or ungrounded claims, then keep the old note
-			retried++
-			fmt.Printf("style/fact retry: %s - %s\n", s.Song, s.Artist)
-			time.Sleep(pace)
-			text, err = g.Generate(prompt)
+
+		// Bounded corrective retries: a failed attempt tells the model
+		// exactly what was rejected (the unsupported year/title, the style
+		// slip, the missing source) instead of repeating the same prompt.
+		var n notes.Note
+		issue := ""
+		for attempt := 1; attempt <= 3; attempt++ {
+			text, err := g.Generate(prompt)
 			if err != nil {
-				fmt.Fprintln(os.Stderr, "warn:", s.Song, "-", err)
-				time.Sleep(pace)
-				kept++
-				continue
+				issue = fmt.Sprintf("generation failed: %v", err)
+				break // API errors have their own backoff; retrying re-writes nothing
 			}
 			text = strings.TrimSpace(strings.Trim(strings.TrimSpace(text), "`"))
 			text = strings.TrimPrefix(text, "json")
-			if err := json.Unmarshal([]byte(strings.TrimSpace(text)), &r); err == nil {
-				n = notes.Note{Note: strings.TrimSpace(r.Note), SourceURL: strings.TrimSpace(r.SourceURL)}
+			var r reply
+			if err := json.Unmarshal([]byte(strings.TrimSpace(text)), &r); err != nil {
+				issue = "response was not the requested JSON"
+				retried++
+				report("note: retry %d (%s): %s - %s", attempt, issue, s.Song, s.Artist)
+				prompt += "\nYour previous response was rejected: " + issue + ". Respond with the requested JSON only."
+				time.Sleep(pace)
+				continue
 			}
+			n = notes.Note{Note: strings.TrimSpace(r.Note), SourceURL: strings.TrimSpace(r.SourceURL)}
+			if wikiURL != "" {
+				n.SourceURL = wikiURL // the article we actually pulled facts from
+			}
+			if !notes.Valid(n) {
+				issue = "no real source URL in the response"
+			} else if si := notes.StyleIssue(n.Note, s.Song, s.Artist); si != "" {
+				issue = "style check failed: " + si
+			} else if ci := notes.ClaimIssue(n.Note, claimsText); ci != "" {
+				issue = "fact check failed: " + ci
+			} else {
+				issue = ""
+				break
+			}
+			retried++
+			report("note: retry %d (%s): %s - %s", attempt, issue, s.Song, s.Artist)
+			prompt += "\nYour previous response was rejected: " + issue + ". Fix only that and respond again."
+			time.Sleep(pace)
 		}
-		if wikiURL != "" {
-			n.SourceURL = wikiURL // the article we actually pulled facts from
-		}
+
 		switch {
-		case !notes.Valid(n):
-			fmt.Printf("dropped (no source): %s - %s\n", s.Song, s.Artist)
-			dropped++
-		case !notes.StyleOK(n.Note):
-			fmt.Printf("kept existing (style check failed after retry): %s - %s\n", s.Song, s.Artist)
-			kept++
-		case !notes.ClaimsOK(n.Note, claimsText):
-			fmt.Printf("kept existing (fact check failed after retry): %s - %s\n", s.Song, s.Artist)
-			kept++
-		default:
+		case issue == "":
+			// accepted: stamp the facts the note was written against, so a
+			// later pin move regenerates it instead of going stale
+			if haveRec && rec.Album != "" {
+				n.Album, n.ReleaseYear = cleanAlbum(rec.Album), rec.ReleaseYear
+			}
 			ctx.Notes[k] = n
 			added++
+			if haveRec && rec.ReleaseChanged {
+				rec.ReleaseChanged = false
+				clearedMarkers++
+			}
+			if regenReason != "" {
+				report("note: written (%s): %s - %s", regenReason, s.Song, s.Artist)
+			} else {
+				report("note: written: %s - %s", s.Song, s.Artist)
+			}
+		case hasOld && regenReason != "" && !notes.ClaimsOK(old.Note, claimsText):
+			// the old note names facts that no longer hold and the rewrite
+			// failed: drop it rather than publish a stale album claim
+			delete(ctx.Notes, k)
+			dropped++
+			report("note: dropped stale note (regeneration failed: %s; old note no longer checks out): %s - %s", issue, s.Song, s.Artist)
+		case hasOld:
+			kept++
+			report("note: kept existing note (regeneration failed: %s): %s - %s", issue, s.Song, s.Artist)
+		default:
+			dropped++
+			report("note: none written (%s): %s - %s", issue, s.Song, s.Artist)
 		}
 		time.Sleep(pace) // stay under the API rate limit
 	}
@@ -441,6 +706,14 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 	if err := ctx.Save(contextPath); err != nil {
 		fail(err)
 	}
-	fmt.Printf("notes: %d written, %d skipped (existing), %d style retries, %d kept old after failed retry, %d dropped -> %s\n", added, skipped, retried, kept, dropped, contextPath)
+	// Clear release_changed markers for notes successfully regenerated this
+	// run; the markers for still-failing songs stay set for the next run.
+	if clearedMarkers > 0 && ef != nil {
+		if err := ef.Save(enrichedPath); err != nil {
+			fmt.Fprintln(os.Stderr, "warn: could not clear release markers:", err)
+		}
+	}
+	report("notes: %d written, %d skipped (existing), %d retries, %d kept old after failed regeneration, %d dropped -> %s", added, skipped, retried, kept, dropped, contextPath)
 	fmt.Println("Review the notes before committing - the site only renders what you commit.")
+	flushSummary("Notes: per-song outcomes")
 }

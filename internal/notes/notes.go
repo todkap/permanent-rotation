@@ -12,10 +12,16 @@ import (
 	"strings"
 )
 
-// Note is one song's background note.
+// Note is one song's background note. Album and ReleaseYear record the
+// enriched facts the note was written against; when the pin moves, the notes
+// run regenerates instead of publishing a note that names the old release.
+// Legacy notes predate these fields and are handled by the release_changed
+// marker on the enriched record.
 type Note struct {
-	Note      string `json:"note"`
-	SourceURL string `json:"source_url"`
+	Note        string `json:"note"`
+	SourceURL   string `json:"source_url"`
+	Album       string `json:"album,omitempty"`
+	ReleaseYear int    `json:"release_year,omitempty"`
 }
 
 // Context is the committed context.json document.
@@ -98,18 +104,21 @@ var (
 	singleQuote = regexp.MustCompile(`(?:^|[\s("\x{201c}])'([A-Z][^']{2,60}?)'(?:[\s,.!?:;)]|$)`)
 	// An unquoted album name: the word "album" followed by title-cased words
 	// and small connectors, stopped by punctuation or a lowercase word.
-	albumClaim = regexp.MustCompile(`(?i)\balbum[,:]?\s+["'\x{201c}]?((?:[A-Z0-9][\w&'.-]*|of|the|a|an|and|in|on|de|la)(?:\s+(?:[A-Z0-9][\w&'.-]*|of|the|a|an|and|in|on|de|la))*)`)
+	albumClaim = regexp.MustCompile(`(?i:album)[,:]?\s+["'\x{201c}]?([A-Z][\w&'-]*(?:\s+(?:(?:of|the|a|an|and|in|on|de|la)\s+)*[A-Z][\w&'-]*)*)`)
 )
 
 // ClaimsOK enforces the grounding contract: every specific the note states
 // must come from the sourced facts the model was given. Any 4-digit year and
 // any quoted title (album, film, single) must literally appear in facts.
 // Notes failing this are retried once, then dropped.
-func ClaimsOK(note, facts string) bool {
+func ClaimsOK(note, facts string) bool { return ClaimIssue(note, facts) == "" }
+
+// ClaimIssue explains the first unsupported claim for logs and corrective retries.
+func ClaimIssue(note, facts string) string {
 	low := strings.ToLower(facts)
 	for _, y := range yearClaim.FindAllString(note, -1) {
 		if !strings.Contains(facts, y) {
-			return false
+			return "unsupported year: " + y
 		}
 	}
 	var spans []string
@@ -131,8 +140,24 @@ func ClaimsOK(note, facts string) bool {
 			continue
 		}
 		if !strings.Contains(low, strings.ToLower(strings.TrimSpace(q))) {
-			return false
+			return "unsupported title/album: " + strings.TrimSpace(q)
 		}
 	}
-	return true
+	return ""
+}
+
+// StyleIssue ignores the actual song title/artist when checking narration.
+func StyleIssue(note, song, artist string) string {
+	for _, name := range []string{song, artist} {
+		if strings.TrimSpace(name) != "" {
+			note = regexp.MustCompile(`(?i)`+regexp.QuoteMeta(name)).ReplaceAllString(note, "the track")
+		}
+	}
+	if secondPerson.MatchString(note) {
+		return "second-person narration"
+	}
+	if selfCorrection.MatchString(note) {
+		return "self-correction/restart"
+	}
+	return ""
 }
