@@ -60,10 +60,39 @@ func TestMergeKeepsMemoryVerbatimAndOverridesWin(t *testing.T) {
 	}
 }
 
-func TestUnmatchedIsListedNotInvented(t *testing.T) {
-	songs := []csvio.Song{{Song: "Ghost", Artist: "Nobody"}}
-	out, problems := Merge(songs, map[string]Record{}, &File{}, nil, time.Now())
-	if len(out.Songs) != 0 || len(problems) != 1 {
-		t.Fatalf("unmatched song should be listed and skipped: %v %v", out.Songs, problems)
+func TestUnmatchedRendersWithoutInventedData(t *testing.T) {
+	songs := []csvio.Song{{Song: "Deep Cover", Artist: "Dr. Dre and Snoop Dogg", LifeYear: 1991, Chapter: "Starting College", Memory: "verbatim words"}}
+	fetched := map[string]Record{
+		"deep cover|dr. dre and snoop dogg": {MatchConfidence: "unmatched"},
+	}
+	out, problems := Merge(songs, fetched, &File{}, nil, time.Now())
+	if len(out.Songs) != 1 {
+		t.Fatalf("unmatched song should still render: %v", out.Songs)
+	}
+	r := out.Songs[0]
+	if r.SpotifyID != "" || r.SpotifyURL != "" || r.ReleaseYear != 0 || r.Album != "" {
+		t.Fatalf("nothing may be invented for an unmatched song: %+v", r)
+	}
+	if r.Memory != "verbatim words" || r.MatchConfidence != "unmatched" {
+		t.Fatalf("CSV data must survive: %+v", r)
+	}
+	if len(problems) != 1 {
+		t.Fatalf("unmatched should be flagged: %v", problems)
+	}
+}
+
+func TestZeroPlaycountGetsNoTier(t *testing.T) {
+	recs := []Record{
+		{Song: "a", LastfmPlaycount: 100},
+		{Song: "b", LastfmPlaycount: 50},
+		{Song: "c", LastfmPlaycount: 10},
+		{Song: "unmatched", LastfmPlaycount: 0},
+	}
+	AssignTiers(recs)
+	if recs[3].Tier != "" {
+		t.Fatalf("no metrics, no tier: %+v", recs[3])
+	}
+	if recs[0].Tier != "canon" || recs[2].Tier != "deep-cut" {
+		t.Fatalf("tiering of the metric-bearing records changed: %v %v", recs[0].Tier, recs[2].Tier)
 	}
 }

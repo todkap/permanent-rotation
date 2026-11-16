@@ -1,7 +1,8 @@
 // Package enrich matches each CSV row to public music data and merges the
 // results into enriched.json. Rules that always hold: never invent a match
-// (unmatched songs are listed and skipped), manual overrides always win,
-// and matching is deterministic so a song never silently changes identity.
+// (unmatched songs are flagged and render without a Spotify link), manual
+// overrides always win, and matching is deterministic so a song never
+// silently changes identity.
 package enrich
 
 import (
@@ -106,15 +107,18 @@ func LoadOverrides(path string) (map[string]Override, error) {
 
 // AssignTiers splits records into canon / middle / deep-cut by playcount
 // percentile within the list: top third canon, bottom third deep cut. The
-// split is relative to the list, so it scales with any song count.
+// split is relative to the list, so it scales with any song count. Records
+// with no metrics (zero playcount, e.g. unmatched songs) get no tier.
 func AssignTiers(recs []Record) {
 	type pc struct {
 		i int
 		n int64
 	}
-	idx := make([]pc, len(recs))
+	var idx []pc
 	for i, r := range recs {
-		idx[i] = pc{i, r.LastfmPlaycount}
+		if r.LastfmPlaycount > 0 {
+			idx = append(idx, pc{i, r.LastfmPlaycount})
+		}
 	}
 	sort.Slice(idx, func(a, b int) bool { return idx[a].n > idx[b].n })
 	n := len(idx)
@@ -149,7 +153,9 @@ func Merge(songs []csvio.Song, fetched map[string]Record, cached *File, override
 			if old, hit := cachedByKey[k]; hit && old.SpotifyID != "" {
 				rec = old // keep a previously matched record rather than dropping it
 			} else {
-				problems = append(problems, fmt.Sprintf("unmatched: %s - %s", s.Song, s.Artist))
+				// defensive: the caller always supplies a record, even
+				// unmatched; if somehow there is none, list and skip
+				problems = append(problems, fmt.Sprintf("no data: %s - %s", s.Song, s.Artist))
 				continue
 			}
 		}
@@ -168,6 +174,9 @@ func Merge(songs []csvio.Song, fetched map[string]Record, cached *File, override
 		}
 		if rec.MatchConfidence == "" {
 			rec.MatchConfidence = "exact"
+		}
+		if rec.SpotifyID == "" {
+			problems = append(problems, fmt.Sprintf("unmatched (renders without Spotify link): %s - %s", s.Song, s.Artist))
 		}
 		out.Songs = append(out.Songs, rec)
 	}

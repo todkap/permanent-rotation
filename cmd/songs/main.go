@@ -11,6 +11,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -167,7 +168,14 @@ func runSite(outPath, siteDir, contextPath, base string) {
 	if err != nil {
 		fail(err)
 	}
-	if err := site.Render(f, ctx, siteDir, base); err != nil {
+	// optional narrative chapter order: a plain text file next to the
+	// enriched data, one chapter name per line, editable in the web UI.
+	// Missing file just means the year+stage fallback orders everything.
+	var chapterOrder []string
+	if b, err := os.ReadFile(filepath.Join(filepath.Dir(outPath), "chapter_order.txt")); err == nil {
+		chapterOrder = strings.Split(string(b), "\n")
+	}
+	if err := site.Render(f, ctx, siteDir, base, chapterOrder); err != nil {
 		fail(err)
 	}
 	fmt.Printf("rendered %d songs -> %s\n", len(f.Songs), siteDir)
