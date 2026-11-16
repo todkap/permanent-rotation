@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T13:43:55Z",
+  "generated_at": "2026-11-16T13:58:58Z",
   "songs": [
     {
       "song": "Regret",
@@ -17,7 +17,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:42Z"
+      "fetched_at": "2026-11-16T13:58:45Z"
     },
     {
       "song": "Smells like Teen Spirit",
@@ -35,7 +35,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:42Z"
+      "fetched_at": "2026-11-16T13:58:45Z"
     },
     {
       "song": "Home Sweet Home",
@@ -53,7 +53,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:42Z"
+      "fetched_at": "2026-11-16T13:58:45Z"
     },
     {
       "song": "Dreams",
@@ -71,7 +71,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:42Z"
+      "fetched_at": "2026-11-16T13:58:46Z"
     },
     {
       "song": "Summer",
@@ -89,7 +89,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:43Z"
+      "fetched_at": "2026-11-16T13:58:46Z"
     },
     {
       "song": "Heartspark Dollarsign",
@@ -107,7 +107,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:43Z"
+      "fetched_at": "2026-11-16T13:58:46Z"
     },
     {
       "song": "I'll Be",
@@ -125,7 +125,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:44Z"
+      "fetched_at": "2026-11-16T13:58:47Z"
     },
     {
       "song": "Hey Ya",
@@ -143,7 +143,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T13:43:44Z"
+      "fetched_at": "2026-11-16T13:58:47Z"
     },
     {
       "song": "Nightswimming",
@@ -161,12 +161,12 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:44Z"
+      "fetched_at": "2026-11-16T13:58:47Z"
     },
     {
       "song": "Joey",
       "artist": "Concrete Blonde",
-      "life_year": 1990,
+      "life_year": 1993,
       "chapter": "College / First Girlfriend",
       "memory": "Driving around southeastern Massachusetts on my way to see my girlfriend, now my wife. One of the best alternative songs with a female lead singer, which I discovered watching the early years of 90210.",
       "tags": "WBRU / College / 90210 /Rhode Island / Taunton / First girlfriend",
@@ -179,7 +179,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:44Z"
+      "fetched_at": "2026-11-16T13:58:48Z"
     },
     {
       "song": "Freshman",
@@ -197,7 +197,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T13:43:45Z"
+      "fetched_at": "2026-11-16T13:58:48Z"
     },
     {
       "song": "Teenage Love",
@@ -215,7 +215,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:45Z"
+      "fetched_at": "2026-11-16T13:58:48Z"
     },
     {
       "song": "Deep Cover",
@@ -229,7 +229,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "unmatched",
-      "fetched_at": "2026-11-16T13:43:46Z"
+      "fetched_at": "2026-11-16T13:58:49Z"
     },
     {
       "song": "Welcome to the Terrordome",
@@ -247,7 +247,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:46Z"
+      "fetched_at": "2026-11-16T13:58:49Z"
     },
     {
       "song": "Papercut",
@@ -265,7 +265,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:46Z"
+      "fetched_at": "2026-11-16T13:58:50Z"
     },
     {
       "song": "Love Song",
@@ -283,7 +283,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T13:43:47Z"
+      "fetched_at": "2026-11-16T13:58:50Z"
     },
     {
       "song": "Here Comes a Regular",
@@ -301,7 +301,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:47Z"
+      "fetched_at": "2026-11-16T13:58:50Z"
     },
     {
       "song": "More than Words",
@@ -319,7 +319,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:47Z"
+      "fetched_at": "2026-11-16T13:58:51Z"
     },
     {
       "song": "Silent Running",
@@ -337,7 +337,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:48Z"
+      "fetched_at": "2026-11-16T13:58:51Z"
     },
     {
       "song": "Something's Always Wrong",
@@ -355,7 +355,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:48Z"
+      "fetched_at": "2026-11-16T13:58:51Z"
     },
     {
       "song": "Somewhere Only We Know",
@@ -373,7 +373,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:48Z"
+      "fetched_at": "2026-11-16T13:58:52Z"
     },
     {
       "song": "With or Without You",
@@ -391,7 +391,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:49Z"
+      "fetched_at": "2026-11-16T13:58:52Z"
     },
     {
       "song": "Would",
@@ -409,7 +409,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T13:43:49Z"
+      "fetched_at": "2026-11-16T13:58:52Z"
     },
     {
       "song": "Tiny Dancer",
@@ -427,7 +427,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:49Z"
+      "fetched_at": "2026-11-16T13:58:52Z"
     },
     {
       "song": "Brick",
@@ -445,7 +445,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:50Z"
+      "fetched_at": "2026-11-16T13:58:53Z"
     },
     {
       "song": "Scenario",
@@ -463,7 +463,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T13:43:50Z"
+      "fetched_at": "2026-11-16T13:58:53Z"
     },
     {
       "song": "Mayonaise",
@@ -481,12 +481,12 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T13:43:50Z"
+      "fetched_at": "2026-11-16T13:58:54Z"
     },
     {
       "song": "There is a light that never goes out",
       "artist": "The Smiths",
-      "life_year": 1992,
+      "life_year": 1994,
       "chapter": "College Roommates",
       "memory": "My roommate junior year introduced me to the Smiths. I loved how they put their songs together and the confidence the singer had.",
       "tags": "Confident british singer / intelligent and fun lyrics / college roomates",
@@ -499,12 +499,12 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T13:43:50Z"
+      "fetched_at": "2026-11-16T13:58:54Z"
     },
     {
       "song": "Someday I Suppose",
       "artist": "Mighty Mighty Bosstones",
-      "life_year": 1993,
+      "life_year": 1997,
       "chapter": "Post-College / Boston",
       "memory": "We went to a New Year's Eve concert at the Middle East. The music was intense. The basement had exposed pipes, and condensation was dripping off them. The music is super energetic and hardcore, but also very catchy.",
       "tags": "New Years / Boston / Middle East / Ska / post college",
@@ -517,7 +517,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T13:43:51Z"
+      "fetched_at": "2026-11-16T13:58:54Z"
     },
     {
       "song": "So What'Cha Want",
@@ -535,7 +535,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:51Z"
+      "fetched_at": "2026-11-16T13:58:55Z"
     },
     {
       "song": "The Old Apartment",
@@ -553,7 +553,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:51Z"
+      "fetched_at": "2026-11-16T13:58:55Z"
     },
     {
       "song": "Title and Registration",
@@ -571,7 +571,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:52Z"
+      "fetched_at": "2026-11-16T13:58:55Z"
     },
     {
       "song": "Demons",
@@ -589,7 +589,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:52Z"
+      "fetched_at": "2026-11-16T13:58:56Z"
     },
     {
       "song": "Colors",
@@ -607,7 +607,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:52Z"
+      "fetched_at": "2026-11-16T13:58:56Z"
     },
     {
       "song": "I Write Sins Not Tragedies",
@@ -625,7 +625,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:53Z"
+      "fetched_at": "2026-11-16T13:58:56Z"
     },
     {
       "song": "Thnks fr th Mmrs",
@@ -643,7 +643,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:53Z"
+      "fetched_at": "2026-11-16T13:58:57Z"
     },
     {
       "song": "My Name Is Jonas",
@@ -661,7 +661,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:53Z"
+      "fetched_at": "2026-11-16T13:58:57Z"
     },
     {
       "song": "Monsters (feat. blackbear)",
@@ -679,7 +679,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:54Z"
+      "fetched_at": "2026-11-16T13:58:57Z"
     },
     {
       "song": "Enjoy the Silence",
@@ -697,7 +697,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:54Z"
+      "fetched_at": "2026-11-16T13:58:58Z"
     },
     {
       "song": "Barrel of a Gun",
@@ -715,7 +715,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:43:54Z"
+      "fetched_at": "2026-11-16T13:58:58Z"
     },
     {
       "song": "11 Minutes",
@@ -733,7 +733,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T13:43:55Z"
+      "fetched_at": "2026-11-16T13:58:58Z"
     }
   ]
 }
