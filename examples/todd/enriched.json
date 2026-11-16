@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T18:16:53Z",
+  "generated_at": "2026-11-16T18:29:26Z",
   "songs": [
     {
       "song": "Regret",
@@ -18,7 +18,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:40Z"
+      "fetched_at": "2026-11-16T18:29:06Z"
     },
     {
       "song": "Smells Like Teen Spirit",
@@ -37,7 +37,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:40Z"
+      "fetched_at": "2026-11-16T18:29:06Z"
     },
     {
       "song": "Home Sweet Home",
@@ -56,7 +56,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:40Z"
+      "fetched_at": "2026-11-16T18:29:06Z"
     },
     {
       "song": "Dreams",
@@ -73,9 +73,9 @@
       "lastfm_listeners": 281733,
       "lastfm_playcount": 1495595,
       "spotify_popularity": null,
-      "tier": "middle",
+      "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:41Z"
+      "fetched_at": "2026-11-16T18:29:07Z"
     },
     {
       "song": "Summer",
@@ -95,7 +95,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:41Z"
+      "fetched_at": "2026-11-16T18:29:07Z"
     },
     {
       "song": "Heartspark Dollarsign",
@@ -115,7 +115,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:41Z"
+      "fetched_at": "2026-11-16T18:29:08Z"
     },
     {
       "song": "I'll Be",
@@ -130,12 +130,12 @@
       "album": "Misguided Roses",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02e1076bcd33dbf8d74f88e4a9",
       "seen_live": "Jimmy V benefit concert, Raleigh, 2001",
-      "lastfm_listeners": 382588,
-      "lastfm_playcount": 2361095,
+      "lastfm_listeners": 382528,
+      "lastfm_playcount": 2360715,
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:42Z"
+      "fetched_at": "2026-11-16T18:29:09Z"
     },
     {
       "song": "Hey Ya",
@@ -154,7 +154,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T18:16:42Z"
+      "fetched_at": "2026-11-16T18:29:09Z"
     },
     {
       "song": "Nightswimming",
@@ -173,7 +173,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:43Z"
+      "fetched_at": "2026-11-16T18:29:09Z"
     },
     {
       "song": "Joey",
@@ -192,7 +192,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:43Z"
+      "fetched_at": "2026-11-16T18:29:10Z"
     },
     {
       "song": "The Freshmen",
@@ -212,7 +212,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T18:16:43Z"
+      "fetched_at": "2026-11-16T18:29:10Z"
     },
     {
       "song": "Teenage Love",
@@ -231,7 +231,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:43Z"
+      "fetched_at": "2026-11-16T18:29:11Z"
     },
     {
       "song": "Deep Cover",
@@ -245,7 +245,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "unmatched",
-      "fetched_at": "2026-11-16T18:16:44Z"
+      "fetched_at": "2026-11-16T18:29:11Z"
     },
     {
       "song": "Welcome to the Terrordome",
@@ -264,7 +264,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:44Z"
+      "fetched_at": "2026-11-16T18:29:12Z"
     },
     {
       "song": "Papercut",
@@ -279,12 +279,12 @@
       "album": "Hybrid Theory (Bonus Edition)",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02e2f039481babe23658fc719a",
       "seen_live": "Saitama, Japan, 2025",
-      "lastfm_listeners": 1837521,
-      "lastfm_playcount": 20828486,
+      "lastfm_listeners": 1837207,
+      "lastfm_playcount": 20824803,
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:45Z"
+      "fetched_at": "2026-11-16T18:29:12Z"
     },
     {
       "song": "Love Song",
@@ -298,12 +298,12 @@
       "release_year": 1989,
       "album": "Disintegration (Deluxe Edition)",
       "album_art": "https://i.scdn.co/image/ab67616d00001e025eaaa770d39591fd91b2b03b",
-      "lastfm_listeners": 897385,
-      "lastfm_playcount": 6558012,
+      "lastfm_listeners": 897494,
+      "lastfm_playcount": 6558712,
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T18:16:45Z"
+      "fetched_at": "2026-11-16T18:29:12Z"
     },
     {
       "song": "Here Comes a Regular",
@@ -322,7 +322,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:45Z"
+      "fetched_at": "2026-11-16T18:29:13Z"
     },
     {
       "song": "More than Words",
@@ -341,7 +341,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:46Z"
+      "fetched_at": "2026-11-16T18:29:13Z"
     },
     {
       "song": "Silent Running",
@@ -360,7 +360,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:46Z"
+      "fetched_at": "2026-11-16T18:29:13Z"
     },
     {
       "song": "Something's Always Wrong",
@@ -380,7 +380,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:46Z"
+      "fetched_at": "2026-11-16T18:29:13Z"
     },
     {
       "song": "Somewhere Only We Know",
@@ -394,12 +394,12 @@
       "release_year": 2004,
       "album": "Somewhere Only We Know",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02f806a7942ff458ea7653edd7",
-      "lastfm_listeners": 2609560,
-      "lastfm_playcount": 28106508,
+      "lastfm_listeners": 2609063,
+      "lastfm_playcount": 28102215,
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:47Z"
+      "fetched_at": "2026-11-16T18:29:14Z"
     },
     {
       "song": "With or Without You",
@@ -413,12 +413,12 @@
       "release_year": 1987,
       "album": "The Joshua Tree (Super Deluxe)",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02b7bea3d01f04e6d0408d2afe",
-      "lastfm_listeners": 1691200,
-      "lastfm_playcount": 12819481,
+      "lastfm_listeners": 1691098,
+      "lastfm_playcount": 12818650,
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:47Z"
+      "fetched_at": "2026-11-16T18:29:14Z"
     },
     {
       "song": "Would?",
@@ -432,12 +432,12 @@
       "release_year": 2001,
       "album": "Greatest Hits",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02647a4d34d01e14d967106fbb",
-      "lastfm_listeners": 916860,
-      "lastfm_playcount": 7788357,
+      "lastfm_listeners": 916901,
+      "lastfm_playcount": 7788758,
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:47Z"
+      "fetched_at": "2026-11-16T18:29:15Z"
     },
     {
       "song": "Tiny Dancer",
@@ -457,7 +457,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:48Z"
+      "fetched_at": "2026-11-16T18:29:15Z"
     },
     {
       "song": "Brick",
@@ -477,7 +477,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:48Z"
+      "fetched_at": "2026-11-16T18:29:16Z"
     },
     {
       "song": "Scenario",
@@ -497,7 +497,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T18:16:48Z"
+      "fetched_at": "2026-11-16T18:29:16Z"
     },
     {
       "song": "Mayonaise",
@@ -512,12 +512,12 @@
       "album": "Siamese Dream (Deluxe Edition)",
       "album_art": "https://i.scdn.co/image/ab67616d00001e025274788f34fc7656d2856dfd",
       "seen_live": "Lollapalooza, Kingston, RI, 1994",
-      "lastfm_listeners": 309987,
-      "lastfm_playcount": 1706561,
+      "lastfm_listeners": 310010,
+      "lastfm_playcount": 1706696,
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T18:16:48Z"
+      "fetched_at": "2026-11-16T18:29:16Z"
     },
     {
       "song": "There Is a Light That Never Goes Out",
@@ -536,7 +536,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T18:16:49Z"
+      "fetched_at": "2026-11-16T18:29:17Z"
     },
     {
       "song": "Someday I Suppose",
@@ -556,7 +556,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T18:16:49Z"
+      "fetched_at": "2026-11-16T18:29:17Z"
     },
     {
       "song": "So What'Cha Want",
@@ -571,12 +571,12 @@
       "album": "Check Your Head",
       "album_art": "https://i.scdn.co/image/ab67616d00001e0208478de146aa7404e54dbf16",
       "seen_live": "Lollapalooza, Kingston, RI, 1994",
-      "lastfm_listeners": 423226,
-      "lastfm_playcount": 2037342,
+      "lastfm_listeners": 423263,
+      "lastfm_playcount": 2037553,
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "manual",
-      "fetched_at": "2026-11-16T18:16:49Z"
+      "fetched_at": "2026-11-16T18:29:17Z"
     },
     {
       "song": "The Old Apartment",
@@ -591,12 +591,12 @@
       "album": "Born on a Pirate Ship (Enhanced Edition)",
       "album_art": "https://i.scdn.co/image/ab67616d00001e0290a09aa3edca8b7cd812d03c",
       "seen_live": "Harborlights, Boston, 1997",
-      "lastfm_listeners": 143484,
-      "lastfm_playcount": 786629,
+      "lastfm_listeners": 143477,
+      "lastfm_playcount": 786579,
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:50Z"
+      "fetched_at": "2026-11-16T18:29:17Z"
     },
     {
       "song": "Title and Registration",
@@ -616,7 +616,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:50Z"
+      "fetched_at": "2026-11-16T18:29:18Z"
     },
     {
       "song": "Demons",
@@ -636,7 +636,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:50Z"
+      "fetched_at": "2026-11-16T18:29:18Z"
     },
     {
       "song": "Colors",
@@ -656,7 +656,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:51Z"
+      "fetched_at": "2026-11-16T18:29:18Z"
     },
     {
       "song": "I Write Sins Not Tragedies",
@@ -671,12 +671,12 @@
       "album": "A Fever You Can't Sweat Out",
       "album_art": "https://i.scdn.co/image/ab67616d00001e023ab3ff3559d2664560e1fdb4",
       "seen_live": "Raleigh, 2016",
-      "lastfm_listeners": 2321386,
-      "lastfm_playcount": 23929739,
+      "lastfm_listeners": 2321586,
+      "lastfm_playcount": 23932237,
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:51Z"
+      "fetched_at": "2026-11-16T18:29:19Z"
     },
     {
       "song": "Thnks fr th Mmrs",
@@ -696,7 +696,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:51Z"
+      "fetched_at": "2026-11-16T18:29:19Z"
     },
     {
       "song": "My Name Is Jonas",
@@ -711,12 +711,12 @@
       "album": "Weezer",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02345536847e60f622ee0eae96",
       "seen_live": "Raleigh, 2016 (with Panic! At The Disco)",
-      "lastfm_listeners": 1107846,
-      "lastfm_playcount": 7261612,
+      "lastfm_listeners": 1107901,
+      "lastfm_playcount": 7262066,
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:52Z"
+      "fetched_at": "2026-11-16T18:29:19Z"
     },
     {
       "song": "Monsters (feat. blackbear)",
@@ -735,7 +735,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:52Z"
+      "fetched_at": "2026-11-16T18:29:20Z"
     },
     {
       "song": "Enjoy the Silence",
@@ -754,7 +754,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:52Z"
+      "fetched_at": "2026-11-16T18:29:20Z"
     },
     {
       "song": "Barrel of a Gun",
@@ -774,7 +774,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:16:52Z"
+      "fetched_at": "2026-11-16T18:29:20Z"
     },
     {
       "song": "11 Minutes",
@@ -793,7 +793,65 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T18:16:53Z"
+      "fetched_at": "2026-11-16T18:29:20Z"
+    },
+    {
+      "song": "Footloose",
+      "artist": "Kenny Loggins",
+      "life_year": 1984,
+      "chapter": "Childhood / Prospect St",
+      "memory": "Kenny Loggins brings me back to my childhood living on prospect street. This was one of a bunch of songs from the soundtrack. Loved the small town feel and also that this was a movie too. The dance at the end just makes me happy.",
+      "tags": "80s movie soundtracks / small town feel / dance ending",
+      "spotify_id": "6W2VbtvMrDXm5vYeB7amkO",
+      "spotify_url": "https://open.spotify.com/track/6W2VbtvMrDXm5vYeB7amkO",
+      "release_year": 1997,
+      "album": "Yesterday, Today, Tomorrow - The Greatest Hits Of Kenny Loggins",
+      "album_art": "https://i.scdn.co/image/ab67616d00001e0219db9ac54c80a898a179f0f1",
+      "lastfm_listeners": 789442,
+      "lastfm_playcount": 3885658,
+      "spotify_popularity": null,
+      "tier": "middle",
+      "match_confidence": "exact",
+      "fetched_at": "2026-11-16T18:29:22Z"
+    },
+    {
+      "song": "Eye of the Tiger",
+      "artist": "Survivor",
+      "life_year": 1982,
+      "chapter": "Childhood / Prospect St",
+      "memory": "One of the first arena rock type songs. Early songs for me were mostly tied to movies. This one for Rocky and the boxing scenes. While I saw all of the movies, this one makes me think of a later one with Ivan Drago.",
+      "tags": "early arena rock / Rocky / boxing scenes / Ivan Drago",
+      "spotify_id": "2HHtWyy5CgaQbC7XSoOb0e",
+      "spotify_url": "https://open.spotify.com/track/2HHtWyy5CgaQbC7XSoOb0e",
+      "release_year": 1982,
+      "album": "Eye Of The Tiger",
+      "album_art": "https://i.scdn.co/image/ab67616d00001e024e2755e7a96ec5e062c76aac",
+      "lastfm_listeners": 1876850,
+      "lastfm_playcount": 12258062,
+      "spotify_popularity": null,
+      "tier": "canon",
+      "match_confidence": "exact",
+      "fetched_at": "2026-11-16T18:29:24Z"
+    },
+    {
+      "song": "Crazy for You",
+      "artist": "Madonna",
+      "life_year": 1985,
+      "chapter": "Childhood / Prospect St",
+      "memory": "Lots of great songs from her collection but this one stood out. Not sure why it stands out but I think it is mostly her singing voice in this song. One of the first love ballads I loved.",
+      "tags": "early love ballad / Madonna voice",
+      "spotify_id": "3iIi0NOco9hyukT6jFZ4dX",
+      "spotify_url": "https://open.spotify.com/track/3iIi0NOco9hyukT6jFZ4dX",
+      "release_year": 2009,
+      "album": "Celebration (Deluxe Version)",
+      "album_art": "https://i.scdn.co/image/ab67616d00001e02d92f642943d7eab422fdaf13",
+      "lastfm_listeners": 339031,
+      "lastfm_playcount": 2197356,
+      "spotify_popularity": null,
+      "tier": "middle",
+      "match_confidence": "exact",
+      "year_conflict": true,
+      "fetched_at": "2026-11-16T18:29:26Z"
     }
   ]
 }
