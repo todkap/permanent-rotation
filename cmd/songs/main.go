@@ -110,9 +110,35 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 				rec.MatchConfidence = old.MatchConfidence
 				rec.SpotifyPopularity = old.SpotifyPopularity
 				rec.AlbumArt = old.AlbumArt
+				rec.YearConflict = old.YearConflict
 				// Existing matches stay pinned, including while adding art.
 				needMatch = false
 				break
+			}
+		}
+		// Re-resolve cached matches that landed on a hits package or expanded
+		// re-release: Spotify's top hit for a catalog song is often a later
+		// compilation (e.g. Zombie pinned to Gold 2008 instead of No Need To
+		// Argue 1994). One live search per flagged song; the pin only moves
+		// when the same title+artist exists on an earlier release, and every
+		// move is printed so the run log shows what changed.
+		if !needMatch && env("SPOTIFY_CLIENT_ID") != "" && (spotify.LooksLikeCompilation(rec.Album) || rec.YearConflict) {
+			if tracks, err := sp.Search(s.Song, s.Artist); err != nil {
+				fmt.Fprintln(os.Stderr, "warn:", err)
+			} else if best, exact := spotify.PickBest(tracks, s.Song, s.Artist); exact {
+				by := 0
+				if len(best.ReleaseDate) >= 4 {
+					fmt.Sscanf(best.ReleaseDate[:4], "%d", &by)
+				}
+				if by > 0 && by < rec.ReleaseYear {
+					fmt.Printf("re-matched: %s - %s (%s %d -> %s %d)\n", s.Song, s.Artist, rec.Album, rec.ReleaseYear, best.Album, by)
+					rec.SpotifyID, rec.SpotifyURL = best.ID, best.URL
+					rec.Album, rec.ReleaseYear = best.Album, by
+					rec.AlbumArt = best.AlbumArt
+					rec.SpotifyPopularity = best.Popularity
+					rec.MatchConfidence = "exact"
+					rec.YearConflict = false
+				}
 			}
 		}
 		if needMatch && env("SPOTIFY_CLIENT_ID") != "" {
@@ -120,7 +146,7 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 			if err != nil {
 				fmt.Fprintln(os.Stderr, "warn:", err)
 			} else if len(tracks) > 0 {
-				best := tracks[0]
+				best, exactMatch := spotify.PickBest(tracks, s.Song, s.Artist)
 				rec.SpotifyID, rec.SpotifyURL = best.ID, best.URL
 				rec.Album = best.Album
 				rec.AlbumArt = best.AlbumArt
@@ -128,7 +154,7 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 				if len(best.ReleaseDate) >= 4 {
 					fmt.Sscanf(best.ReleaseDate[:4], "%d", &rec.ReleaseYear)
 				}
-				if strings.EqualFold(best.Name, s.Song) && strings.EqualFold(best.Artist, s.Artist) {
+				if exactMatch {
 					rec.MatchConfidence = "exact"
 				} else {
 					rec.MatchConfidence = "fuzzy"
