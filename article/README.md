@@ -21,9 +21,9 @@ A few decisions shaped everything else:
 
 The final round made the site itself more visual. Every card now carries its album cover from Spotify, there is a stats page (50 songs across five eras, 1971 to 2020, 25 seen live), and the titles are the official ones. That last one sounds small, but it matters to anyone who knows the songs: it is The Freshmen, not Freshman, and There Is a Light That Never Goes Out.
 
-![A song card from the live site: album cover, my memory in my own words, the AI-written background note with its source link, and the seen-live tag](https://todkap.github.io/permanent-rotation/article-song-card.png)
+![A song card from the live site: album cover, my memory in my own words, the AI-written background note with its source link, and the seen-live tag](../assets/article-song-card.png)
 
-![The stats page: 50 songs, five eras, 1971 to 2020, 25 seen live](https://todkap.github.io/permanent-rotation/article-stats.png)
+![The stats page: 50 songs, five eras, 1971 to 2020, 25 seen live](../assets/article-stats.png)
 
 ### The APIs, and why those
 
@@ -59,7 +59,7 @@ Memory mostly held up in one more place: the shows. For the songs I saw live, In
 
 Matching is deterministic, cached, and honest about failure. Any match the tool is unsure about gets printed for you to confirm, and you can pin one by hand in an overrides file. A song that cannot be matched still renders, your words and its note intact, just without a Spotify link. Deep Cover is on my list and stayed unmatched, because the alternative was faking a link to the wrong track. Nothing is ever invented. I wish I could say the same for the background notes on their first pass.
 
-![The Deep Cover card with its placeholder cover: unmatched songs still render, words and note intact, with no invented link](https://todkap.github.io/permanent-rotation/article-deep-cover.png)
+![The Deep Cover card with its placeholder cover: unmatched songs still render, words and note intact, with no invented link](../assets/article-deep-cover.png)
 
 ### Built without a terminal
 
