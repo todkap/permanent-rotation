@@ -161,3 +161,26 @@ func StyleIssue(note, song, artist string) string {
 	}
 	return ""
 }
+
+// AlbumYearIssue checks a relationship, not just a bag of allowed years.
+// The year of a single must not be attached to the album it appeared on.
+func AlbumYearIssue(note, album string, releaseYear int) string {
+	if album == "" || releaseYear == 0 {
+		return ""
+	}
+	title := regexp.QuoteMeta(album)
+	patterns := []string{
+		`(?i)(?:released|issued|appeared)\s+(?:in\s+)?((?:19|20)\d{2})\s+(?:on|from)\s+(?:the\s+)?(?:[^.!?;\n]{0,80}?\balbum\s+)?["']?` + title,
+		`(?i)((?:19|20)\d{2})\s+(?:studio\s+)?album\s+["']?` + title,
+		`(?i)album\s+["']?` + title + `["']?\s*\(\s*((?:19|20)\d{2})\s*\)`,
+	}
+	want := fmt.Sprint(releaseYear)
+	for _, pattern := range patterns {
+		for _, m := range regexp.MustCompile(pattern).FindAllStringSubmatch(note, -1) {
+			if m[1] != want {
+				return "album-year mismatch: " + album + " is dated " + want + " in the selected release facts; do not attach single year " + m[1] + " to that album"
+			}
+		}
+	}
+	return ""
+}

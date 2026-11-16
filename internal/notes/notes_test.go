@@ -98,3 +98,22 @@ func TestV2TitlePronounsAreNotNarration(t *testing.T) {
 		t.Fatal("second person passed")
 	}
 }
+
+func TestAlbumYearRelationship(t *testing.T) {
+	for _, tc := range []struct {
+		note, album string
+		year        int
+		bad         bool
+	}{
+		{`Released in 1993 on the album Automatic for the People, the song features piano.`, "Automatic for the People", 1992, true},
+		{`Released in 1992 on A Tribe Called Quest's album The Low End Theory, the song features Busta.`, "The Low End Theory", 1991, true},
+		{`Released in 1992 on the album The Low End Theory, the song features Busta.`, "The Low End Theory", 1991, true},
+		{`The song appears on the 1992 album The Low End Theory.`, "The Low End Theory", 1991, true},
+		{`From the 1991 album The Low End Theory, the song was released as a single in 1992.`, "The Low End Theory", 1991, false},
+		{`Nightswimming was a 1993 single from Automatic for the People (1992).`, "Automatic for the People", 1992, false},
+	} {
+		if got := AlbumYearIssue(tc.note, tc.album, tc.year) != ""; got != tc.bad {
+			t.Errorf("bad=%v want %v: %s", got, tc.bad, tc.note)
+		}
+	}
+}

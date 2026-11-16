@@ -16,8 +16,11 @@ const apiURL = "https://en.wikipedia.org/w/api.php"
 const MaxExtract = 1500
 
 type Client struct {
-	hc     *http.Client
-	apiURL string
+	hc           *http.Client
+	apiURL       string
+	lastRequest  time.Time
+	blockedUntil time.Time
+	cache        map[string][]byte
 }
 
 func New() *Client { return &Client{hc: &http.Client{Timeout: 15 * time.Second}, apiURL: apiURL} }
@@ -56,14 +59,7 @@ func (c *Client) LookupRelease(song, artist, album string) (title, pageURL, extr
 			if page.disambiguation || page.extract == "" {
 				continue
 			}
-			// Search rank alone is not a binding to the requested performer.
-			if !strings.Contains(strings.ToLower(page.extract), strings.ToLower(strings.TrimSpace(stripFeat(artist)))) {
-				continue
-			}
-			identity := strings.ToLower(page.title + " " + page.extract)
-			songOK := strings.Contains(identity, strings.ToLower(song))
-			albumOK := album != "" && strings.Contains(strings.ToLower(page.title), strings.ToLower(album))
-			if !songOK && !albumOK {
+			if !belongs(page, song, artist, album) {
 				continue
 			}
 			text := strings.Join(strings.Fields(page.extract), " ")
@@ -121,7 +117,7 @@ func (c *Client) page(title string) (article, error) {
 		Query struct {
 			Pages map[string]struct {
 				Title, FullURL, Extract string
-				Missing                 bool
+				Missing                 json.RawMessage
 				PageProps               map[string]json.RawMessage `json:"pageprops"`
 				Revisions               []struct {
 					Slots struct {
@@ -137,14 +133,14 @@ func (c *Client) page(title string) (article, error) {
 		return article{}, err
 	}
 	for _, p := range x.Query.Pages {
-		if !p.Missing {
+		if len(p.Missing) == 0 {
 			t := p.Title
 			if t == "" {
 				t = title
 			}
 			u := p.FullURL
 			if u == "" {
-				u = "https://en.wikipedia.org/wiki/" + strings.ReplaceAll(t, " ", "_")
+				u = (&url.URL{Scheme: "https", Host: "en.wikipedia.org", Path: "/wiki/" + strings.ReplaceAll(t, " ", "_")}).String()
 			}
 			_, disamb := p.PageProps["disambiguation"]
 			low := strings.ToLower(p.Extract)
@@ -176,6 +172,19 @@ func albumHint(w string) string {
 	return regexp.MustCompile(`\s*\([^)]*\)$`).ReplaceAllString(name, "")
 }
 func (c *Client) get(q url.Values) ([]byte, error) {
+	key := q.Encode()
+	if b, ok := c.cache[key]; ok {
+		return b, nil
+	}
+	if c.apiURL == apiURL {
+		if time.Now().Before(c.blockedUntil) {
+			return nil, fmt.Errorf("wikipedia: rate-limit cooldown; retry the notes run later")
+		}
+		if wait := time.Second - time.Since(c.lastRequest); wait > 0 {
+			time.Sleep(wait)
+		}
+		c.lastRequest = time.Now()
+	}
 	req, _ := http.NewRequest("GET", c.apiURL+"?"+q.Encode(), nil)
 	req.Header.Set("User-Agent", "permanent-rotation/0.1 (personal music list tool)")
 	resp, err := c.hc.Do(req)
@@ -184,9 +193,19 @@ func (c *Client) get(q url.Values) ([]byte, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
+		if resp.StatusCode == 429 {
+			c.blockedUntil = time.Now().Add(time.Minute)
+		}
 		return nil, fmt.Errorf("wikipedia: %s", resp.Status)
 	}
-	return io.ReadAll(resp.Body)
+	b, err := io.ReadAll(resp.Body)
+	if err == nil {
+		if c.cache == nil {
+			c.cache = map[string][]byte{}
+		}
+		c.cache[key] = b
+	}
+	return b, err
 }
 
 // SourceUsable validates an existing Wikipedia note URL without following
@@ -208,4 +227,47 @@ func (c *Client) SourceUsable(raw string) (bool, error) {
 		return false, err
 	}
 	return !page.disambiguation && page.extract != "", nil
+}
+
+var nonIdentity = regexp.MustCompile(`[^a-z0-9]+`)
+
+func identity(s string) string {
+	return strings.TrimSpace(nonIdentity.ReplaceAllString(strings.ToLower(s), " "))
+}
+func belongs(p article, song, artist, album string) bool {
+	text := identity(p.title + " " + p.extract)
+	performer := identity(stripFeat(artist))
+	artistOK := performer != "" && strings.Contains(text, performer)
+	// Joint credits may be phrased as "by Dr. Dre, featuring Snoop Dogg".
+	if !artistOK && strings.Contains(performer, " and ") {
+		artistOK = true
+		for _, part := range strings.Split(performer, " and ") {
+			artistOK = artistOK && strings.Contains(text, part)
+		}
+	}
+	return artistOK && (strings.Contains(text, identity(song)) || album != "" && strings.Contains(identity(p.title), identity(album)))
+}
+
+// CheckSource verifies identity as well as existence before an existing note may skip.
+// A raw question mark is a query delimiter, not part of a Wikipedia title.
+func (c *Client) CheckSource(raw, song, artist, album string) (canonical string, usable bool, err error) {
+	u, err := url.Parse(raw)
+	if err != nil {
+		return "", false, err
+	}
+	if u.Scheme != "https" || u.Host != "en.wikipedia.org" || !strings.HasPrefix(u.Path, "/wiki/") || u.RawQuery != "" || strings.Contains(raw, "?") {
+		return "", false, nil
+	}
+	title, err := url.PathUnescape(strings.TrimPrefix(u.EscapedPath(), "/wiki/"))
+	if err != nil {
+		return "", false, err
+	}
+	p, err := c.page(strings.ReplaceAll(title, "_", " "))
+	if err != nil {
+		if strings.HasPrefix(err.Error(), "missing article ") {
+			return "", false, nil
+		}
+		return "", false, err
+	}
+	return p.url, !p.disambiguation && p.extract != "" && belongs(p, song, artist, album), nil
 }

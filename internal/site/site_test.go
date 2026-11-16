@@ -1,6 +1,7 @@
 package site
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -209,5 +210,60 @@ func TestArtworkLiveTagsAndStats(t *testing.T) {
 		if !strings.Contains(h, want) {
 			t.Errorf("missing %s", want)
 		}
+	}
+}
+
+func TestNavigationCountAndFriendlyDate(t *testing.T) {
+	for _, count := range []int{0, 2, 50} {
+		f := &enrich.File{GeneratedAt: "2026-11-16T23:00:00Z"}
+		for i := 0; i < count; i++ {
+			f.Songs = append(f.Songs, enrich.Record{Song: "Example", Artist: "Artist", Chapter: "Childhood", LifeYear: 1982, ReleaseYear: 1981})
+		}
+		dir := t.TempDir()
+		if err := Render(f, nil, dir, "https://todkap.github.io/permanent-rotation", []string{"## School Years", "Childhood"}); err != nil {
+			t.Fatal(err)
+		}
+		for _, name := range []string{"index.html", "stats.html"} {
+			b, _ := os.ReadFile(filepath.Join(dir, name))
+			html := string(b)
+			want := fmt.Sprintf(`content="%d songs grouped`, count)
+			if !strings.Contains(html, want) {
+				t.Errorf("%s og count not derived from actual %d records", name, count)
+			}
+			for _, text := range []string{"Read the story", "Updated <time", "November 16, 2026 (UTC)", `datetime="2026-11-16T23:00:00Z"`} {
+				if !strings.Contains(html, text) {
+					t.Errorf("%s missing %q", name, text)
+				}
+			}
+		}
+		b, _ := os.ReadFile(filepath.Join(dir, "index.html"))
+		html := string(b)
+		for _, text := range []string{"Two years, two stories", `id="top"`} {
+			if !strings.Contains(html, text) {
+				t.Error("missing " + text)
+			}
+		}
+		if count > 0 {
+			for _, text := range []string{`href="#era-1"`, `id="era-1"`, "Back to top"} {
+				if !strings.Contains(html, text) {
+					t.Error("missing " + text)
+				}
+			}
+		}
+	}
+}
+func TestPersonalLinksDoNotLeakIntoForks(t *testing.T) {
+	dir := t.TempDir()
+	if err := Render(&enrich.File{}, nil, dir, "https://someone.github.io/music", nil); err != nil {
+		t.Fatal(err)
+	}
+	b, _ := os.ReadFile(filepath.Join(dir, "index.html"))
+	if strings.Contains(string(b), "A personal list by Todd Kaplinger") || strings.Contains(string(b), "Read the story") {
+		t.Error("Todd intro leaked into fork")
+	}
+}
+func TestFriendlyDatePreservesUnknown(t *testing.T) {
+	if friendlyDate("") != "" || friendlyDate("unknown") != "unknown" {
+		t.Fatal("invented update date")
 	}
 }

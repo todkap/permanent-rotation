@@ -546,7 +546,7 @@ Tags from the listener: %s
 %s
 Verified facts, sourced from Spotify and Wikipedia:
 %s
-Write exactly 2 sentences about the song. Sentence 1: release context, chart history, or musical context, using ONLY the verified facts above - never state an album name, year, chart position, or any other specific that is not written there; if the facts do not include one, write around it, a shorter accurate note is better than a detailed wrong one. If the verified facts name the album the song appears on, mention it in sentence 1. Sentence 2: how the song connects to the listener's memory above, or its lasting resonance if no memory was shared. %sNever invent facts about the listener's life; you may only reference what they wrote above.
+Write exactly 2 sentences about the song. Sentence 1: release context, chart history, or musical context, using ONLY the verified facts above - never state an album name, year, chart position, or any other specific that is not written there; if the facts do not include one, write around it, a shorter accurate note is better than a detailed wrong one. Keep SINGLE release dates separate from ALBUM release dates. Never write "released in [single year] on the album [album]" when that album has a different year. Use separate explicit clauses, or omit the date if the relationship is uncertain. If the verified facts name the album the song appears on, mention it in sentence 1. Sentence 2: how the song connects to the listener's memory above, or its lasting resonance if no memory was shared. %sNever invent facts about the listener's life; you may only reference what they wrote above.
 
 Style rules: write in the third person; refer to the person as "this listener" or "the listener". Do not address the listener as you/your. Exact song or artist names may contain those words. Do not expand initials, abbreviations, or nicknames from the memory into names not provided in the facts. Do not put memory paraphrases in quotation marks. No self-corrections, restarts, or hedges (never write "wait", "actually", "no,", or similar). No meta commentary about the writing itself.
 
@@ -607,44 +607,42 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 		rec, haveRec := enriched[k]
 		old, hasOld := ctx.Notes[k]
 
-		// Skip logic: an existing note survives while the facts it was
-		// written against still hold. Stamped notes compare their recorded
-		// album/year to the current pin; legacy unstamped notes rely on the
-		// release_changed marker set by enrich when a pin moves. Anything
-		// else is preserved untouched.
-		regenReason := ""
-		if force {
-			regenReason = "forced regeneration"
-		}
-		if !force && hasOld && notes.Valid(old) {
-			stamped := old.Album != "" || old.ReleaseYear != 0
-			switch {
-			case stamped && haveRec && rec.Album != "" && (cleanAlbum(rec.Album) != old.Album || rec.ReleaseYear != old.ReleaseYear):
-				regenReason = fmt.Sprintf("pin moved since the note was written (%s %d -> %s %d)", old.Album, old.ReleaseYear, cleanAlbum(rec.Album), rec.ReleaseYear)
-			case stamped:
-				skipped++
-				report("note: skipped (existing note, facts current): %s - %s", s.Song, s.Artist)
-				continue
-			case haveRec && rec.ReleaseChanged:
-				regenReason = "release changed since this legacy note was written"
-			default:
-				skipped++
-				report("note: skipped (existing note): %s - %s", s.Song, s.Artist)
-				continue
+		// Validate legacy sources BEFORE skipping a note. Existence alone is
+		// insufficient: a grammar/disambiguation page is not a song source.
+		oldSourceOK, sourceNeedsRefresh := true, false
+		if hasOld {
+			canonical, ok, sourceErr := wk.CheckSource(old.SourceURL, s.Song, s.Artist, cleanAlbum(recAlbum(rec)))
+			if sourceErr != nil {
+				sourceNeedsRefresh = true
+				report("note source: %s: cannot verify existing source: %v; attempting fresh resolution", s.Song, sourceErr)
+			} else {
+				oldSourceOK = ok
+				sourceNeedsRefresh = !ok || canonical != old.SourceURL
 			}
+		}
+		albumIssue := ""
+		if hasOld && haveRec && rec.AlbumType != "single" {
+			albumIssue = notes.AlbumYearIssue(old.Note, cleanAlbum(rec.Album), rec.ReleaseYear)
+		}
+		regenReason := ""
+		switch {
+		case force:
+			regenReason = "forced regeneration"
+		case sourceNeedsRefresh:
+			regenReason = "source missing, changed, unverified or wrong identity"
+		case albumIssue != "":
+			regenReason = albumIssue
+		case hasOld && haveRec && rec.ReleaseChanged:
+			regenReason = "release changed since the note was written"
+		case hasOld && haveRec && (old.Album != "" || old.ReleaseYear != 0) && rec.Album != "" && (cleanAlbum(rec.Album) != old.Album || rec.ReleaseYear != old.ReleaseYear):
+			regenReason = "selected release differs from stamped note facts"
+		}
+		if !force && hasOld && notes.Valid(old) && regenReason == "" {
+			skipped++
+			report("note: skipped (existing note, source and release checked): %s - %s", s.Song, s.Artist)
+			continue
 		}
 
-		oldSourceOK := true
-		if hasOld {
-			if ok, err := wk.SourceUsable(old.SourceURL); err == nil {
-				oldSourceOK = ok
-				if !ok {
-					report("note source: %s: old source is disambiguation/empty and cannot be retained", s.Song)
-				}
-			} else {
-				report("note source: %s: old-source verification unavailable: %v", s.Song, err)
-			}
-		}
 		memCtx, memRule := "", "The listener did not share a personal memory for this one. "
 		if includeMemory && s.Memory != "" {
 			memCtx = "The listener's own words about it: " + s.Memory + "\n"
@@ -660,7 +658,7 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 				// title matches the song: the release is the single itself
 				factsLines = append(factsLines, fmt.Sprintf("- Release (Spotify data): %q (%d), a single", album, rec.ReleaseYear))
 			} else {
-				factsLines = append(factsLines, fmt.Sprintf("- Album (Spotify data): %q (%d)", album, rec.ReleaseYear))
+				factsLines = append(factsLines, fmt.Sprintf("- Selected ALBUM release (Spotify data): %q; ALBUM year: %d. A Wikipedia single date is NOT this album year.", album, rec.ReleaseYear))
 			}
 		}
 		wikiURL := ""
@@ -718,6 +716,8 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 				issue = "no real source URL in the response"
 			} else if si := notes.StyleIssue(n.Note, s.Song, s.Artist); si != "" {
 				issue = "style check failed: " + si
+			} else if ai := noteAlbumIssue(n.Note, rec); ai != "" {
+				issue = "fact check failed: " + ai
 			} else if ci := notes.ClaimIssue(n.Note, claimsText); ci != "" {
 				issue = "fact check failed: " + ci
 			} else {
@@ -748,7 +748,7 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 			} else {
 				report("note: written: %s - %s", s.Song, s.Artist)
 			}
-		case hasOld && (!oldSourceOK || regenReason != "" && !notes.ClaimsOK(old.Note, claimsText)):
+		case hasOld && (!oldSourceOK || albumIssue != "" || regenReason != "" && !notes.ClaimsOK(old.Note, claimsText)):
 			// the old note names facts that no longer hold and the rewrite
 			// failed: drop it rather than publish a stale album claim
 			delete(ctx.Notes, k)
@@ -777,7 +777,7 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 		}
 	}
 	report("notes: %d written, %d skipped (existing), %d retries, %d kept old after failed regeneration, %d dropped -> %s", added, skipped, retried, kept, dropped, contextPath)
-	fmt.Println("Review the notes before committing - the site only renders what you commit.")
+	fmt.Println("Review the generated note diff and published facts. The supplied Action commits and deploys automatically; it has no human review gate.")
 	flushSummary("Notes: per-song outcomes")
 }
 
@@ -791,4 +791,11 @@ func recAlbum(r *enrich.Record) string {
 // Keep regeneration state across the enrich step that precedes notes.
 func copyReleaseState(rec *enrich.Record, old enrich.Record) {
 	rec.ReleaseChanged = old.ReleaseChanged
+}
+
+func noteAlbumIssue(text string, rec *enrich.Record) string {
+	if rec == nil || rec.AlbumType == "single" {
+		return ""
+	}
+	return notes.AlbumYearIssue(text, cleanAlbum(rec.Album), rec.ReleaseYear)
 }

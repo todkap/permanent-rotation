@@ -16,6 +16,7 @@ import (
 	"path/filepath"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/todkap/permanent-rotation/internal/enrich"
 	"github.com/todkap/permanent-rotation/internal/notes"
@@ -91,6 +92,17 @@ nav ul a{font-size:.88rem}
 .song .row{flex-direction:column;gap:4px}
 .song .when{flex:none}
 }
+
+/* Approved navigation additions */
+
+.context-bar{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:18px 0;background:var(--navy-2)}
+.context-bar .wrap{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;font-size:.9rem}
+.context-bar .by{color:var(--muted);margin-right:auto}.context-bar a{color:var(--ice);text-decoration:none}.context-bar a:hover{text-decoration:underline}
+.browse{padding:28px 0 8px}.browse-label{font-size:.7rem;text-transform:uppercase;letter-spacing:.15em;color:var(--muted);margin:0 0 10px}
+.era-jumps{display:flex;flex-wrap:wrap;gap:8px 20px;list-style:none;padding:0;margin:0}.era-jumps a{color:var(--ice);text-decoration:none;font-size:.9rem;border-bottom:1px solid rgba(142,194,225,.35);padding-bottom:3px}
+.year-key{color:var(--muted);font-size:.83rem;margin:22px 0 0;line-height:1.7}.year-key strong{font-weight:600;color:var(--text)}
+.era-head h2{scroll-margin-top:90px}.back-top{text-align:right;margin-left:auto!important;font-size:.8rem!important;color:var(--muted)!important}.browse+main section{padding-top:24px}
+@media(max-width:760px){.context-bar .wrap{gap:10px 18px}.context-bar .by{flex-basis:100%;margin-right:0}.browse{padding-top:24px}.era-jumps{gap:12px 18px}.year-key{margin-top:20px}.hero{padding:36px 0 30px}.hero .lede{margin-bottom:0}.back-top{margin-left:0!important}.era-head h2{scroll-margin-top:120px}}
 `
 
 const navHTML = `<nav><div class="wrap">
@@ -164,6 +176,7 @@ func ParseChapterOrder(lines []string) (order []string, eraOf map[string]string)
 }
 
 type eraGroup struct {
+	ID       string
 	Name     string
 	Chapters []chapter
 }
@@ -295,17 +308,19 @@ var indexTpl = template.Must(template.New("index").Parse(`<!doctype html>
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<style>{{.CSS}}</style></head><body>
+<style>{{.CSS}}</style></head><body id="top">
 ` + navHTML + `
 <header class="hero"><div class="wrap">
 <p class="kicker">A list, not a ranking</p>
 <h1>Permanent <span class="accent">Rotation</span></h1>
 <p class="lede">{{.Count}} songs grouped by the chapter of life they arrived in. The memories are mine; the background notes are AI-researched, with sources linked.</p>
 </div></header>
+{{if .StoryURL}}<aside class="context-bar" aria-label="About this list"><div class="wrap"><span class="by">A personal list by Todd Kaplinger</span><a href="{{.StoryURL}}">Read the story</a><a href="https://github.com/todkap/permanent-rotation">View source</a><a href="{{.PlaylistURL}}">Spotify playlist &#8599;</a></div></aside>{{end}}
+<div class="browse"><div class="wrap">{{if .Eras}}<p class="browse-label">Jump to an era</p><ul class="era-jumps">{{range .Eras}}{{if .Name}}<li><a href="#{{.ID}}">{{.Name}}</a></li>{{end}}{{end}}</ul>{{end}}<p class="year-key"><strong>Two years, two stories.</strong> The year beside each card is when the song entered my life. The year beside the album is the release year.</p></div></div>
 <main><div class="wrap">
 <section>
 {{range .Eras}}{{if .Name}}
-<div class="era-head"><p class="eyebrow">Era</p><h2>{{.Name}}</h2></div>{{end}}{{range .Chapters}}
+<div class="era-head"><p class="eyebrow">Era</p><h2 id="{{.ID}}">{{.Name}}</h2></div>{{end}}{{range .Chapters}}
 <div class="chapter-head"><p class="eyebrow">Chapter</p><h2>{{.Name}}</h2></div>
 {{range .Songs}}<div class="song"><div class="row">
 <div class="when">{{.DecadeYear}}</div>
@@ -318,10 +333,10 @@ var indexTpl = template.Must(template.New("index").Parse(`<!doctype html>
 {{if .Note}}<div class="background"><span class="label">Background &middot; AI-researched &middot; source linked</span><p>{{.Note.Note}}</p><p class="src"><a href="{{.Note.SourceURL}}">Source</a></p></div>{{end}}
 {{if .SpotifyURL}}<p class="links"><a href="{{.SpotifyURL}}">Listen on Spotify</a></p>{{end}}
 </div></div></div>{{end}}
-{{end}}{{end}}
+{{end}}<p class="back-top"><a href="#top">Back to top &#8593;</a></p>{{end}}
 </section>
 </div></main>
-<footer><div class="wrap"><p class="note">Data as of {{if .GeneratedAt}}{{.GeneratedAt}}{{else}}not yet enriched{{end}} &middot; Built with <a href="https://github.com/todkap/permanent-rotation">permanent-rotation</a> by <a href="https://todkap.github.io/">Todd Kaplinger</a><span class="dot">.</span></p></div></footer>
+<footer><div class="wrap"><p class="note">{{if .GeneratedAt}}Updated <time datetime="{{.GeneratedAt}}" title="{{.GeneratedAt}}">{{.Updated}}</time>{{else}}Not yet enriched{{end}} &middot; Built with <a href="https://github.com/todkap/permanent-rotation">permanent-rotation</a> by <a href="https://todkap.github.io/">Todd Kaplinger</a><span class="dot">.</span></p></div></footer>
 </body></html>`))
 
 var statsTpl = template.Must(template.New("stats").Parse(`<!doctype html>
@@ -338,13 +353,14 @@ var statsTpl = template.Must(template.New("stats").Parse(`<!doctype html>
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="favicon.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<style>{{.CSS}}</style></head><body>
+<style>{{.CSS}}</style></head><body id="top">
 ` + navHTML + `
 <header class="hero"><div class="wrap">
 <p class="kicker">The numbers</p>
 <h1>Stats<span class="accent">.</span></h1>
 <p class="lede">Canon vs deep cuts from Last.fm all-time play counts, split into thirds within this list. Today's popularity, not history's verdict.</p>
 </div></header>
+{{if .StoryURL}}<aside class="context-bar" aria-label="About this list"><div class="wrap"><span class="by">A personal list by Todd Kaplinger</span><a href="{{.StoryURL}}">Read the story</a><a href="https://github.com/todkap/permanent-rotation">View source</a><a href="{{.PlaylistURL}}">Spotify playlist &#8599;</a></div></aside>{{end}}
 <main><div class="wrap">
 <section>
 <div class="stat-strip">
@@ -375,7 +391,7 @@ var statsTpl = template.Must(template.New("stats").Parse(`<!doctype html>
 </div>{{end}}
 </section>
 </div></main>
-<footer><div class="wrap"><p class="note">Data as of {{if .GeneratedAt}}{{.GeneratedAt}}{{else}}not yet enriched{{end}} &middot; Built with <a href="https://github.com/todkap/permanent-rotation">permanent-rotation</a> by <a href="https://todkap.github.io/">Todd Kaplinger</a><span class="dot">.</span></p></div></footer>
+<footer><div class="wrap"><p class="note">{{if .GeneratedAt}}Updated <time datetime="{{.GeneratedAt}}" title="{{.GeneratedAt}}">{{.Updated}}</time>{{else}}Not yet enriched{{end}} &middot; Built with <a href="https://github.com/todkap/permanent-rotation">permanent-rotation</a> by <a href="https://todkap.github.io/">Todd Kaplinger</a><span class="dot">.</span></p></div></footer>
 </body></html>`))
 
 type kv struct {
@@ -398,6 +414,9 @@ func Render(f *enrich.File, ctx *notes.Context, dir, base string, chapterOrder [
 	order, eraOf := ParseChapterOrder(chapterOrder)
 	chapters := groupByChapter(f.Songs, ctx, order)
 	eras := groupEras(chapters, eraOf)
+	for i := range eras {
+		eras[i].ID = fmt.Sprintf("era-%d", i+1)
+	}
 
 	tierCount := map[string]int{"canon": 0, "middle": 0, "deep-cut": 0}
 	decadeCount := map[int]int{}
@@ -466,11 +485,12 @@ func Render(f *enrich.File, ctx *notes.Context, dir, base string, chapterOrder [
 	}
 
 	ogDesc := fmt.Sprintf("%d songs grouped by the chapter of life they arrived in. The memories are mine; the background notes are AI-researched, with sources linked.", len(f.Songs))
-	playlistURL := ""
+	playlistURL, storyURL := "", ""
 	if strings.TrimRight(base, "/") == "https://todkap.github.io/permanent-rotation" {
 		playlistURL = "https://open.spotify.com/playlist/3Mx9a5o9ZQW5v6nqoKUllO"
+		storyURL = "https://github.com/todkap/permanent-rotation/blob/main/article/README.md"
 	}
-	baseData := map[string]any{"CSS": template.CSS(pageCSS), "OGDesc": ogDesc, "Base": base, "PlaylistURL": playlistURL} //nolint:gosec
+	baseData := map[string]any{"CSS": template.CSS(pageCSS), "OGDesc": ogDesc, "Base": base, "PlaylistURL": playlistURL, "StoryURL": storyURL, "Updated": friendlyDate(f.GeneratedAt)} //nolint:gosec
 	pages := []struct {
 		name string
 		tpl  *template.Template
@@ -521,4 +541,13 @@ func merge(a, b map[string]any) map[string]any {
 		out[k] = v
 	}
 	return out
+}
+
+// friendlyDate preserves unknown input rather than invent a successful update.
+func friendlyDate(raw string) string {
+	t, err := time.Parse(time.RFC3339, raw)
+	if err != nil {
+		return raw
+	}
+	return t.UTC().Format("January 2, 2006") + " (UTC)"
 }

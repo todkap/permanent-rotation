@@ -1,6 +1,7 @@
 package wikipedia
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -120,5 +121,49 @@ func TestV5WrongPerformerSourceRejected(t *testing.T) {
 	c.apiURL = srv.URL
 	if _, _, _, _, err := c.LookupRelease("Zombie", "The Cranberries", ""); err == nil {
 		t.Fatal("wrong performer accepted")
+	}
+}
+
+func TestSourceIdentityAndEncodedQuestion(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Query().Get("titles") {
+		case "Would?":
+			fmt.Fprint(w, `{"query":{"pages":{"1":{"title":"Would?","extract":"Would? is a song by Alice in Chains.","fullurl":"https://en.wikipedia.org/wiki/Would%3F"}}}}`)
+		case "Tim (album)":
+			fmt.Fprint(w, `{"query":{"pages":{"1":{"title":"Tim (album)","extract":"Tim may refer to:","pageprops":{"disambiguation":""}}}}}`)
+		case "Scenario (A Tribe Called Quest song)":
+			fmt.Fprint(w, `{"query":{"pages":{"-1":{"title":"Scenario (A Tribe Called Quest song)","missing":""}}}}`)
+		default:
+			fmt.Fprint(w, `{"query":{"pages":{"1":{"title":"Would","extract":"Would is an English modal auxiliary verb."}}}}`)
+		}
+	}))
+	defer srv.Close()
+	c := &Client{hc: srv.Client(), apiURL: srv.URL}
+	for _, tc := range []struct {
+		url, song, artist, album string
+		ok                       bool
+	}{
+		{"https://en.wikipedia.org/wiki/Would?", "Would?", "Alice in Chains", "", false},
+		{"https://en.wikipedia.org/wiki/Would%3F", "Would?", "Alice in Chains", "", true},
+		{"https://en.wikipedia.org/wiki/Would", "Would?", "Alice in Chains", "", false},
+		{"https://en.wikipedia.org/wiki/Tim_(album)", "Here Comes a Regular", "The Replacements", "Tim", false},
+		{"https://en.wikipedia.org/wiki/Scenario_(A_Tribe_Called_Quest_song)", "Scenario", "A Tribe Called Quest", "The Low End Theory", false},
+	} {
+		_, ok, err := c.CheckSource(tc.url, tc.song, tc.artist, tc.album)
+		if err != nil || ok != tc.ok {
+			t.Errorf("%s: ok=%v err=%v", tc.url, ok, err)
+		}
+	}
+}
+func TestPerformerPunctuationAndJointCredit(t *testing.T) {
+	for _, tc := range []struct{ song, artist, text string }{
+		{"Deep Cover", "Dr. Dre and Snoop Dogg", "Deep Cover is a song by Dr. Dre, featuring Snoop Doggy Dogg. Later Dr. Dre and Snoop Dogg remade it."},
+		{"Nightswimming", "R.E.M.", "Nightswimming is a song by American band R.E.M."},
+		{"So What'Cha Want", "Beastie Boys", "So What'cha Want is a song by the Beastie Boys."},
+		{"I Write Sins Not Tragedies", "Panic! at the Disco", "I Write Sins Not Tragedies is a song by Panic! at the Disco."},
+	} {
+		if !belongs(article{title: tc.song, extract: tc.text}, tc.song, tc.artist, "") {
+			t.Error("identity failed: " + tc.song)
+		}
 	}
 }
