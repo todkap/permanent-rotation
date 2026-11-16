@@ -41,8 +41,8 @@ func TestRealList(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(songs) != 44 {
-		t.Fatalf("expected 44 rows, got %d", len(songs))
+	if len(songs) != 47 {
+		t.Fatalf("expected 47 rows, got %d", len(songs))
 	}
 	var regret *Song
 	for i := range songs {
@@ -157,8 +157,8 @@ func TestToddSeenLiveCount(t *testing.T) {
 			n++
 		}
 	}
-	if n != 20 || songs[0].Song != "Regret" {
-		t.Fatalf("seen live = %d, want 20", n)
+	if n != 22 || songs[0].Song != "Regret" {
+		t.Fatalf("seen live = %d, want 22", n)
 	}
 }
 
