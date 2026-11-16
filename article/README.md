@@ -16,6 +16,8 @@ The list lived in a spreadsheet, which felt like a waste. So the project became 
 
 The repo is a small Go program plus a GitHub Action. You edit a CSV with six columns: song, artist, era, tags, memory and angle. Only song and artist are required. When you run the Action, it matches each song against Spotify, pulls listener and play counts from Last.fm, optionally asks Gemini to write a short background note, and publishes a static site to GitHub Pages. A separate command builds your playlist.
 
+![The songs.csv format: the header row (song, artist, era, tags, memory, angle) and the real Mayonaise row](../assets/article-csv-example.png)
+
 A few decisions shaped everything else:
 
 - Your words are the source of truth. The APIs only add labeled context around them. My memory text is published verbatim, and anything the machine adds sits in its own labeled block.
@@ -48,6 +50,8 @@ The first run of background notes looked great. Clean paragraphs, confident tone
 The fix was not to hand-edit the paragraphs. The fix was to change the generator. We tightened the prompt to say a shorter accurate note is better than a longer wrong one, deleted the bad notes, and regenerated all 41 from scratch. Most came back correct. Two songs kept failing to get a note at all, and two kept hallucinating album names no matter how the prompt read.
 
 The real fix was to stop trusting the model's memory altogether. The tool now pulls the facts first: album and release year from the song's own Spotify match, chart position and background from the song's Wikipedia article. The model gets those facts as the only ones it is allowed to use, a validator rejects any note that names a year or an album title that is not in them, and every note links to the real Wikipedia article it came from. Retrieval first, generation second.
+
+![What the model is handed for each song: verified facts from Spotify and Wikipedia, the source-URL rule, and the validator's two rejection rules](../assets/article-validator.png)
 
 The first grounded run wrote all 41 notes, and the five that had been wrong or missing came back correct. One detail I liked from that first version: for The Old Apartment, MusicBrainz knew the 1997 single and Wikipedia knew the album was Born on a Pirate Ship. The two sources covered each other's gaps, even though MusicBrainz did not survive as the album source.
 
