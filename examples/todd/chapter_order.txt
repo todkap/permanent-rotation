@@ -1,0 +1,45 @@
+# Permanent Rotation - narrative chapter order, earliest first.
+# "## Name" starts a big era heading; chapter names beneath it belong to that era.
+# One chapter name per line, exactly as it appears in songs.csv before the "(~...)".
+# Chapters not listed here fall back to year + life-stage order and join the era above them.
+## School Years
+Childhood / Prospect St
+Middle School
+High School
+High School Prom
+High School / College Transition
+High School to College Transition
+## College
+Starting College
+College Freshman Year
+College / Dorm Life
+College Sophomore Year
+College / Musical Evolution
+College / First Girlfriend
+College Roommates
+College to Present
+College to Post-College Transition
+## Early Career
+Post-College / Boston
+Post-College / Early Career
+Post-College / Adulthood
+Post-College / Arlington
+Post-College / Late Boston Era
+Post-College / NC
+## Adulthood & Family
+Marriage & Adulthood
+Early Career / Adulthood
+Post-College / Moving South
+Late Discovery / Wilmington Era
+Adulthood / Almost Famous Era
+Relocating & Marriage
+Adulthood / Looking Back
+Fatherhood / Early 2000s
+Middle Age & Family
+Mid-2000s / Pop-Punk Pivot
+Late 2000s / Pop-Punk Era
+## Recent Years
+2010s / Family & Reflection
+Late 2010s / Modern Alt-Pop
+Late 2010s / 2020s Threshold
+2020s / Modern Crossover

@@ -43,6 +43,10 @@ nav ul a:hover,nav ul a.active{color:var(--carolina-bright);text-decoration:none
 .hero p.lede{color:var(--muted);font-size:1.1rem;max-width:56ch}
 section{padding:56px 0;border-bottom:1px solid var(--line)}
 section:last-of-type{border-bottom:none}
+.era-head{margin:72px 0 8px;padding-top:40px;border-top:1px solid rgba(157,180,204,.28)}
+.era-head:first-of-type{margin-top:0;padding-top:0;border-top:none}
+.era-head .eyebrow{color:var(--red);text-transform:uppercase;letter-spacing:.22em;font-size:.8rem;font-weight:700;margin-bottom:10px}
+.era-head h2{font-size:clamp(2rem,4.5vw,2.75rem);letter-spacing:-.02em}
 .chapter-head{margin:48px 0 8px}
 .chapter-head:first-of-type{margin-top:0}
 .chapter-head .eyebrow{color:var(--red);text-transform:uppercase;letter-spacing:.18em;font-size:.75rem;font-weight:700;margin-bottom:8px}
@@ -128,7 +132,72 @@ type songView struct {
 	DecadeYear string
 }
 
-func groupByChapter(recs []enrich.Record, ctx *notes.Context) []chapter {
+// ParseChapterOrder reads the chapter_order.txt lines: "## Era Name" starts
+// an era heading, "#" lines are comments, everything else is a chapter name.
+// Chapters above the first ## line are ungrouped.
+func ParseChapterOrder(lines []string) (order []string, eraOf map[string]string) {
+	eraOf = map[string]string{}
+	era := ""
+	for _, l := range lines {
+		l = strings.TrimSpace(l)
+		switch {
+		case l == "":
+		case strings.HasPrefix(l, "##"):
+			era = strings.TrimSpace(strings.TrimPrefix(l, "##"))
+		case strings.HasPrefix(l, "#"):
+			// comment
+		default:
+			order = append(order, l)
+			eraOf[l] = era
+		}
+	}
+	return order, eraOf
+}
+
+type eraGroup struct {
+	Name     string
+	Chapters []chapter
+}
+
+// groupEras wraps the ordered chapters in their era headings. Chapters not
+// listed in the order file inherit the era of the chapter before them, so a
+// new chapter he adds does not break the grouping.
+func groupEras(chapters []chapter, eraOf map[string]string) []eraGroup {
+	var out []eraGroup
+	cur := "\x00start"
+	for _, ch := range chapters {
+		era, listed := eraOf[ch.Name]
+		if !listed {
+			if len(out) > 0 {
+				era = out[len(out)-1].Name
+			} else {
+				era = ""
+			}
+		}
+		if era != cur {
+			out = append(out, eraGroup{Name: era})
+			cur = era
+		}
+		out[len(out)-1].Chapters = append(out[len(out)-1].Chapters, ch)
+	}
+	return out
+}
+
+// groupByChapter orders chapters by an explicit narrative sequence when one
+// is provided (chapterOrder lists chapter names, earliest first). Chapters
+// missing from the list keep the year+stage fallback, so a chapter he adds
+// to the CSV still lands sensibly before the list is updated.
+func groupByChapter(recs []enrich.Record, ctx *notes.Context, chapterOrder []string) []chapter {
+	listIdx := map[string]int{}
+	for i, name := range chapterOrder {
+		name = strings.TrimSpace(name)
+		if name == "" || strings.HasPrefix(name, "#") {
+			continue
+		}
+		if _, ok := listIdx[name]; !ok {
+			listIdx[name] = i
+		}
+	}
 	var order []string
 	byName := map[string][]songView{}
 	yearOf := map[string]int{}
@@ -159,6 +228,11 @@ func groupByChapter(recs []enrich.Record, ctx *notes.Context) []chapter {
 		byName[name] = append(byName[name], sv)
 	}
 	sort.SliceStable(order, func(i, j int) bool {
+		li, iListed := listIdx[order[i]]
+		lj, jListed := listIdx[order[j]]
+		if iListed && jListed {
+			return li < lj // explicit narrative order
+		}
 		yi, iok := yearOf[order[i]]
 		yj, jok := yearOf[order[j]]
 		if !iok {
@@ -170,9 +244,13 @@ func groupByChapter(recs []enrich.Record, ctx *notes.Context) []chapter {
 		if yi != yj {
 			return yi < yj
 		}
-		// same year: life stage, then alphabetical
+		// same year: life stage, then alphabetical; a listed chapter wins
+		// ties against an unlisted one so it keeps its authored position
 		if ri, rj := stageRank(order[i]), stageRank(order[j]); ri != rj {
 			return ri < rj
+		}
+		if iListed != jListed {
+			return iListed
 		}
 		return order[i] < order[j]
 	})
@@ -217,7 +295,8 @@ var indexTpl = template.Must(template.New("index").Parse(`<!doctype html>
 </div></header>
 <main><div class="wrap">
 <section>
-{{range .Chapters}}
+{{range .Eras}}{{if .Name}}
+<div class="era-head"><p class="eyebrow">Era</p><h2>{{.Name}}</h2></div>{{end}}{{range .Chapters}}
 <div class="chapter-head"><p class="eyebrow">Chapter</p><h2>{{.Name}}</h2></div>
 {{range .Songs}}<div class="song"><div class="row">
 <div class="when">{{.DecadeYear}}</div>
@@ -228,7 +307,7 @@ var indexTpl = template.Must(template.New("index").Parse(`<!doctype html>
 {{if .Note}}<div class="background"><span class="label">Background &middot; AI-researched &middot; source linked</span><p>{{.Note.Note}}</p><p class="src"><a href="{{.Note.SourceURL}}">Source</a></p></div>{{end}}
 {{if .SpotifyURL}}<p class="links"><a href="{{.SpotifyURL}}">Listen on Spotify</a></p>{{end}}
 </div></div></div>{{end}}
-{{end}}
+{{end}}{{end}}
 </section>
 </div></main>
 <footer><div class="wrap"><p class="note">Data as of {{if .GeneratedAt}}{{.GeneratedAt}}{{else}}not yet enriched{{end}} &middot; Built with <a href="https://github.com/todkap/permanent-rotation">permanent-rotation</a> by <a href="https://todkap.github.io/">Todd Kaplinger</a><span class="dot">.</span></p></div></footer>
@@ -288,12 +367,14 @@ var tierLabel = map[string]string{"canon": "Canon", "middle": "Middle", "deep-cu
 // base is the absolute published URL (for og:image and link previews);
 // leave it empty for a relative-only build. Files in an assets/ directory
 // next to the repo root (og.png, favicon.png, ...) are copied into dir.
-func Render(f *enrich.File, ctx *notes.Context, dir, base string) error {
+func Render(f *enrich.File, ctx *notes.Context, dir, base string, chapterOrder []string) error {
 	if err := os.MkdirAll(dir, 0o755); err != nil {
 		return err
 	}
 	copyAssets("assets", dir)
-	chapters := groupByChapter(f.Songs, ctx)
+	order, eraOf := ParseChapterOrder(chapterOrder)
+	chapters := groupByChapter(f.Songs, ctx, order)
+	eras := groupEras(chapters, eraOf)
 
 	tierCount := map[string]int{"canon": 0, "middle": 0, "deep-cut": 0}
 	decadeCount := map[int]int{}
@@ -335,7 +416,7 @@ func Render(f *enrich.File, ctx *notes.Context, dir, base string) error {
 		tpl  *template.Template
 		data map[string]any
 	}{
-		{"index.html", indexTpl, merge(baseData, map[string]any{"Timeline": true, "Chapters": chapters, "Count": len(f.Songs), "GeneratedAt": f.GeneratedAt})},
+		{"index.html", indexTpl, merge(baseData, map[string]any{"Timeline": true, "Eras": eras, "Count": len(f.Songs), "GeneratedAt": f.GeneratedAt})},
 		{"stats.html", statsTpl, merge(baseData, map[string]any{"Timeline": false, "Tiers": tiers, "Decades": decades, "AvgGap": avgGap, "GeneratedAt": f.GeneratedAt})},
 	}
 	for _, p := range pages {
