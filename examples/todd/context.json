@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T18:55:22Z",
+  "generated_at": "2026-11-16T21:04:27Z",
   "model": "gemini-3.5-flash-lite",
   "include_memory": true,
   "notes": {
@@ -30,6 +30,10 @@
     "demons|imagine dragons": {
       "note": "Released as a single from the debut studio album Night Visions, \"Demons\" by Imagine Dragons became a major commercial success and spent twelve weeks in the top ten on the Billboard Hot 100. This listener associates the ubiquitous 2010s melodic rock anthem with radio play, games, and family car rides with the kids.",
       "source_url": "https://en.wikipedia.org/wiki/Demons_(Imagine_Dragons_song)"
+    },
+    "desperately wanting|better than ezra": {
+      "note": "Desperately Wanting is a song by American alternative rock group Better Than Ezra that was released in November 1996 as the second single from their third studio album, Friction, Baby, and became a chart hit in the United States, Australia, and Canada. This listener associates the track with a memorable live performance at Lupo's in Providence during the mid-1990s, where an amazing balcony view enhanced the experience of seeing the band with a spouse.",
+      "source_url": "https://en.wikipedia.org/wiki/Desperately_Wanting"
     },
     "dreams|van halen": {
       "note": "Released in 1986 as the second single from Van Halen's album 5150, \"Dreams\" reached number 22 on the US Billboard Hot 100, driven by its prominent synthesizer hooks and Sammy Hagar's soaring vocals. This listener fondly recalls discovering the track likely on MTV during middle school, appreciating how the band blended hard rock with a novel keyboard-heavy sound.",
@@ -62,6 +66,10 @@
     "home sweet home|mötley crüe": {
       "note": "Released in 1985 on Mötley Crüe's album Theatre of Pain, 'Home Sweet Home' became a defining anthem of the 1980s heavy metal power ballad era. For the listener, the track captures the bittersweet transition of starting middle school and gaining independence, perfectly mirroring the feeling of moving on.",
       "source_url": "https://en.wikipedia.org/wiki/Home_Sweet_Home_(M%C3%B6tley_Cr%C3%BCe_song)"
+    },
+    "i think we're alone now|tiffany": {
+      "note": "Tiffany released her cover of I Think We're Alone Now as the second single from her debut studio album, Tiffany, and the track spent two weeks at No. 1 on the Billboard Hot 100 chart. The listener associates this song with their freshman year of high school and their first concert attended with cousins and a sister, recalling when Tiffany and Debbie Gibson arrived as popular mall performers of that era.",
+      "source_url": "https://en.wikipedia.org/wiki/Tiffany_Darwish"
     },
     "i'll be|edwin mccain": {
       "note": "Edwin McCain released the song on his album Misguided Roses, and it eventually reached number five in the United States and number 52 in Canada. The listener associates the track with the bittersweet period when college roommates moved to different states around 1998, serving as a reminder of their time together and the start of new chapters in their lives.",
@@ -170,6 +178,10 @@
     "would?|alice in chains": {
       "note": "Written by Jerry Cantrell as a tribute to Andrew Wood and featured on the Singles: Original Motion Picture Soundtrack and the album Dirt, \"Would?\" became a definitive grunge anthem. The listener fondly recalls this track as their favorite from the Cameron Crowe movie's soundtrack, perfectly capturing the spirit of the era.",
       "source_url": "https://en.wikipedia.org/wiki/Would?"
+    },
+    "zombie|the cranberries": {
+      "note": "Written by Dolores O'Riordan as a protest song about the Troubles, the track appears on Stars: The Best Of The Cranberries 1992-2002 and became known for its grunge-style distorted guitar and shouted vocals. For this listener in the spring of 1995, the track soundtracked a surreal graduation week memory when the listener's brother-in-law unexpectedly found himself in a mosh pit during a performance.",
+      "source_url": "https://en.wikipedia.org/wiki/Zombie_(The_Cranberries_song)"
     }
   }
 }
