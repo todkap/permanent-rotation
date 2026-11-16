@@ -188,7 +188,7 @@ Song: %s
 Artist: %s
 Tags from the listener: %s
 %s
-Write exactly 2 sentences about the song. Sentence 1: release context, chart history, or musical context. Sentence 2: how the song connects to the listener's memory above, or its lasting resonance if no memory was shared. Facts must be real - if you are not confident of a fact, leave it out. %sNever invent facts about the listener's life; you may only reference what they wrote above.
+Write exactly 2 sentences about the song. Sentence 1: release context, chart history, or musical context. Sentence 2: how the song connects to the listener's memory above, or its lasting resonance if no memory was shared. Facts must be real. Include the release year, album name, single order, chart position, or any other specific fact only when you are confident it is correct; if you are unsure, omit it rather than guess - a shorter accurate note is better than a detailed wrong one. %sNever invent facts about the listener's life; you may only reference what they wrote above.
 
 Style rules, no exceptions: write in the third person only; refer to the person as "this listener" or "the listener", never "you" or "your". No self-corrections, restarts, or hedges (never write "wait", "actually", "no,", or similar). No meta commentary about the writing itself.
 
