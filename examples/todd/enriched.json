@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T18:52:58Z",
+  "generated_at": "2026-11-16T20:03:05Z",
   "songs": [
     {
       "song": "Regret",
@@ -18,7 +18,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:43Z"
+      "fetched_at": "2026-11-16T20:02:45Z"
     },
     {
       "song": "Smells Like Teen Spirit",
@@ -37,7 +37,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:44Z"
+      "fetched_at": "2026-11-16T20:02:45Z"
     },
     {
       "song": "Home Sweet Home",
@@ -56,7 +56,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:44Z"
+      "fetched_at": "2026-11-16T20:02:46Z"
     },
     {
       "song": "Dreams",
@@ -75,7 +75,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:44Z"
+      "fetched_at": "2026-11-16T20:02:46Z"
     },
     {
       "song": "Summer",
@@ -95,7 +95,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:45Z"
+      "fetched_at": "2026-11-16T20:02:46Z"
     },
     {
       "song": "Heartspark Dollarsign",
@@ -115,7 +115,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:45Z"
+      "fetched_at": "2026-11-16T20:02:47Z"
     },
     {
       "song": "I'll Be",
@@ -130,12 +130,12 @@
       "album": "Misguided Roses",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02e1076bcd33dbf8d74f88e4a9",
       "seen_live": "Jimmy V benefit concert, Raleigh, 2001",
-      "lastfm_listeners": 382528,
-      "lastfm_playcount": 2360715,
+      "lastfm_listeners": 382588,
+      "lastfm_playcount": 2361095,
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:45Z"
+      "fetched_at": "2026-11-16T20:02:47Z"
     },
     {
       "song": "Hey Ya",
@@ -154,7 +154,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T18:52:46Z"
+      "fetched_at": "2026-11-16T20:02:47Z"
     },
     {
       "song": "Nightswimming",
@@ -173,7 +173,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:46Z"
+      "fetched_at": "2026-11-16T20:02:48Z"
     },
     {
       "song": "Joey",
@@ -192,7 +192,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:46Z"
+      "fetched_at": "2026-11-16T20:02:48Z"
     },
     {
       "song": "The Freshmen",
@@ -210,9 +210,9 @@
       "lastfm_listeners": 304736,
       "lastfm_playcount": 1502453,
       "spotify_popularity": null,
-      "tier": "middle",
+      "tier": "deep-cut",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T18:52:47Z"
+      "fetched_at": "2026-11-16T20:02:48Z"
     },
     {
       "song": "Teenage Love",
@@ -231,7 +231,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:47Z"
+      "fetched_at": "2026-11-16T20:02:49Z"
     },
     {
       "song": "Deep Cover",
@@ -245,7 +245,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "unmatched",
-      "fetched_at": "2026-11-16T18:52:48Z"
+      "fetched_at": "2026-11-16T20:02:49Z"
     },
     {
       "song": "Welcome to the Terrordome",
@@ -264,7 +264,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:48Z"
+      "fetched_at": "2026-11-16T20:02:49Z"
     },
     {
       "song": "Papercut",
@@ -279,12 +279,12 @@
       "album": "Hybrid Theory (Bonus Edition)",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02e2f039481babe23658fc719a",
       "seen_live": "Saitama, Japan, 2025",
-      "lastfm_listeners": 1837521,
-      "lastfm_playcount": 20828486,
+      "lastfm_listeners": 1837207,
+      "lastfm_playcount": 20824803,
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:48Z"
+      "fetched_at": "2026-11-16T20:02:50Z"
     },
     {
       "song": "Love Song",
@@ -303,7 +303,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T18:52:49Z"
+      "fetched_at": "2026-11-16T20:02:50Z"
     },
     {
       "song": "Here Comes a Regular",
@@ -322,7 +322,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:49Z"
+      "fetched_at": "2026-11-16T20:02:50Z"
     },
     {
       "song": "More than Words",
@@ -341,7 +341,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:49Z"
+      "fetched_at": "2026-11-16T20:02:51Z"
     },
     {
       "song": "Silent Running",
@@ -360,7 +360,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:50Z"
+      "fetched_at": "2026-11-16T20:02:51Z"
     },
     {
       "song": "Something's Always Wrong",
@@ -380,7 +380,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:50Z"
+      "fetched_at": "2026-11-16T20:02:51Z"
     },
     {
       "song": "Somewhere Only We Know",
@@ -399,7 +399,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:50Z"
+      "fetched_at": "2026-11-16T20:02:52Z"
     },
     {
       "song": "With or Without You",
@@ -413,12 +413,12 @@
       "release_year": 1987,
       "album": "The Joshua Tree (Super Deluxe)",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02b7bea3d01f04e6d0408d2afe",
-      "lastfm_listeners": 1691098,
-      "lastfm_playcount": 12818650,
+      "lastfm_listeners": 1691200,
+      "lastfm_playcount": 12819481,
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:50Z"
+      "fetched_at": "2026-11-16T20:02:52Z"
     },
     {
       "song": "Would?",
@@ -437,7 +437,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:51Z"
+      "fetched_at": "2026-11-16T20:02:52Z"
     },
     {
       "song": "Tiny Dancer",
@@ -457,7 +457,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:51Z"
+      "fetched_at": "2026-11-16T20:02:53Z"
     },
     {
       "song": "Brick",
@@ -477,7 +477,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:52Z"
+      "fetched_at": "2026-11-16T20:02:53Z"
     },
     {
       "song": "Scenario",
@@ -492,12 +492,12 @@
       "album": "The Low End Theory",
       "album_art": "https://i.scdn.co/image/ab67616d00001e02f38c6b37a21334e22005b1f7",
       "seen_live": "Lollapalooza, Kingston, RI, 1994",
-      "lastfm_listeners": 286466,
-      "lastfm_playcount": 1331673,
+      "lastfm_listeners": 286471,
+      "lastfm_playcount": 1331706,
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T18:52:52Z"
+      "fetched_at": "2026-11-16T20:02:53Z"
     },
     {
       "song": "Mayonaise",
@@ -512,12 +512,12 @@
       "album": "Siamese Dream (Deluxe Edition)",
       "album_art": "https://i.scdn.co/image/ab67616d00001e025274788f34fc7656d2856dfd",
       "seen_live": "Lollapalooza, Kingston, RI, 1994",
-      "lastfm_listeners": 309987,
-      "lastfm_playcount": 1706561,
+      "lastfm_listeners": 310010,
+      "lastfm_playcount": 1706696,
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T18:52:52Z"
+      "fetched_at": "2026-11-16T20:02:54Z"
     },
     {
       "song": "There Is a Light That Never Goes Out",
@@ -536,7 +536,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T18:52:53Z"
+      "fetched_at": "2026-11-16T20:02:54Z"
     },
     {
       "song": "Someday I Suppose",
@@ -556,7 +556,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T18:52:53Z"
+      "fetched_at": "2026-11-16T20:02:54Z"
     },
     {
       "song": "So What'Cha Want",
@@ -576,7 +576,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "manual",
-      "fetched_at": "2026-11-16T18:52:53Z"
+      "fetched_at": "2026-11-16T20:02:55Z"
     },
     {
       "song": "The Old Apartment",
@@ -596,7 +596,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:53Z"
+      "fetched_at": "2026-11-16T20:02:55Z"
     },
     {
       "song": "Title and Registration",
@@ -616,7 +616,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:54Z"
+      "fetched_at": "2026-11-16T20:02:55Z"
     },
     {
       "song": "Demons",
@@ -636,7 +636,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:54Z"
+      "fetched_at": "2026-11-16T20:02:56Z"
     },
     {
       "song": "Colors",
@@ -656,7 +656,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:54Z"
+      "fetched_at": "2026-11-16T20:02:56Z"
     },
     {
       "song": "I Write Sins Not Tragedies",
@@ -676,7 +676,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:55Z"
+      "fetched_at": "2026-11-16T20:02:56Z"
     },
     {
       "song": "Thnks fr th Mmrs",
@@ -696,7 +696,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:56Z"
+      "fetched_at": "2026-11-16T20:02:57Z"
     },
     {
       "song": "My Name Is Jonas",
@@ -716,7 +716,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:56Z"
+      "fetched_at": "2026-11-16T20:02:57Z"
     },
     {
       "song": "Monsters (feat. blackbear)",
@@ -735,7 +735,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:56Z"
+      "fetched_at": "2026-11-16T20:02:57Z"
     },
     {
       "song": "Enjoy the Silence",
@@ -754,7 +754,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:57Z"
+      "fetched_at": "2026-11-16T20:02:58Z"
     },
     {
       "song": "Barrel of a Gun",
@@ -774,7 +774,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:57Z"
+      "fetched_at": "2026-11-16T20:02:58Z"
     },
     {
       "song": "11 Minutes",
@@ -793,7 +793,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T18:52:57Z"
+      "fetched_at": "2026-11-16T20:02:58Z"
     },
     {
       "song": "Footloose",
@@ -812,7 +812,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:58Z"
+      "fetched_at": "2026-11-16T20:02:58Z"
     },
     {
       "song": "Eye of the Tiger",
@@ -831,7 +831,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:58Z"
+      "fetched_at": "2026-11-16T20:02:59Z"
     },
     {
       "song": "Crazy for You",
@@ -850,7 +850,66 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T18:52:58Z"
+      "fetched_at": "2026-11-16T20:02:59Z"
+    },
+    {
+      "song": "I Think We're Alone Now",
+      "artist": "Tiffany",
+      "life_year": 1987,
+      "chapter": "High School",
+      "memory": "my freshman year of high school. First concert I went to, with my cousins and my sister. I remember her and Debbie Gibson arriving, around our age and crazy popular, the first of what I would call the mall performers.",
+      "tags": "first concert / cousins and sister / mall performers / Debbie Gibson era",
+      "spotify_id": "4uvjOKsp7mSjrDhWdkLPBY",
+      "spotify_url": "https://open.spotify.com/track/4uvjOKsp7mSjrDhWdkLPBY",
+      "release_year": 1987,
+      "album": "Tiffany",
+      "album_art": "https://i.scdn.co/image/ab67616d00001e02ec908cd672ac564d27f9ae51",
+      "seen_live": "mall tour, 1987",
+      "lastfm_listeners": 712701,
+      "lastfm_playcount": 4740528,
+      "spotify_popularity": null,
+      "tier": "middle",
+      "match_confidence": "exact",
+      "fetched_at": "2026-11-16T20:03:01Z"
+    },
+    {
+      "song": "Basket Case",
+      "artist": "Green Day",
+      "life_year": 1994,
+      "chapter": "College / First Girlfriend",
+      "memory": "We saw that the first fall I was dating my now wife (fall of 93) at the Boston Hatch Shell. The free concert overwhelmed the concert security staff and they barely played one song before it ended.",
+      "tags": "early dating / free concert / Hatch Shell / overwhelmed security",
+      "spotify_id": "6L89mwZXSOwYl76YXfX13s",
+      "spotify_url": "https://open.spotify.com/track/6L89mwZXSOwYl76YXfX13s",
+      "release_year": 1994,
+      "album": "Dookie",
+      "album_art": "https://i.scdn.co/image/ab67616d00001e02db89b08034de626ebee6823d",
+      "seen_live": "Hatch Shell, Boston, Sept 9, 1994",
+      "lastfm_listeners": 2659910,
+      "lastfm_playcount": 24022178,
+      "spotify_popularity": null,
+      "tier": "canon",
+      "match_confidence": "exact",
+      "fetched_at": "2026-11-16T20:03:03Z"
+    },
+    {
+      "song": "Rock of Ages",
+      "artist": "Def Leppard",
+      "life_year": 1983,
+      "chapter": "Childhood / Prospect St",
+      "memory": "It was the first rock band I recall and my friend Peter was a huge fan. I always remember them from tragic events like the drummer losing his arm and having to learn to play drums with one arm.",
+      "tags": "first rock band / friend Peter / drummer losing his arm",
+      "spotify_id": "2AmEv442DGwSxMGZ9XEvBA",
+      "spotify_url": "https://open.spotify.com/track/2AmEv442DGwSxMGZ9XEvBA",
+      "release_year": 1983,
+      "album": "Pyromania (Deluxe)",
+      "album_art": "https://i.scdn.co/image/ab67616d00001e02c56fbdf8c58463a4cced0d03",
+      "lastfm_listeners": 279634,
+      "lastfm_playcount": 1839443,
+      "spotify_popularity": null,
+      "tier": "middle",
+      "match_confidence": "exact",
+      "fetched_at": "2026-11-16T20:03:05Z"
     }
   ]
 }
