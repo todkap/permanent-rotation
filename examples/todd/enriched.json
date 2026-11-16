@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T13:15:04Z",
+  "generated_at": "2026-11-16T13:43:55Z",
   "songs": [
     {
       "song": "Regret",
@@ -17,7 +17,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:14:50Z"
+      "fetched_at": "2026-11-16T13:43:42Z"
     },
     {
       "song": "Smells like Teen Spirit",
@@ -35,7 +35,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:14:51Z"
+      "fetched_at": "2026-11-16T13:43:42Z"
     },
     {
       "song": "Home Sweet Home",
@@ -53,7 +53,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:14:51Z"
+      "fetched_at": "2026-11-16T13:43:42Z"
     },
     {
       "song": "Dreams",
@@ -71,7 +71,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:14:51Z"
+      "fetched_at": "2026-11-16T13:43:42Z"
     },
     {
       "song": "Summer",
@@ -89,7 +89,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:14:52Z"
+      "fetched_at": "2026-11-16T13:43:43Z"
     },
     {
       "song": "Heartspark Dollarsign",
@@ -107,7 +107,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:14:52Z"
+      "fetched_at": "2026-11-16T13:43:43Z"
     },
     {
       "song": "I'll Be",
@@ -125,12 +125,12 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:14:52Z"
+      "fetched_at": "2026-11-16T13:43:44Z"
     },
     {
       "song": "Hey Ya",
       "artist": "Outkast",
-      "life_year": 2000,
+      "life_year": 2004,
       "chapter": "Fatherhood / Early 2000s",
       "memory": "I always relate this song to holding my first son and working out while he slept. The song was upbeat, and the video was really cool. It feels like one of the last music video memories I have.",
       "tags": "Birth of first child / commiting to fitness / inventions / innovation / technology",
@@ -143,7 +143,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T13:14:53Z"
+      "fetched_at": "2026-11-16T13:43:44Z"
     },
     {
       "song": "Nightswimming",
@@ -161,7 +161,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:14:53Z"
+      "fetched_at": "2026-11-16T13:43:44Z"
     },
     {
       "song": "Joey",
@@ -179,7 +179,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:14:53Z"
+      "fetched_at": "2026-11-16T13:43:44Z"
     },
     {
       "song": "Freshman",
@@ -197,7 +197,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T13:14:54Z"
+      "fetched_at": "2026-11-16T13:43:45Z"
     },
     {
       "song": "Teenage Love",
@@ -215,12 +215,12 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:14:54Z"
+      "fetched_at": "2026-11-16T13:43:45Z"
     },
     {
       "song": "Deep Cover",
       "artist": "Dr. Dre and Snoop Dogg",
-      "life_year": 1991,
+      "life_year": 1992,
       "chapter": "Starting College",
       "memory": "Snoop Dogg gets introduced to our lives, tied to NWA, who, while not on this list, were a huge rap band for me growing up in high school. I just loved how Snoop changed how rappers approach lyrics, and the beat was amazing. Hardcore rap.",
       "tags": "started college but still was attached to my hometown / not ready to grow up / taking different path than my childhood pals",
@@ -229,12 +229,12 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "unmatched",
-      "fetched_at": "2026-11-16T13:14:55Z"
+      "fetched_at": "2026-11-16T13:43:46Z"
     },
     {
       "song": "Welcome to the Terrordome",
       "artist": "Public Enemy",
-      "life_year": 1989,
+      "life_year": 1990,
       "chapter": "High School / College Transition",
       "memory": "PE had many great hits, but this was super high energy and one they owned, versus the other amazing one, Bring the Noise with Anthrax. They felt like a rock band in many regards. Amazing depth and deep lyrics. I listened to PE with my cousin, who introduced me to rap. This is one of the songs I remember playing on the way to an amusement park with my sister and her then-husband.",
       "tags": "Amazing mix of lyrical rapper alongside a heavy beat.   Finding my sweetspot on the intersection of music",
@@ -247,7 +247,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:14:55Z"
+      "fetched_at": "2026-11-16T13:43:46Z"
     },
     {
       "song": "Papercut",
@@ -265,7 +265,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:14:55Z"
+      "fetched_at": "2026-11-16T13:43:46Z"
     },
     {
       "song": "Love Song",
@@ -283,7 +283,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T13:14:55Z"
+      "fetched_at": "2026-11-16T13:43:47Z"
     },
     {
       "song": "Here Comes a Regular",
@@ -301,7 +301,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:14:56Z"
+      "fetched_at": "2026-11-16T13:43:47Z"
     },
     {
       "song": "More than Words",
@@ -319,7 +319,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:14:56Z"
+      "fetched_at": "2026-11-16T13:43:47Z"
     },
     {
       "song": "Silent Running",
@@ -337,7 +337,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:14:56Z"
+      "fetched_at": "2026-11-16T13:43:48Z"
     },
     {
       "song": "Something's Always Wrong",
@@ -355,12 +355,12 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:14:57Z"
+      "fetched_at": "2026-11-16T13:43:48Z"
     },
     {
       "song": "Somewhere Only We Know",
       "artist": "Keane",
-      "life_year": 2000,
+      "life_year": 2004,
       "chapter": "Middle Age \u0026 Family",
       "memory": "The family watched Glee. We all had different music tastes and songs that we tied to that show. I have always loved songs that are melodic and memorable. This one feels like one of those songs.",
       "tags": "Middle Age / Kids Starting to form their own opinions on music / calming song / glee",
@@ -373,7 +373,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:14:57Z"
+      "fetched_at": "2026-11-16T13:43:48Z"
     },
     {
       "song": "With or Without You",
@@ -391,7 +391,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:14:58Z"
+      "fetched_at": "2026-11-16T13:43:49Z"
     },
     {
       "song": "Would",
@@ -409,7 +409,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T13:14:58Z"
+      "fetched_at": "2026-11-16T13:43:49Z"
     },
     {
       "song": "Tiny Dancer",
@@ -427,7 +427,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:14:58Z"
+      "fetched_at": "2026-11-16T13:43:49Z"
     },
     {
       "song": "Brick",
@@ -445,7 +445,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:14:59Z"
+      "fetched_at": "2026-11-16T13:43:50Z"
     },
     {
       "song": "Scenario",
@@ -463,7 +463,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T13:14:59Z"
+      "fetched_at": "2026-11-16T13:43:50Z"
     },
     {
       "song": "Mayonaise",
@@ -481,7 +481,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T13:14:59Z"
+      "fetched_at": "2026-11-16T13:43:50Z"
     },
     {
       "song": "There is a light that never goes out",
@@ -499,7 +499,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T13:15:00Z"
+      "fetched_at": "2026-11-16T13:43:50Z"
     },
     {
       "song": "Someday I Suppose",
@@ -517,7 +517,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T13:15:00Z"
+      "fetched_at": "2026-11-16T13:43:51Z"
     },
     {
       "song": "So What'Cha Want",
@@ -535,7 +535,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:15:00Z"
+      "fetched_at": "2026-11-16T13:43:51Z"
     },
     {
       "song": "The Old Apartment",
@@ -553,7 +553,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:15:01Z"
+      "fetched_at": "2026-11-16T13:43:51Z"
     },
     {
       "song": "Title and Registration",
@@ -571,12 +571,12 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:15:01Z"
+      "fetched_at": "2026-11-16T13:43:52Z"
     },
     {
       "song": "Demons",
       "artist": "Imagine Dragons",
-      "life_year": 2010,
+      "life_year": 2013,
       "chapter": "2010s / Family \u0026 Reflection",
       "memory": "This song was everywhere in the 2010s. It was on the radio, at games, and in the car with the kids. Just a great melodic rock song.",
       "tags": "2010s alt-rock / anthem / family car rides / melodic",
@@ -589,12 +589,12 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:15:01Z"
+      "fetched_at": "2026-11-16T13:43:52Z"
     },
     {
       "song": "Colors",
       "artist": "Halsey",
-      "life_year": 2010,
+      "life_year": 2016,
       "chapter": "Late 2010s / Modern Alt-Pop",
       "memory": "I really liked Halsey's sound when this came out. Catchy, synth-heavy pop that reminded me a bit of the '80s alternative I grew up on. I'm the huge Halsey fan, not the kids. I love all her music and the variety across rock, dance, and love songs.",
       "tags": "everything is blue / modern synth-pop / melodic / 2010s",
@@ -607,12 +607,12 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:15:02Z"
+      "fetched_at": "2026-11-16T13:43:52Z"
     },
     {
       "song": "I Write Sins Not Tragedies",
       "artist": "Panic! At The Disco",
-      "life_year": 2000,
+      "life_year": 2006,
       "chapter": "Mid-2000s / Pop-Punk Pivot",
       "memory": "Big hooks and a fun, theatrical sound. It felt like a whole new wave of rock taking over in the mid-2000s, and the video was great. It felt emo-like, and I gravitated toward emo with this and Thnks fr th Mmrs.",
       "tags": "las vegas / theatrical rock / catchy hooks / mid-2000s",
@@ -625,12 +625,12 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:15:02Z"
+      "fetched_at": "2026-11-16T13:43:53Z"
     },
     {
       "song": "Thnks fr th Mmrs",
       "artist": "Fall Out Boy",
-      "life_year": 2000,
+      "life_year": 2007,
       "chapter": "Late 2000s / Pop-Punk Era",
       "memory": "Just a high-energy, catchy song from the late 2000s. Looking back now, the title feels like a funny nod to putting together a playlist of old memories. I gravitated toward emo with this and I Write Sins Not Tragedies. Fall Out Boy's connection to One Tree Hill gave it another association, since I loved that show.",
       "tags": "mid-2000s pop-punk / catchy hooks / nostalgia / meta title",
@@ -643,7 +643,7 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:15:03Z"
+      "fetched_at": "2026-11-16T13:43:53Z"
     },
     {
       "song": "My Name Is Jonas",
@@ -661,7 +661,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:15:03Z"
+      "fetched_at": "2026-11-16T13:43:53Z"
     },
     {
       "song": "Monsters (feat. blackbear)",
@@ -679,7 +679,7 @@
       "spotify_popularity": null,
       "tier": "middle",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:15:03Z"
+      "fetched_at": "2026-11-16T13:43:54Z"
     },
     {
       "song": "Enjoy the Silence",
@@ -697,12 +697,12 @@
       "spotify_popularity": null,
       "tier": "canon",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:15:04Z"
+      "fetched_at": "2026-11-16T13:43:54Z"
     },
     {
       "song": "Barrel of a Gun",
       "artist": "Guster",
-      "life_year": 1998,
+      "life_year": 1999,
       "chapter": "Post-College / Late Boston Era",
       "memory": "We saw them open for Barenaked Ladies in Boston in the mid-'90s. No drum kit, just acoustic guitars and hand percussion, plus that '4, 3, 2, 1' hook.",
       "tags": "boston band / bnl opener / hand percussion / 4 3 2 1 hook",
@@ -715,12 +715,12 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "exact",
-      "fetched_at": "2026-11-16T13:15:04Z"
+      "fetched_at": "2026-11-16T13:43:54Z"
     },
     {
       "song": "11 Minutes",
       "artist": "YUNGBLUD \u0026 Halsey (feat. Travis Barker)",
-      "life_year": 2010,
+      "life_year": 2019,
       "chapter": "Late 2010s / 2020s Threshold",
       "memory": "I really like the collabs Halsey and Travis Barker did together. Great hooks, heavy drums, and a modern take on the alt-rock and pop-punk sounds I grew up with. Finding YUNGBLUD was totally random, but I like his music in general. I like collabs and love when rap-like music gets added in.",
       "tags": "travis barker / halsey / yungblud / emo-pop / modern crossover",
@@ -733,7 +733,7 @@
       "spotify_popularity": null,
       "tier": "deep-cut",
       "match_confidence": "fuzzy",
-      "fetched_at": "2026-11-16T13:15:04Z"
+      "fetched_at": "2026-11-16T13:43:55Z"
     }
   ]
 }
