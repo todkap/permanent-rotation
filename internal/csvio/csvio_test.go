@@ -41,8 +41,8 @@ func TestRealList(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(songs) != 41 {
-		t.Fatalf("expected 41 rows, got %d", len(songs))
+	if len(songs) != 44 {
+		t.Fatalf("expected 44 rows, got %d", len(songs))
 	}
 	var regret *Song
 	for i := range songs {

@@ -242,7 +242,7 @@ func oldTitle(s csvio.Song) string {
 		return "Smells like Teen Spirit"
 	case "there is a light that never goes out|the smiths":
 		return "There is a light that never goes out"
-	case "would|alice in chains":
+	case "would?|alice in chains":
 		return "Would"
 	case "the freshmen|verve pipe":
 		return "Freshman"
