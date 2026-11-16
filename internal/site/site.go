@@ -98,6 +98,7 @@ const navHTML = `<nav><div class="wrap">
 <ul>
 <li><a href="index.html"{{if .Timeline}} class="active"{{end}}>Timeline</a></li>
 <li><a href="stats.html"{{if not .Timeline}} class="active"{{end}}>Stats</a></li>
+{{if .PlaylistURL}}<li><a href="{{.PlaylistURL}}">Spotify playlist</a></li>{{end}}
 <li><a href="https://github.com/todkap/permanent-rotation">Make your own</a></li>
 </ul></div></nav>`
 
@@ -465,7 +466,11 @@ func Render(f *enrich.File, ctx *notes.Context, dir, base string, chapterOrder [
 	}
 
 	ogDesc := fmt.Sprintf("%d songs grouped by the chapter of life they arrived in. The memories are mine; the background notes are AI-researched, with sources linked.", len(f.Songs))
-	baseData := map[string]any{"CSS": template.CSS(pageCSS), "OGDesc": ogDesc, "Base": base} //nolint:gosec
+	playlistURL := ""
+	if strings.TrimRight(base, "/") == "https://todkap.github.io/permanent-rotation" {
+		playlistURL = "https://open.spotify.com/playlist/3Mx9a5o9ZQW5v6nqoKUllO"
+	}
+	baseData := map[string]any{"CSS": template.CSS(pageCSS), "OGDesc": ogDesc, "Base": base, "PlaylistURL": playlistURL} //nolint:gosec
 	pages := []struct {
 		name string
 		tpl  *template.Template

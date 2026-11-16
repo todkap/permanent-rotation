@@ -1,5 +1,7 @@
 # Permanent Rotation: an agentic project for the end of the year
 
+[Listen to the public Spotify playlist](https://open.spotify.com/playlist/3Mx9a5o9ZQW5v6nqoKUllO) - 49 songs in life-chapter order. Deep Cover is omitted because it has no Spotify match.
+
 ![The Boston skyline from the Longfellow Bridge at golden hour](../assets/article-header-boston.jpg)
 
 *Photo: [King of Hearts](https://commons.wikimedia.org/wiki/File:Boston_skyline_from_Longfellow_Bridge_September_2017_panorama_2.jpg), CC BY-SA 4.0, via Wikimedia Commons*
@@ -14,7 +16,7 @@ The list lived in a spreadsheet, which felt like a waste. So the project became 
 
 ### What the tool does
 
-The repo is a small Go program plus a GitHub Action. You edit a CSV with six columns: song, artist, era, tags, memory and angle. Only song and artist are required. When you run the Action, it matches each song against Spotify, pulls listener and play counts from Last.fm, optionally asks Gemini to write a short background note, and publishes a static site to GitHub Pages. A separate command builds your playlist.
+The repo is a small Go program plus a GitHub Action. You edit a CSV with six columns: song, artist, era, tags, memory and angle. Only song and artist are required. When you run the Action, it matches each song against Spotify, pulls listener and play counts from Last.fm, optionally asks Gemini to write a short background note, and publishes a static site to GitHub Pages. An optional local Mac script builds your playlist after a Spotify browser sign-in and an explicit confirmation. The site build itself stays in GitHub Actions; playlist creation is a separate step.
 
 ![The songs.csv format: the header row (song, artist, era, tags, memory, angle) and the real Mayonaise row](../assets/article-csv-example.png)
 
@@ -71,7 +73,7 @@ Matching is deterministic, cached, and honest about failure. Any match the tool 
 
 ### Built without a terminal
 
-One more thing that surprised me. The entire project, from first commit to deployed site, ran through the GitHub web UI. Edit the CSV in the browser, commit, open the Actions tab, tick the box that says regenerate notes, run the workflow. The keys live in repository secrets. I never opened a terminal, which made the whole thing feel closer to maintaining a playlist than running a software project. For a holiday build, that felt about right.
+One more thing that surprised me. The entire project, from first commit to deployed site, ran through the GitHub web UI. Edit the CSV in the browser, commit, open the Actions tab, tick the box that says regenerate notes, run the workflow. The keys live in repository secrets. I never opened a terminal to build and publish the site, which made that part feel closer to maintaining a playlist than running a software project. The optional Spotify playlist script is the exception: it runs locally on my Mac. For a holiday build, that felt about right.
 
 ### Make your own
 
