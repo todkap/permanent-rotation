@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T23:13:57Z",
+  "generated_at": "2026-11-16T23:43:14Z",
   "model": "gemini-3.5-flash-lite",
   "include_memory": true,
   "notes": {
@@ -26,10 +26,6 @@
     "colors|halsey": {
       "note": "Released as a single from her debut studio album Badlands, Colors showcases the modern synth-pop style that initially drew this listener to Halsey's music. The listener appreciates how the catchy, synth-heavy track echoes the 1980s alternative sounds of their youth as part of their enduring fandom across the artist's diverse musical eras.",
       "source_url": "https://en.wikipedia.org/wiki/Colors_(Halsey_song)"
-    },
-    "crazy for you|madonna": {
-      "note": "Originally released in 1985 from the soundtrack to the film Vision Quest and later included on the compilation album Celebration, this pop ballad marked a departure from Madonna's earlier dance-oriented material and became her second number-one single on the US Billboard Hot 100. This listener remembers it as one of the first early love ballads they loved, standing out in the collection mostly because of Madonna's singing voice.",
-      "source_url": "https://en.wikipedia.org/wiki/Crazy_for_You_(Madonna_song)"
     },
     "deep cover|dr. dre and snoop dogg": {
       "note": "Released in 1992 as the lead single from the soundtrack to the film of the same name, this hardcore track marked the explosive solo debut of Snoop Dogg over a hypnotic Dr. Dre beat. For this listener, who started college while remaining attached to their hometown and following a different path than their childhood pals, the song preserves the thrill of Snoop's arrival alongside the enduring legacy of N.W.A from their high school years.",
@@ -68,12 +64,10 @@
       "source_url": "https://en.wikipedia.org/wiki/Sparkle_and_Fade"
     },
     "here comes a regular|the replacements": {
-      "note": "Originally released on The Replacements' acclaimed 1985 album Tim, \"Here Comes a Regular\" is a poignant acoustic ballad that became a defining track of the band's catalog. For this listener, the song evokes memories of a vacation in Wilmington with Mike and Jess, connecting the bittersweet track to both the filming locations of One Tree Hill and subsequent set tours of the city.",
-      "source_url": "https://en.wikipedia.org/wiki/Tim_(album)"
-    },
-    "hey ya|outkast": {
-      "note": "Released by Outkast in 2003 as part of the double album Speakerboxxx/The Love Below, \"Hey Ya!\" became a massive global chart-topper and defined the pop landscape of the era. The listener associates this upbeat track and its iconic music video with holding their first newborn son and working out while he slept.",
-      "source_url": "https://en.wikipedia.org/wiki/Hey_Ya!"
+      "note": "Here Comes a Regular appears on the 1985 album Tim, which was produced by Tommy Erdelyi and marked the final album featuring the original line-up of the band. The listener connects this track to a vacation in Wilmington with Mike and Jess, associating the city both with filming locations for One Tree Hill and subsequent set tours.",
+      "source_url": "https://en.wikipedia.org/wiki/Tim_(The_Replacements_album)",
+      "album": "Tim",
+      "release_year": 1985
     },
     "home sweet home|mötley crüe": {
       "note": "Released in 1985 on Mötley Crüe's album Theatre of Pain, 'Home Sweet Home' became a defining anthem of the 1980s heavy metal power ballad era. For the listener, the track captures the bittersweet transition of starting middle school and gaining independence, perfectly mirroring the feeling of moving on.",
@@ -100,8 +94,10 @@
       "source_url": "https://en.wikipedia.org/wiki/Mayonaise_(song)"
     },
     "monsters (feat. blackbear)|all time low": {
-      "note": "Released in 2020 as part of All Time Low's album Wake Up, Sunshine, 'Monsters' featuring blackbear became a major crossover hit that topped the Billboard Alternative Airplay chart. This track successfully bridges the listener's longtime appreciation for All Time Low's earlier emo-pop style with modern rap-rock collaborations and the infectious hooks they enjoy.",
-      "source_url": "https://en.wikipedia.org/wiki/Monsters_(All_Time_Low_song)"
+      "note": "Featured on the eighth studio album Wake Up, Sunshine, the song became the highest-charting single of the band's career. The listener enjoys this track as a modern 2020s crossover that blends the band's earlier emo-pop style with rap hooks from blackbear.",
+      "source_url": "https://en.wikipedia.org/wiki/Wake_Up,_Sunshine",
+      "album": "Wake Up, Sunshine",
+      "release_year": 2020
     },
     "more than words|extreme": {
       "note": "Released as an acoustic rock ballad by the American rock band Extreme from their second album, Pornograffitti, this song topped the Billboard Hot 100 chart. For this listener, it captures the combination of high school prom, the end of high school, heading to college in the fall, and the interesting detail that the band was Boston-based.",
@@ -110,10 +106,6 @@
     "my name is jonas|weezer": {
       "note": "Serving as the explosive opening track to Weezer's 1994 self-titled debut, 'My Name Is Jonas' transitions seamlessly from gentle acoustic picking into a heavy, melodic rock anthem. This listener fondly recalls how those dynamic guitar shifts provided a fitting soundtrack just as their college years were coming to a close.",
       "source_url": "https://en.wikipedia.org/wiki/My_Name_Is_Jonas"
-    },
-    "nightswimming|r.e.m.": {
-      "note": "Released in 1993 on the album Automatic for the People, R.E.M.'s \"Nightswimming\" features a poignant piano arrangement by bassist Mike Mills complemented by Michael Stipe's evocative vocals. For this listener, who first fell in love with alternative music through the band, the track served as close college friends' wedding song and continues to evoke deep memories of that joyful day alongside reflections on love and friendship.",
-      "source_url": "https://en.wikipedia.org/wiki/Nightswimming"
     },
     "papercut|linkin park": {
       "note": "Released as the third single from Linkin Park's diamond-certified 2000 debut album Hybrid Theory, \"Papercut\" peaked at number 14 on the UK Singles Chart. For this listener, who transitioned from an urban rap background to grunge-loving private university peers during a period of major life changes, the track's unique blend of hip-hop and alternative rock perfectly bridged two different worlds.",
@@ -135,29 +127,25 @@
       "album": "Post Traumatic",
       "release_year": 2018
     },
-    "scenario|a tribe called quest": {
-      "note": "Released in 1992 on A Tribe Called Quest's album The Low End Theory, \"Scenario\" featured an iconic breakout guest verse by Busta Rhymes over hard-hitting production. This track soundtracked the listener's dorm life and college years, remaining in heavy rotation alongside grunge despite changing musical trends.",
-      "source_url": "https://en.wikipedia.org/wiki/Scenario_(A_Tribe_Called_Quest_song)"
-    },
     "silent running|mike + the mechanics": {
       "note": "Released in late 1985 as the lead single from Mike + The Mechanics' self-titled debut album, \"Silent Running\" reached number six on the US Billboard Hot 100 in 1986. For this listener, the track serves as a musical anchor to Prospect Street and childhood sports memories, evoking a timeless bond with a lifelong friend from that neighborhood.",
       "source_url": "https://en.wikipedia.org/wiki/Silent_Running_(On_Dangerous_Ground)"
     },
     "smells like teen spirit|nirvana": {
-      "note": "Released in late 1991 as the lead single from Nirvana's seminal album Nevermind, 'Smells Like Teen Spirit' propelled grunge into the mainstream and reached number six on the Billboard Hot 100. For this listener, the track serves as a soundtrack to dorm life during freshman year, capturing the bittersweet pivot from childhood friends and home life to new college trajectories amidst feeling broke.",
-      "source_url": "https://en.wikipedia.org/wiki/Smells_Like_Teen_Spirit"
-    },
-    "someday i suppose|mighty mighty bosstones": {
-      "note": "Released in 1993 on the album \"Don't Know How to Party,\" the Mighty Mighty Bosstones' track \"Someday I Suppose\" exemplifies the high-energy ska-punk fusion that defined the Boston band's signature sound. For this listener, the song evokes a vivid memory of a sweaty, intense New Year's Eve concert at the Middle East basement, perfectly matching the track's driving rhythm and catchy aggression.",
-      "source_url": "https://en.wikipedia.org/wiki/Don%27t_Know_How_to_Party"
+      "note": "\"Smells Like Teen Spirit\" is the opening track and lead single from Nirvana's second album, Nevermind (1991), released on DGC Records, and it propelled the album to the top of several charts while helping grunge enter the mainstream. The listener associates this track with dorm life and freshman year, reflecting on growing up, childhood friends moving on, the weight of life-trajectory choices, and balancing home and college life while feeling broke.",
+      "source_url": "https://en.wikipedia.org/wiki/Smells_Like_Teen_Spirit",
+      "album": "Nevermind",
+      "release_year": 1991
     },
     "something's always wrong|toad the wet sprocket": {
       "note": "Released in 1994 on Toad the Wet Sprocket's album Dulcinea, \"Something's Always Wrong\" reached number four on the US Modern Rock Tracks chart. For this listener, the track serves as a lasting anchor to college friendships formed around the band and unforgettable nights at the Orpheum Theater.",
       "source_url": "https://en.wikipedia.org/wiki/Something%27s_Always_Wrong"
     },
     "somewhere only we know|keane": {
-      "note": "Composed and performed by the English alternative rock band Keane, \"Somewhere Only We Know\" was officially released as the first single from their debut album, Hopes and Fears, and became the band's signature song and biggest hit single to date. The listener connects this melodic and memorable tune to watching Glee as a family when everyone had different music tastes and songs tied to the show.",
-      "source_url": "https://en.wikipedia.org/wiki/Somewhere_Only_We_Know"
+      "note": "Somewhere Only We Know is a song composed and performed by English alternative rock band Keane, and it appears on their debut album, Hopes and Fears. The listener connects with this melodic and memorable track as a calming song that bridges different family music tastes sparked by watching Glee.",
+      "source_url": "https://en.wikipedia.org/wiki/Somewhere_Only_We_Know",
+      "album": "Hopes And Fears",
+      "release_year": 2004
     },
     "summer|buffalo tom": {
       "note": "Buffalo Tom released the track \"Summer\" on their 1995 album \"Sleepy Eyed\". For this listener, the song is permanently intertwined with a final concert before a friend moved to Arizona, following a memorable moment when Greg was pulled onto the stage.",
@@ -200,10 +188,6 @@
     "with or without you|u2": {
       "note": "Released as the lead single from The Joshua Tree, this rock ballad features sustained guitar parts played with a prototype of the Infinite Guitar alongside Bono's vocals and Adam Clayton's bassline. While living in a heavily Irish Boston, this listener felt that U2 was adopted by the local music scene and experienced the song as extremely powerful in both its lyrics and musical arrangement.",
       "source_url": "https://en.wikipedia.org/wiki/With_or_Without_You"
-    },
-    "would?|alice in chains": {
-      "note": "Written by Jerry Cantrell as a tribute to Andrew Wood and featured on the Singles: Original Motion Picture Soundtrack and the album Dirt, \"Would?\" became a definitive grunge anthem. The listener fondly recalls this track as their favorite from the Cameron Crowe movie's soundtrack, perfectly capturing the spirit of the era.",
-      "source_url": "https://en.wikipedia.org/wiki/Would?"
     },
     "zombie|the cranberries": {
       "note": "Zombie is a protest song by the Irish alternative rock band the Cranberries from their second studio album, No Need to Argue, featuring grunge-style distorted guitar and shouted vocals. This listener connects the track to the spring of 1995 in Rhode Island during college graduation week, when a surreal mosh pit broke out with the listener's brother-in-law.",
