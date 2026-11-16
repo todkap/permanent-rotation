@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T17:50:14Z",
+  "generated_at": "2026-11-16T17:55:21Z",
   "model": "gemini-3.5-flash-lite",
   "include_memory": true,
   "notes": {
@@ -114,6 +114,10 @@
     "something's always wrong|toad the wet sprocket": {
       "note": "Released in 1994 on Toad the Wet Sprocket's album Dulcinea, \"Something's Always Wrong\" reached number four on the US Modern Rock Tracks chart. For this listener, the track serves as a lasting anchor to college friendships formed around the band and unforgettable nights at the Orpheum Theater.",
       "source_url": "https://en.wikipedia.org/wiki/Something%27s_Always_Wrong"
+    },
+    "somewhere only we know|keane": {
+      "note": "Composed and performed by the English alternative rock band Keane, \"Somewhere Only We Know\" was officially released as the first single from their debut album, Hopes and Fears, and became the band's signature song and biggest hit single to date. The listener connects this melodic and memorable tune to watching Glee as a family when everyone had different music tastes and songs tied to the show.",
+      "source_url": "https://en.wikipedia.org/wiki/Somewhere_Only_We_Know"
     },
     "summer|buffalo tom": {
       "note": "Buffalo Tom released the track \"Summer\" on their 1995 album \"Sleepy Eyed\". For this listener, the song is permanently intertwined with a final concert before a friend moved to Arizona, following a memorable moment when Greg was pulled onto the stage.",
