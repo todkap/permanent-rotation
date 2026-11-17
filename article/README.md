@@ -103,6 +103,8 @@ The README walks through getting each key step by step.
 
 One collaborator on this build was not a person. Instinct, my AI assistant, checked the facts, ran down the setlists, and caught the details I would have shipped wrong. The invented album names are funny in this article because they got caught. Working with an agent that checks its own work against sources changed how I think about the tools I spend my week on. Thanks, Instinct.
 
+Instinct is still early stage and invite-only, which I love. I have a few invites. If you want one, comment or message me on LinkedIn with what you would hand off first, and I will pick from those.
+
 ### Wrapping up the year
 
 The habit underneath these articles is simple: I reserve December to invest in my own technical growth. Most years that becomes an article, some years it is just a project. The theme ends up the same: the best way to understand a technology is to build something you care about with it. This year, that lesson came from watching an agent confidently invent a Barenaked Ladies album. My list is live at https://todkap.github.io/permanent-rotation/index.html if you want to see what 50 songs look like with their notes, canon labels and all.
