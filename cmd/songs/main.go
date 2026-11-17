@@ -11,8 +11,10 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 	"time"
 
@@ -50,6 +52,8 @@ func main() {
 	includeMemory := fs.Bool("include-memory", true, "send memory text to the model (opt out with -include-memory=false)")
 	paceSecs := fs.Int("pace", 5, "seconds between Gemini requests (free tier allows 15/min; lower this on a paid tier)")
 	forceNotes := fs.Bool("force", false, "notes: regenerate even songs that already have a note (default fills only missing ones)")
+	batch := fs.Int("batch", 4, "maximum songs making source requests per notes run")
+	recoveryRef := fs.String("recovery-ref", "", "one-time restore of missing notes from this git commit")
 	fs.Parse(args)
 
 	switch cmd {
@@ -63,7 +67,15 @@ func main() {
 		fmt.Println("redirect http://127.0.0.1:8888/callback, then POST /me/playlists.")
 		fmt.Println("Order follows life chapters, no ranking.")
 		os.Exit(1)
+	case "notes-recover":
+		if err := recoverNotes(*contextPath, *recoveryRef); err != nil {
+			fail(err)
+		}
 	case "notes":
+		if *batch < 1 || *batch > 4 {
+			fail(fmt.Errorf("notes batch must be between 1 and 4"))
+		}
+		notesBatch = *batch
 		runNotes(*csvPath, *contextPath, *outPath, *minSongs, *includeMemory, *forceNotes, time.Duration(*paceSecs)*time.Second)
 	default:
 		fmt.Fprintln(os.Stderr, "unknown command:", cmd)
@@ -292,12 +304,15 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 				best, exact := spotify.PickBest(tracks, s.Song, s.Artist)
 				switch {
 				case !exact:
+					setRecheckReason(&rec, "no-exact")
 					report("re-check: %s - %s: no exact title+artist in search results, keeping %s %d", s.Song, s.Artist, rec.Album, rec.ReleaseYear)
 				case best.ID == rec.SpotifyID:
+					setRecheckReason(&rec, "confirmed")
 					report("re-check: %s - %s: pin confirmed %s %d", s.Song, s.Artist, rec.Album, rec.ReleaseYear)
 				case metadataOK && spotify.BetterPin(best, spotify.Track{Album: rec.Album, AlbumType: rec.AlbumType, ReleaseDate: fmt.Sprint(rec.ReleaseYear)}):
 					adoptPin(&rec, best, "earlier or plainer original in plain search")
 				default:
+					setRecheckReason(&rec, "no-better")
 					report("re-check: %s - %s: search offered nothing better, keeping %s %d", s.Song, s.Artist, rec.Album, rec.ReleaseYear)
 				}
 			}
@@ -546,7 +561,7 @@ Tags from the listener: %s
 %s
 Verified facts, sourced from Spotify and Wikipedia:
 %s
-Write exactly 2 sentences about the song. Sentence 1: release context, chart history, or musical context, using ONLY the verified facts above - never state an album name, year, chart position, or any other specific that is not written there; if the facts do not include one, write around it, a shorter accurate note is better than a detailed wrong one. Keep SINGLE release dates separate from ALBUM release dates. Never write "released in [single year] on the album [album]" when that album has a different year. Use separate explicit clauses, or omit the date if the relationship is uncertain. If the verified facts name the album the song appears on, mention it in sentence 1. Sentence 2: how the song connects to the listener's memory above, or its lasting resonance if no memory was shared. %sNever invent facts about the listener's life; you may only reference what they wrote above.
+Write exactly 2 sentences about the song. Sentence 1: release context, chart history, or musical context, using ONLY the verified facts above - never state an album name, year, chart position, or any other specific that is not written there; if the facts do not include one, write around it, a shorter accurate note is better than a detailed wrong one. Keep SINGLE release dates separate from ALBUM release dates. Never write "released in [single year] on the album [album]" when that album has a different year. Use separate explicit clauses, or omit the date if the relationship is uncertain. If the verified facts name the album, mention it only if its title has no second-person words. For titles such as A Fever You Can't Sweat Out, omit the album name and use other verified musical context instead; the site already shows the album. Do not quote lyrics or use any second-person pronoun in either sentence. Sentence 2: how the song connects to the listener's memory above, or its lasting resonance if no memory was shared. %sNever invent facts about the listener's life; you may only reference what they wrote above.
 
 Style rules: write in the third person; refer to the person as "this listener" or "the listener". Do not address the listener as you/your. Exact song or artist names may contain those words. Do not expand initials, abbreviations, or nicknames from the memory into names not provided in the facts. Do not put memory paraphrases in quotation marks. No self-corrections, restarts, or hedges (never write "wait", "actually", "no,", or similar). No meta commentary about the writing itself.
 
@@ -601,25 +616,60 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 		Note      string `json:"note"`
 		SourceURL string `json:"source_url"`
 	}
-	var added, dropped, kept, skipped, retried, clearedMarkers int
+	var added, dropped, missing, kept, skipped, retried, clearedMarkers int
+	remoteSongs := 0
+	now := time.Now().UTC()
+	if until, err := time.Parse(time.RFC3339, ctx.RetryNotBefore); err == nil && now.Before(until) {
+		report("notes: deferred entire batch until at least %s after prior source throttling; no notes changed", ctx.RetryNotBefore)
+		flushSummary("Notes: deferred safely")
+		return
+	}
+	sort.SliceStable(songs, func(i, j int) bool {
+		pi, pj := notePriority(ctx, enriched, songs[i]), notePriority(ctx, enriched, songs[j])
+		if pi != pj {
+			return pi < pj
+		}
+		return ctx.LastAttempt[notes.Key(songs[i].Song, songs[i].Artist)] < ctx.LastAttempt[notes.Key(songs[j].Song, songs[j].Artist)]
+	})
+	if ctx.LastAttempt == nil {
+		ctx.LastAttempt = map[string]string{}
+	}
 	for _, s := range songs {
 		k := notes.Key(s.Song, s.Artist)
 		rec, haveRec := enriched[k]
 		old, hasOld := ctx.Notes[k]
 
-		// Validate legacy sources BEFORE skipping a note. Existence alone is
-		// insufficient: a grammar/disambiguation page is not a song source.
 		oldSourceOK, sourceNeedsRefresh := true, false
-		if hasOld {
+		stamped := hasOld && sourceStampValid(old, s.Song, s.Artist, now)
+		if hasOld && stamped && !old.PendingVerification && !force && (!haveRec || !rec.ReleaseChanged) && noteAlbumIssue(old.Note, rec) == "" && (!haveRec || old.Album == cleanAlbum(rec.Album) && old.ReleaseYear == rec.ReleaseYear) {
+			skipped++
+			report("note: skipped (persisted verified source): %s - %s", s.Song, s.Artist)
+			continue
+		}
+		if remoteSongs >= notesBatch {
+			report("note: deferred (batch limit %d, unchanged): %s - %s", notesBatch, s.Song, s.Artist)
+			continue
+		}
+		remoteSongs++
+		ctx.LastAttempt[k] = now.Format(time.RFC3339)
+		if hasOld && !stamped {
 			canonical, ok, sourceErr := wk.CheckSource(old.SourceURL, s.Song, s.Artist, cleanAlbum(recAlbum(rec)))
 			if sourceErr != nil {
-				sourceNeedsRefresh = true
-				report("note source: %s: cannot verify existing source: %v; attempting fresh resolution", s.Song, sourceErr)
-			} else {
-				oldSourceOK = ok
-				sourceNeedsRefresh = !ok || canonical != old.SourceURL
+				report("note: deferred (source UNKNOWN, existing text/marker unchanged): %s - %s: %v", s.Song, s.Artist, sourceErr)
+				if until := wk.RetryNotBefore(); !until.IsZero() {
+					recordThrottle(ctx, until, now)
+					break
+				}
+				continue
+			}
+			oldSourceOK = ok
+			sourceNeedsRefresh = !ok || canonical != old.SourceURL
+			if ok && !sourceNeedsRefresh {
+				stampSource(&old, s.Song, s.Artist, now)
+				ctx.Notes[k] = old
 			}
 		}
+
 		albumIssue := ""
 		if hasOld && haveRec && rec.AlbumType != "single" {
 			albumIssue = notes.AlbumYearIssue(old.Note, cleanAlbum(rec.Album), rec.ReleaseYear)
@@ -628,6 +678,8 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 		switch {
 		case force:
 			regenReason = "forced regeneration"
+		case hasOld && old.PendingVerification:
+			regenReason = "recovered note pending verification"
 		case sourceNeedsRefresh:
 			regenReason = "source missing, changed, unverified or wrong identity"
 		case albumIssue != "":
@@ -662,12 +714,18 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 			}
 		}
 		wikiURL := ""
-		if wTitle, wURL, wExtract, _, err := wk.LookupRelease(s.Song, s.Artist, cleanAlbum(recAlbum(rec))); err != nil {
-			report("note source: %s: %v", s.Song, err)
+		if wTitle, wURL, wExtract, _, sourceErr := wk.LookupRelease(s.Song, s.Artist, cleanAlbum(recAlbum(rec))); sourceErr != nil {
+			report("note: deferred (fresh source UNKNOWN, no destructive validation): %s - %s: %v", s.Song, s.Artist, sourceErr)
+			if until := wk.RetryNotBefore(); !until.IsZero() {
+				recordThrottle(ctx, until, now)
+				break
+			}
+			continue
 		} else if wExtract != "" {
 			wikiURL = wURL
 			factsLines = append(factsLines, fmt.Sprintf("- Wikipedia article %q intro: %s", wTitle, wExtract))
 		}
+
 		if s.LifeYear > 0 {
 			factsLines = append(factsLines, fmt.Sprintf("- The listener places this song around %d in their own life.", s.LifeYear))
 		}
@@ -715,7 +773,7 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 			} else if !notes.Valid(n) {
 				issue = "no real source URL in the response"
 			} else if si := notes.StyleIssue(n.Note, s.Song, s.Artist); si != "" {
-				issue = "style check failed: " + si
+				issue = "style check failed: " + si + "; rejected term: " + notes.SecondPersonTerm(n.Note, s.Song, s.Artist)
 			} else if ai := noteAlbumIssue(n.Note, rec); ai != "" {
 				issue = "fact check failed: " + ai
 			} else if ci := notes.ClaimIssue(n.Note, claimsText); ci != "" {
@@ -737,6 +795,8 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 			if haveRec && rec.Album != "" {
 				n.Album, n.ReleaseYear = cleanAlbum(rec.Album), rec.ReleaseYear
 			}
+			stampSource(&n, s.Song, s.Artist, now)
+			n.PendingVerification = false
 			ctx.Notes[k] = n
 			added++
 			if haveRec && rec.ReleaseChanged {
@@ -748,7 +808,7 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 			} else {
 				report("note: written: %s - %s", s.Song, s.Artist)
 			}
-		case hasOld && (!oldSourceOK || albumIssue != "" || regenReason != "" && !notes.ClaimsOK(old.Note, claimsText)):
+		case hasOld && !oldSourceOK:
 			// the old note names facts that no longer hold and the rewrite
 			// failed: drop it rather than publish a stale album claim
 			delete(ctx.Notes, k)
@@ -758,7 +818,7 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 			kept++
 			report("note: kept existing note (regeneration failed: %s): %s - %s", issue, s.Song, s.Artist)
 		default:
-			dropped++
+			missing++
 			report("note: none written (%s): %s - %s", issue, s.Song, s.Artist)
 		}
 		time.Sleep(pace) // stay under the API rate limit
@@ -776,7 +836,7 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 			fmt.Fprintln(os.Stderr, "warn: could not clear release markers:", err)
 		}
 	}
-	report("notes: %d written, %d skipped (existing), %d retries, %d kept old after failed regeneration, %d dropped -> %s", added, skipped, retried, kept, dropped, contextPath)
+	report("notes: %d written, %d skipped (existing), %d retries, %d kept old after failed regeneration, %d existing removed, %d missing/no note written; %d source-check songs (limit %d) -> %s", added, skipped, retried, kept, dropped, missing, remoteSongs, notesBatch, contextPath)
 	fmt.Println("Review the generated note diff and published facts. The supplied Action commits and deploys automatically; it has no human review gate.")
 	flushSummary("Notes: per-song outcomes")
 }
@@ -798,4 +858,80 @@ func noteAlbumIssue(text string, rec *enrich.Record) string {
 		return ""
 	}
 	return notes.AlbumYearIssue(text, cleanAlbum(rec.Album), rec.ReleaseYear)
+}
+
+var notesBatch = 4
+
+const sourceVersion = 2
+
+func sourceStampValid(n notes.Note, song, artist string, now time.Time) bool {
+	checked, err := time.Parse(time.RFC3339, n.SourceCheckedAt)
+	return err == nil && n.SourceVersion == sourceVersion && n.SourceIdentity == notes.Key(song, artist)+"|"+n.SourceURL && !checked.After(now) && now.Sub(checked) < 30*24*time.Hour
+}
+func stampSource(n *notes.Note, song, artist string, now time.Time) {
+	n.SourceCheckedAt = now.UTC().Format(time.RFC3339)
+	n.SourceIdentity = notes.Key(song, artist) + "|" + n.SourceURL
+	n.SourceVersion = sourceVersion
+}
+func notePriority(c *notes.Context, records map[string]*enrich.Record, s csvio.Song) int {
+	k := notes.Key(s.Song, s.Artist)
+	n, ok := c.Notes[k]
+	if !ok {
+		return 0
+	}
+	if n.PendingVerification {
+		return 1
+	}
+	if r := records[k]; r != nil && (r.ReleaseChanged || noteAlbumIssue(n.Note, r) != "") {
+		return 2
+	}
+	return 3
+}
+func recoverNotes(path, ref string) error {
+	if !regexp.MustCompile(`^[a-f0-9]{40}$`).MatchString(ref) {
+		return fmt.Errorf("recovery-ref must be an exact 40-character git commit")
+	}
+	clean := filepath.ToSlash(filepath.Clean(path))
+	if strings.HasPrefix(clean, "../") || filepath.IsAbs(path) {
+		return fmt.Errorf("recovery context path must be repository-relative")
+	}
+	b, err := exec.Command("git", "show", ref+":"+clean).Output()
+	if err != nil {
+		return fmt.Errorf("cannot load pre-run notes from git: %w", err)
+	}
+	var prior notes.Context
+	if err = json.Unmarshal(b, &prior); err != nil {
+		return err
+	}
+	current, err := notes.Load(path)
+	if err != nil {
+		return err
+	}
+	count := notes.RestoreMissing(current, &prior, ref)
+	if err = current.Save(path); err != nil {
+		return err
+	}
+	fmt.Printf("Recovered %d missing prior notes; existing notes untouched; recovered text pending verification.\n", count)
+	return nil
+}
+
+func setRecheckReason(rec *enrich.Record, result string) {
+	switch result {
+	case "confirmed":
+		rec.MatchReason = "kept: pin confirmed by this run"
+	case "no-exact":
+		rec.MatchReason = "kept: no exact title+artist candidate in this run"
+	case "no-better":
+		rec.MatchReason = "kept: current search offered nothing better"
+	}
+}
+
+// recordThrottle carries repeated throttles across separate workflow runs.
+func recordThrottle(ctx *notes.Context, until, now time.Time) {
+	ctx.ThrottleCount++
+	backoff := 15 * time.Minute * time.Duration(1<<uint(min(ctx.ThrottleCount-1, 3)))
+	if minimum := now.Add(backoff); until.Before(minimum) {
+		until = minimum
+	}
+	ctx.RetryNotBefore = until.UTC().Format(time.RFC3339)
 }

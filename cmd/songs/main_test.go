@@ -143,7 +143,15 @@ func TestNotesRetryGapsAndRepairSourceBeforeSkip(t *testing.T) {
 	if err := ef.Save(efPath); err != nil {
 		t.Fatal(err)
 	}
-	runNotes(csvPath, ctxPath, efPath, 1, false, false, 0)
+	priorBatch := notesBatch
+	notesBatch = 1
+	defer func() { notesBatch = priorBatch }()
+	for pass := 1; pass <= 3; pass++ {
+		runNotes(csvPath, ctxPath, efPath, 1, false, false, 0)
+		if calls != pass {
+			t.Fatalf("bounded resume pass %d made %d total generations", pass, calls)
+		}
+	}
 	got, err := notes.Load(ctxPath)
 	if err != nil {
 		t.Fatal(err)

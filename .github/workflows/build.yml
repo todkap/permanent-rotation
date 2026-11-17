@@ -4,9 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       notes:
-        description: 'Regenerate Gemini background notes (opt-in per run; review the diff before merging)'
+        description: 'Repair a bounded notes batch (opt-in; inspect outcomes after publishing)'
         type: boolean
         default: false
+      notes_batch:
+        description: 'Maximum songs to check/repair this run (1-4)'
+        type: choice
+        options: ['4', '2', '1']
+        default: '4'
   push:
     branches: [main]
     paths: # CSV + code triggers: the generated JSON this workflow commits can never retrigger it
@@ -46,9 +51,15 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
       - uses: actions/setup-go@v5
         with:
           go-version: '1.22'
+      - name: recover missing notes once (no API calls)
+        if: github.repository == 'todkap/permanent-rotation'
+        run: go run ./cmd/songs notes-recover --context "$CONTEXT_PATH" --recovery-ref 3bda2900911b42c74b4241bae5611f0ac914358c
       - name: enrich
         env:
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
@@ -62,7 +73,8 @@ jobs:
           # Optional: Settings > Secrets and variables > Actions > Variables tab.
           # Unset = empty = the tool's built-in default model.
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
-        run: go run ./cmd/songs notes --csv "$CSV_PATH" --context "$CONTEXT_PATH" --out "$OUT_PATH"
+          NOTES_BATCH: ${{ inputs.notes_batch || '4' }}
+        run: go run ./cmd/songs notes --csv "$CSV_PATH" --context "$CONTEXT_PATH" --out "$OUT_PATH" --batch "$NOTES_BATCH" --pace 8
       - name: render site
         run: go run ./cmd/songs site --out "$OUT_PATH" --context "$CONTEXT_PATH" --site "$SITE_DIR" --base "$SITE_BASE"
       - name: commit data changes

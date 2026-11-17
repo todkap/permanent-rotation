@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestLookup(t *testing.T) {
@@ -165,5 +167,56 @@ func TestPerformerPunctuationAndJointCredit(t *testing.T) {
 		if !belongs(article{title: tc.song, extract: tc.text}, tc.song, tc.artist, "") {
 			t.Error("identity failed: " + tc.song)
 		}
+	}
+}
+
+func TestRetryAfterAndStopOn429(t *testing.T) {
+	now := time.Now()
+	for _, h := range []string{"3600", now.Add(2 * time.Hour).UTC().Format(http.TimeFormat)} {
+		until := retryUntil(h, now, 1)
+		if until.Sub(now) < 59*time.Minute {
+			t.Fatal("ignored Retry-After", h, until)
+		}
+	}
+	if retryUntil("", now, 2).Sub(now) <= retryUntil("", now, 1).Sub(now) {
+		t.Fatal("no exponential backoff")
+	}
+	calls := 0
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls++
+		w.Header().Set("Retry-After", "3600")
+		w.WriteHeader(429)
+	}))
+	defer srv.Close()
+	c := &Client{hc: srv.Client(), apiURL: srv.URL}
+	_, _, _, _, err := c.LookupRelease("Song", "Artist", "Album")
+	if err == nil {
+		t.Fatal("429 ignored")
+	}
+	c.LookupRelease("Another", "Artist", "Album")
+	if calls != 1 {
+		t.Fatal("requests continued during cooldown", calls)
+	}
+	if time.Until(c.RetryNotBefore()) < 59*time.Minute {
+		t.Fatal("cooldown not exposed")
+	}
+}
+func TestRequestCacheAndBudget(t *testing.T) {
+	calls := 0
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls++; fmt.Fprint(w, `{"query":{"search":[]}}`) }))
+	defer srv.Close()
+	c := &Client{hc: srv.Client(), apiURL: srv.URL}
+	q := url.Values{"x": {"1"}}
+	c.get(q)
+	c.get(q)
+	if calls != 1 {
+		t.Fatal("same request not cached")
+	}
+	c.requests = 20
+	if _, err := c.get(url.Values{"x": {"2"}}); err == nil {
+		t.Fatal("budget exceeded")
+	}
+	if calls != 1 {
+		t.Fatal("network after budget")
 	}
 }

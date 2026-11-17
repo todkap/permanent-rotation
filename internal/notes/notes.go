@@ -18,18 +18,26 @@ import (
 // Legacy notes predate these fields and are handled by the release_changed
 // marker on the enriched record.
 type Note struct {
-	Note        string `json:"note"`
-	SourceURL   string `json:"source_url"`
-	Album       string `json:"album,omitempty"`
-	ReleaseYear int    `json:"release_year,omitempty"`
+	Note                string `json:"note"`
+	SourceURL           string `json:"source_url"`
+	Album               string `json:"album,omitempty"`
+	ReleaseYear         int    `json:"release_year,omitempty"`
+	SourceCheckedAt     string `json:"source_checked_at,omitempty"`
+	SourceIdentity      string `json:"source_identity,omitempty"`
+	SourceVersion       int    `json:"source_version,omitempty"`
+	PendingVerification bool   `json:"pending_verification,omitempty"`
 }
 
 // Context is the committed context.json document.
 type Context struct {
-	GeneratedAt   string          `json:"generated_at"`
-	Model         string          `json:"model"`
-	IncludeMemory bool            `json:"include_memory"`
-	Notes         map[string]Note `json:"notes"`
+	GeneratedAt     string            `json:"generated_at"`
+	Model           string            `json:"model"`
+	IncludeMemory   bool              `json:"include_memory"`
+	Notes           map[string]Note   `json:"notes"`
+	RecoveryApplied map[string]bool   `json:"recovery_applied,omitempty"`
+	LastAttempt     map[string]string `json:"last_attempt,omitempty"`
+	ThrottleCount   int               `json:"throttle_count,omitempty"`
+	RetryNotBefore  string            `json:"retry_not_before,omitempty"`
 }
 
 func Key(song, artist string) string {
@@ -183,4 +191,38 @@ func AlbumYearIssue(note, album string, releaseYear int) string {
 		}
 	}
 	return ""
+}
+
+// RestoreMissing restores only missing, previously stored notes, never replacing
+// successful new work. The applied receipt prevents repeated resurrection.
+func RestoreMissing(current, prior *Context, receipt string) int {
+	if current.RecoveryApplied == nil {
+		current.RecoveryApplied = map[string]bool{}
+	}
+	if current.RecoveryApplied[receipt] {
+		return 0
+	}
+	n := 0
+	for key, note := range prior.Notes {
+		if _, exists := current.Notes[key]; !exists && Valid(note) {
+			note.PendingVerification = true
+			note.SourceCheckedAt = ""
+			note.SourceIdentity = ""
+			note.SourceVersion = 0
+			current.Notes[key] = note
+			n++
+		}
+	}
+	current.RecoveryApplied[receipt] = true
+	return n
+}
+
+// Diagnostic prints only the rejected token, never the whole prompt/memory.
+func SecondPersonTerm(note, song, artist string) string {
+	for _, name := range []string{song, artist} {
+		if name != "" {
+			note = regexp.MustCompile(`(?i)`+regexp.QuoteMeta(name)).ReplaceAllString(note, "the track")
+		}
+	}
+	return secondPerson.FindString(note)
 }

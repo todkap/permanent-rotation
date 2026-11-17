@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -21,6 +22,8 @@ type Client struct {
 	lastRequest  time.Time
 	blockedUntil time.Time
 	cache        map[string][]byte
+	requests     int
+	retries      int
 }
 
 func New() *Client { return &Client{hc: &http.Client{Timeout: 15 * time.Second}, apiURL: apiURL} }
@@ -44,6 +47,9 @@ func (c *Client) LookupRelease(song, artist, album string) (title, pageURL, extr
 		titles, e := c.searchTitles(query)
 		if e != nil {
 			lastErr = e
+			if !c.RetryNotBefore().IsZero() {
+				return "", "", "", "", e
+			}
 			continue
 		}
 		for _, t := range titles {
@@ -54,6 +60,9 @@ func (c *Client) LookupRelease(song, artist, album string) (title, pageURL, extr
 			page, e := c.page(t)
 			if e != nil {
 				lastErr = e
+				if !c.RetryNotBefore().IsZero() {
+					return "", "", "", "", e
+				}
 				continue
 			}
 			if page.disambiguation || page.extract == "" {
@@ -176,17 +185,24 @@ func (c *Client) get(q url.Values) ([]byte, error) {
 	if b, ok := c.cache[key]; ok {
 		return b, nil
 	}
+	if c.requests >= 20 {
+		return nil, fmt.Errorf("wikipedia: batch request budget reached; deferred")
+	}
+	if time.Now().Before(c.blockedUntil) {
+		return nil, fmt.Errorf("wikipedia: rate-limit cooldown; retry after %s", c.blockedUntil.UTC().Format(time.RFC3339))
+	}
 	if c.apiURL == apiURL {
 		if time.Now().Before(c.blockedUntil) {
 			return nil, fmt.Errorf("wikipedia: rate-limit cooldown; retry the notes run later")
 		}
-		if wait := time.Second - time.Since(c.lastRequest); wait > 0 {
+		if wait := 5*time.Second - time.Since(c.lastRequest); wait > 0 {
 			time.Sleep(wait)
 		}
 		c.lastRequest = time.Now()
 	}
+	c.requests++
 	req, _ := http.NewRequest("GET", c.apiURL+"?"+q.Encode(), nil)
-	req.Header.Set("User-Agent", "permanent-rotation/0.1 (personal music list tool)")
+	req.Header.Set("User-Agent", "PermanentRotation/0.2 (source verification; https://github.com/todkap/permanent-rotation; maintainer https://github.com/todkap)")
 	resp, err := c.hc.Do(req)
 	if err != nil {
 		return nil, err
@@ -194,7 +210,8 @@ func (c *Client) get(q url.Values) ([]byte, error) {
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
 		if resp.StatusCode == 429 {
-			c.blockedUntil = time.Now().Add(time.Minute)
+			c.retries++
+			c.blockedUntil = retryUntil(resp.Header.Get("Retry-After"), time.Now(), c.retries)
 		}
 		return nil, fmt.Errorf("wikipedia: %s", resp.Status)
 	}
@@ -270,4 +287,23 @@ func (c *Client) CheckSource(raw, song, artist, album string) (canonical string,
 		return "", false, err
 	}
 	return p.url, !p.disambiguation && p.extract != "" && belongs(p, song, artist, album), nil
+}
+
+// RetryNotBefore is persisted by the notes runner; it is a lower bound, not a promise.
+func (c *Client) RetryNotBefore() time.Time { return c.blockedUntil }
+func retryUntil(header string, now time.Time, attempt int) time.Time {
+	delay := 15 * time.Minute * time.Duration(1<<uint(minInt(attempt-1, 3)))
+	if seconds, err := strconv.Atoi(header); err == nil && seconds > 0 && time.Duration(seconds)*time.Second > delay {
+		delay = time.Duration(seconds) * time.Second
+	}
+	if t, err := http.ParseTime(header); err == nil && t.Sub(now) > delay {
+		delay = t.Sub(now)
+	}
+	return now.Add(delay)
+}
+func minInt(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
 }
