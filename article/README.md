@@ -4,13 +4,13 @@
 
 *Photo: [King of Hearts](https://commons.wikimedia.org/wiki/File:Boston_skyline_from_Longfellow_Bridge_September_2017_panorama_2.jpg), CC BY-SA 4.0, via Wikimedia Commons*
 
-Every December I take a break from the office and use part of it to go hands on with a technology I did not have time for during the year. In past years that has meant containers, Kubernetes and Istio. Projects like this have always belonged to downtime, because downtime was the only block of time big enough to hold them. That assumption broke this year. Agents are the disruption of 2026, and I spend most of my work week thinking about how teams build with them. With an agent doing the typing, a real app now fits into a few afternoons, something both fun and interesting. So this year's holiday build is about music, and the stakes were personal instead of professional.
+Every December I take a break from the office and use part of it to go hands on with a technology I did not have time for during the year. Projects like this have always belonged to downtime, because downtime was the only block of time big enough to hold them. That assumption broke this year. With an agent doing the typing, a real app now fits into a few afternoons, something both fun and interesting. So this year's holiday build is about music, and the stakes were personal instead of professional.
 
 ### The idea
 
 Earlier this fall I wrote about the songs that stayed with me. The list started at 30 and kept growing once I stopped trying to rank them and just asked which songs had earned a permanent spot. It sits at 50 now. Each one has a few sentences in my own words about what it means and when it entered my life.
 
-The list lived in a spreadsheet, which felt like a waste. So the project became permanent-rotation, a small open source tool that turns a spreadsheet of your songs into a personal site and a Spotify playlist. My list is the sample that ships with it. The repo is built so you can fork it and make your own.
+The list lived in a spreadsheet. So the project became permanent-rotation, a small open source tool that turns a spreadsheet of your songs into a personal site and a Spotify playlist. My list is the sample that ships with it. The repo is built so you can fork it and make your own.
 
 ### What the tool does
 
@@ -25,7 +25,7 @@ A few decisions shaped everything else:
 - The Action commits the enriched data only when something changed. The diff is your audit trail, and the page footer shows "data as of".
 - There is no ranking. The site groups songs by the chapters of your life.
 
-The final round made the site itself more visual. Every card now carries its album cover from Spotify, there is a stats page (50 songs across five eras, 1971 to 2020, 25 seen live), and the titles are the official ones. That last one sounds small, but it matters to anyone who knows the songs: it is The Freshmen, not Freshman, and There Is a Light That Never Goes Out.
+The final round made the site itself more visual. Every card now carries its album cover from Spotify, there is a stats page (50 songs across five eras, 1971 to 2020, 25 seen live), and the titles are the official ones. That last one sounds small, but it shows on every card: it is The Freshmen, not Freshman, and There Is a Light That Never Goes Out.
 
 ![A song card from the live site: album cover, my memory in my own words, the AI-written background note with its source link, and the seen-live tag](../assets/article-song-card.png)
 
@@ -33,31 +33,32 @@ The final round made the site itself more visual. Every card now carries its alb
 
 ### The APIs, and why those
 
-Spotify was the obvious first choice for matching songs and building the playlist. There is a catch worth knowing about. Since February 2026, new Spotify developer apps run in Development Mode: one client ID, five authorized users, and no popularity field. That last one mattered, because I wanted every song labeled as canon, middle or deep cut.
+Spotify was the obvious first choice for matching songs and building the playlist. There is a catch worth knowing about. Since February 2026, new Spotify developer apps run in Development Mode: one client ID, five authorized users, and no popularity field. That last one mattered, because every song gets a label: canon, middle or deep cut.
 
-That is where Last.fm came in. Last.fm still exposes listener and play counts, so the tiers are computed from your own list: the top third of your songs by listeners reads as canon, the bottom third as deep cuts. It is today's popularity, not the popularity of the year the song came out, and I decided that was fine. A track that was obscure in 1987 but famous now is canon in 2026.
+That is where Last.fm came in. Last.fm still exposes listener and play counts, so the tiers are computed from your own list: the top third of your songs by listeners reads as canon, the bottom third as deep cuts. It is today's popularity, not the popularity of the year the song came out. A track that was obscure in 1987 but famous now is canon in 2026.
 
 Gemini writes the optional background notes, the short paragraphs that sit next to a song and explain where it came from. That step is opt in, paced slowly to respect the free tier, and every note must carry a source URL or it gets dropped. More on why that rule exists below.
 
-MusicBrainz was my first choice for the album and year, and it turned out to be a trusted-looking source that was wrong in a different way. Its release-group search returned a tribute album, Mayonaise Dream, when the tool asked about Mayonaise, and a Songs of Ben Folds compilation when it asked about Brick, and it rate-limited the run besides. So the album and year now come from the song's own Spotify match in the repo's data. MusicBrainz stays on as a cross-check on release years, because remastered albums often report a later year than the original. When Spotify and MusicBrainz disagree, the tool flags the disagreement instead of silently picking one.
+MusicBrainz was the first choice for the album and year, and it turned out to be a trusted-looking source that was wrong in a different way. Its release-group search returned a tribute album, Mayonaise Dream, when the tool asked about Mayonaise, and a Songs of Ben Folds compilation when it asked about Brick, and it rate-limited the run besides. So the album and year now come from the song's own Spotify match in the repo's data. MusicBrainz stays on as a cross-check on release years, because remastered albums often report a later year than the original. When Spotify and MusicBrainz disagree, the tool flags the disagreement instead of silently picking one.
 
 ### Where the agent was wrong
 
-This is the section most articles about agents skip, and I think it is the most useful part of the build.
+Most articles about agents skip this part.
 
-The first run of background notes looked great. Clean paragraphs, confident tone. Then my assistant, Instinct, checked every note against Wikipedia, and it turned out the model had invented facts with complete confidence. It said The Old Apartment was from a Barenaked Ladies album called Born on a Gerrard Street. The album is Born on a Pirate Ship. On a later run it invented a different street, Dunedin, which was almost impressive. It put Edwin McCain's I'll Be on an album called Messenger. The album is Misguided Roses. It credited Bill Berry with the piano on Nightswimming. That is Mike Mills.
+The first run of background notes looked great. Clean paragraphs, confident tone. Then my assistant, Instinct, checked every note against Wikipedia, and it turned out the model had invented facts with complete confidence. 
+- It said The Old Apartment was from a Barenaked Ladies album called Born on a Gerrard Street. The album is Born on a Pirate Ship. On a later run it invented a different street, Dunedin, which was almost impressive.
+- It put Edwin McCain's I'll Be on an album called Messenger. The album is Misguided Roses.
+- It credited Bill Berry with the piano on Nightswimming. That is Mike Mills.
 
 The fix was not to hand-edit the paragraphs. The fix was to change the generator. We tightened the prompt to say a shorter accurate note is better than a longer wrong one, deleted the bad notes, and regenerated all 41 from scratch. Most came back correct. Two songs kept failing to get a note at all, and two kept hallucinating album names no matter how the prompt read.
 
-The real fix was to stop trusting the model's memory altogether. The tool now pulls the facts first: album and release year from the song's own Spotify match, chart position and background from the song's Wikipedia article. The model gets those facts as the only ones it is allowed to use, a validator rejects any note that names a year or an album title that is not in them, and every note links to the real Wikipedia article it came from. Retrieval first, generation second.
+The real fix was to stop trusting the model's memory altogether. The tool now pulls the facts first: album and release year from the song's own Spotify match, chart position and background from the song's Wikipedia article. The model gets those facts as the only ones it is allowed to use, a validator rejects any note that names a year or an album title that is not in them, and every note links to the real Wikipedia article it came from. **Retrieval first, generation second.**
 
 ![What the model is handed for each song: verified facts from Spotify and Wikipedia, the source-URL rule, and the validator's two rejection rules](../assets/article-validator.png)
 
-The first grounded run wrote all 41 notes, and the five that had been wrong or missing came back correct. One detail I liked from that first version: for The Old Apartment, MusicBrainz knew the 1997 single and Wikipedia knew the album was Born on a Pirate Ship. The two sources covered each other's gaps, even though MusicBrainz did not survive as the album source.
+The first grounded run wrote all 41 notes, and the five that had been wrong or missing came back correct. One detail from that first version: for The Old Apartment, MusicBrainz knew the 1997 single and Wikipedia knew the album was Born on a Pirate Ship. The two sources covered each other's gaps, even though MusicBrainz did not survive as the album source.
 
-The last bug was my favorite. One of the style rules for the notes said never address the reader as you. Sensible, until you remember that three songs on my list have You in the title: With or Without You, So What'Cha Want and I Write Sins Not Tragedies. The check was rejecting their notes no matter what the model wrote, which is why those songs kept coming back empty. Fixing the rule fixed the songs.
-
-If there is one sentence to take away from this article, it is that one: I stopped trusting the model's memory and gave it sources.
+If there is one sentence to take away from this article, it is that one: **I stopped trusting the model's memory and gave it sources.**
 
 ### Where memory beats the data
 
@@ -71,7 +72,15 @@ Matching is deterministic, cached, and honest about failure. Any match the tool 
 
 ### Built without a terminal
 
-One more thing that surprised me. The entire project, from first commit to deployed site, ran through the GitHub web UI. Edit the CSV in the browser, commit, open the Actions tab, tick the box that says regenerate notes, run the workflow. The keys live in repository secrets. I never opened a terminal to build and publish the site, which made that part feel closer to maintaining a playlist than running a software project. The optional Spotify playlist script is the exception: it runs locally on my Mac. For a holiday build, that felt about right.
+One more thing worth noting. The entire project, from first commit to deployed site, ran through the GitHub web UI. Edit the CSV in the browser, commit, open the Actions tab, tick the box that says regenerate notes, run the workflow. The keys live in repository secrets.
+
+The Action is the whole backend. One workflow matches the songs against Spotify, pulls the Last.fm numbers, checks background against Wikipedia, optionally repairs a batch of Gemini notes, renders the site, commits the refreshed data back to the repo, and deploys the result to GitHub Pages. There is no web server to stand up and no API to keep alive. The API calls happen once, at build time; what Pages serves is plain files. I never opened a terminal to build and publish the site. The whole flow is closer to maintaining a playlist than running a software project. The optional Spotify playlist script is the exception: it runs locally on my Mac. For a holiday build, that felt about right.
+
+### By the numbers
+
+Some scale, at the time of writing. 106 commits on main and climbing. 13 pull requests, all merged. 55 runs of the build Action. 44 of those commits are the Action checking in refreshed data on its own; the rest are me in the browser. 106 test functions across nine test files. Go for the tool, one shell script for the playlist, 50 songs.
+
+What the numbers do not show is how it got built. This was not vibe coding, and the agent did not build it all at once. It was an iterative, agentic conversation with Instinct: a step at a time, my decisions and my merges in between, the agent doing the typing. Human in the loop, start to finish.
 
 ### Make your own
 
@@ -90,8 +99,12 @@ The README walks through getting each key step by step.
 
 ![Todd Kaplinger's public Permanent Rotation playlist on Spotify, showing 49 songs and the first tracks: Eye of the Tiger, Rock of Ages and Footloose.](../assets/spotify-playlist-public.png)
 
+### A thank you
+
+One collaborator on this build was not a person. Instinct, my AI assistant, checked the facts, ran down the setlists, and caught the details I would have shipped wrong. The invented album names are funny in this article because they got caught. Working with an agent that checks its own work against sources changed how I think about the tools I spend my week on. Thanks, Instinct.
+
 ### Wrapping up the year
 
-The habit underneath these articles is simple: I reserve December to invest in my own technical growth. Most years that becomes an article, some years it is just a project. The theme ends up the same: the best way to understand a technology is to build something you care about with it. This year I learned more about agents from watching one confidently invent a Barenaked Ladies album than from anything I read. My list is live at https://todkap.github.io/permanent-rotation/index.html if you want to see what 50 songs look like with their notes, canon labels and all.
+The habit underneath these articles is simple: I reserve December to invest in my own technical growth. Most years that becomes an article, some years it is just a project. The theme ends up the same: the best way to understand a technology is to build something you care about with it. This year, that lesson came from watching an agent confidently invent a Barenaked Ladies album. My list is live at https://todkap.github.io/permanent-rotation/index.html if you want to see what 50 songs look like with their notes, canon labels and all.
 
 Happy holidays. Go make your list.
