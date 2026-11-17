@@ -8,10 +8,15 @@ on:
         type: boolean
         default: false
       notes_batch:
-        description: 'Maximum songs to check/repair this run (1-4)'
+        description: 'Maximum songs to check/repair this run (1-50)'
         type: choice
-        options: ['4', '2', '1']
-        default: '4'
+        options: ['12', '4', '50']
+        default: '12'
+      wiki_requests:
+        description: 'Wikipedia request budget per command (enrich and notes separately)'
+        type: choice
+        options: ['60', '20', '120']
+        default: '60'
   push:
     branches: [main]
     paths: # CSV + code triggers: the generated JSON this workflow commits can never retrigger it
@@ -36,6 +41,7 @@ env:
   OUT_PATH: examples/todd/enriched.json
   CONTEXT_PATH: examples/todd/context.json
   SITE_DIR: site
+  WIKI_REQUESTS: ${{ inputs.wiki_requests || '60' }}
   # Forks: set this to your published site URL (used for link-preview tags)
   SITE_BASE: https://todkap.github.io/permanent-rotation
 
@@ -46,6 +52,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 90
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -65,7 +72,7 @@ jobs:
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
           LASTFM_API_KEY: ${{ secrets.LASTFM_API_KEY }}
-        run: go run ./cmd/songs enrich --csv "$CSV_PATH" --out "$OUT_PATH"
+        run: go run ./cmd/songs enrich --csv "$CSV_PATH" --out "$OUT_PATH" --wiki-requests "$WIKI_REQUESTS"
       - name: background notes (Gemini, opt-in per run)
         if: github.event_name == 'workflow_dispatch' && inputs.notes
         env:
@@ -73,8 +80,8 @@ jobs:
           # Optional: Settings > Secrets and variables > Actions > Variables tab.
           # Unset = empty = the tool's built-in default model.
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
-          NOTES_BATCH: ${{ inputs.notes_batch || '4' }}
-        run: go run ./cmd/songs notes --csv "$CSV_PATH" --context "$CONTEXT_PATH" --out "$OUT_PATH" --batch "$NOTES_BATCH" --pace 8
+          NOTES_BATCH: ${{ inputs.notes_batch || '12' }}
+        run: go run ./cmd/songs notes --csv "$CSV_PATH" --context "$CONTEXT_PATH" --out "$OUT_PATH" --batch "$NOTES_BATCH" --wiki-requests "$WIKI_REQUESTS" --pace 8
       - name: render site
         run: go run ./cmd/songs site --out "$OUT_PATH" --context "$CONTEXT_PATH" --site "$SITE_DIR" --base "$SITE_BASE"
       - name: commit data changes
