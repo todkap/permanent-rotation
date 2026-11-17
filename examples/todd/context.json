@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-11-16T23:43:14Z",
+  "generated_at": "2026-11-17T01:55:18Z",
   "model": "gemini-3.5-flash-lite",
   "include_memory": true,
   "notes": {
@@ -75,9 +75,13 @@
       "release_year": 1985
     },
     "hey ya|outkast": {
-      "note": "Released by Outkast in 2003 as part of the double album Speakerboxxx/The Love Below, \"Hey Ya!\" became a massive global chart-topper and defined the pop landscape of the era. The listener associates this upbeat track and its iconic music video with holding their first newborn son and working out while he slept.",
+      "note": "Performed by André 3000, \"Hey Ya!\" received critical acclaim and is consistently ranked as one of the greatest songs of the 2000s, reaching number one in multiple countries including the United States, Australia, and Canada. The listener relates this upbeat track to holding their first son and working out while the child slept.",
       "source_url": "https://en.wikipedia.org/wiki/Hey_Ya!",
-      "pending_verification": true
+      "album": "Speakerboxxx/The Love Below",
+      "release_year": 2003,
+      "source_checked_at": "2026-11-17T01:54:14Z",
+      "source_identity": "hey ya|outkast|https://en.wikipedia.org/wiki/Hey_Ya!",
+      "source_version": 2
     },
     "home sweet home|mötley crüe": {
       "note": "Released in 1985 on Mötley Crüe's album Theatre of Pain, 'Home Sweet Home' became a defining anthem of the 1980s heavy metal power ballad era. For the listener, the track captures the bittersweet transition of starting middle school and gaining independence, perfectly mirroring the feeling of moving on.",
@@ -86,6 +90,15 @@
     "i think we're alone now|tiffany": {
       "note": "Tiffany released her cover of I Think We're Alone Now as the second single from her debut studio album, Tiffany, and the track spent two weeks at No. 1 on the Billboard Hot 100 chart. The listener associates this song with their freshman year of high school and their first concert attended with cousins and a sister, recalling when Tiffany and Debbie Gibson arrived as popular mall performers of that era.",
       "source_url": "https://en.wikipedia.org/wiki/Tiffany_Darwish"
+    },
+    "i write sins not tragedies|panic! at the disco": {
+      "note": "This track by Panic! at the Disco features a pizzicato cello motif played by session musician Heather Stebbins and became one of the biggest modern rock hits of 2006. The listener gravitated toward the mid-2000s wave of rock, connecting its big hooks, fun theatrical sound, and great video with an emo-like feel alongside songs like Thnks fr th Mmrs.",
+      "source_url": "https://en.wikipedia.org/wiki/I_Write_Sins_Not_Tragedies",
+      "album": "A Fever You Can't Sweat Out",
+      "release_year": 2005,
+      "source_checked_at": "2026-11-17T01:54:14Z",
+      "source_identity": "i write sins not tragedies|panic! at the disco|https://en.wikipedia.org/wiki/I_Write_Sins_Not_Tragedies",
+      "source_version": 2
     },
     "i'll be|edwin mccain": {
       "note": "Edwin McCain released the song on his album Misguided Roses, and it eventually reached number five in the United States and number 52 in Canada. The listener associates the track with the bittersweet period when college roommates moved to different states around 1998, serving as a reminder of their time together and the start of new chapters in their lives.",
@@ -118,9 +131,13 @@
       "source_url": "https://en.wikipedia.org/wiki/My_Name_Is_Jonas"
     },
     "nightswimming|r.e.m.": {
-      "note": "Released in 1993 on the album Automatic for the People, R.E.M.'s \"Nightswimming\" features a poignant piano arrangement by bassist Mike Mills complemented by Michael Stipe's evocative vocals. For this listener, who first fell in love with alternative music through the band, the track served as close college friends' wedding song and continues to evoke deep memories of that joyful day alongside reflections on love and friendship.",
+      "note": "Originally released as a single in July 1993, the track features singer Michael Stipe accompanied by Mike Mills on piano, string arrangements by John Paul Jones, and oboe by Deborah Workman. For this listener, the song evokes fond memories of a close college friends' wedding and serves as a reflection on love and lasting friendship.",
       "source_url": "https://en.wikipedia.org/wiki/Nightswimming",
-      "pending_verification": true
+      "album": "Automatic For The People",
+      "release_year": 1992,
+      "source_checked_at": "2026-11-17T01:54:14Z",
+      "source_identity": "nightswimming|r.e.m.|https://en.wikipedia.org/wiki/Nightswimming",
+      "source_version": 2
     },
     "papercut|linkin park": {
       "note": "Released as the third single from Linkin Park's diamond-certified 2000 debut album Hybrid Theory, \"Papercut\" peaked at number 14 on the UK Singles Chart. For this listener, who transitioned from an urban rap background to grunge-loving private university peers during a period of major life changes, the track's unique blend of hip-hop and alternative rock perfectly bridged two different worlds.",
@@ -156,6 +173,15 @@
       "source_url": "https://en.wikipedia.org/wiki/Smells_Like_Teen_Spirit",
       "album": "Nevermind",
       "release_year": 1991
+    },
+    "so what'cha want|beastie boys": {
+      "note": "So What'Cha Want is a song by American hip-hop and rap rock group the Beastie Boys that also appears in the video game Rock Band 2. The listener associates the track with discovering the group independently around 1992, seeing them perform at Lollapalooza, and viewing their musical shift toward alternative sounds as a precursor to later rap rock.",
+      "source_url": "https://en.wikipedia.org/wiki/So_What%27cha_Want",
+      "album": "Check Your Head",
+      "release_year": 1992,
+      "source_checked_at": "2026-11-17T01:54:14Z",
+      "source_identity": "so what'cha want|beastie boys|https://en.wikipedia.org/wiki/So_What%27cha_Want",
+      "source_version": 2
     },
     "someday i suppose|mighty mighty bosstones": {
       "note": "Released in 1993 on the album \"Don't Know How to Party,\" the Mighty Mighty Bosstones' track \"Someday I Suppose\" exemplifies the high-energy ska-punk fusion that defined the Boston band's signature sound. For this listener, the song evokes a vivid memory of a sweaty, intense New Year's Eve concert at the Middle East basement, perfectly matching the track's driving rhythm and catchy aggression.",
@@ -228,5 +254,11 @@
   },
   "recovery_applied": {
     "3bda2900911b42c74b4241bae5611f0ac914358c": true
+  },
+  "last_attempt": {
+    "hey ya|outkast": "2026-11-17T01:54:14Z",
+    "i write sins not tragedies|panic! at the disco": "2026-11-17T01:54:14Z",
+    "nightswimming|r.e.m.": "2026-11-17T01:54:14Z",
+    "so what'cha want|beastie boys": "2026-11-17T01:54:14Z"
   }
 }
