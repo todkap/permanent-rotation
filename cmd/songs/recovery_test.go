@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"github.com/todkap/permanent-rotation/internal/csvio"
 	"github.com/todkap/permanent-rotation/internal/enrich"
+	"github.com/todkap/permanent-rotation/internal/musicbrainz"
 	"github.com/todkap/permanent-rotation/internal/notes"
+	"github.com/todkap/permanent-rotation/internal/spotify"
+	"github.com/todkap/permanent-rotation/internal/wikipedia"
 	"io"
 	"net/http"
 	"os"
@@ -273,5 +276,57 @@ func TestWorkflowRecoveryAndBatchWiring(t *testing.T) {
 	}
 	if strings.Index(s, "notes-recover --context") > strings.Index(s, "- name: enrich") {
 		t.Fatal("recovery must precede enrich")
+	}
+}
+
+func TestLaterEnrichRescuesRespectSharedCooldown(t *testing.T) {
+	for _, code := range []int{429, 503} {
+		t.Run(fmt.Sprint(code), func(t *testing.T) {
+			old := http.DefaultTransport
+			defer func() { http.DefaultTransport = old }()
+			requests := 0
+			http.DefaultTransport = noteTestTransport(func(r *http.Request) (*http.Response, error) {
+				status, body := 200, `{"recordings":[]}`
+				h := http.Header{}
+				if r.URL.Host == "en.wikipedia.org" {
+					requests++
+					status = code
+					body = "busy"
+					h.Set("Retry-After", "3600")
+					ua := r.Header.Get("User-Agent")
+					if !strings.Contains(ua, "https://github.com/todkap/permanent-rotation") {
+						t.Fatal("contact missing", ua)
+					}
+				}
+				return &http.Response{StatusCode: status, Status: fmt.Sprint(status), Header: h, Body: io.NopCloser(strings.NewReader(body)), Request: r}, nil
+			})
+			wk := wikipedia.New()
+			sp := spotify.New("", "")
+			mb := musicbrainz.New()
+			for _, song := range []string{"First", "Second", "Third"} {
+				rec := enrich.Record{Song: song, Artist: "Artist"}
+				rescueCompilationPin(sp, mb, wk, song, "Artist", "", 0, &rec)
+			}
+			if requests != 1 {
+				t.Fatal("later rescue contacted throttled source", requests)
+			}
+		})
+	}
+}
+func TestEnrichWiresOneWikipediaClientForEveryRescue(t *testing.T) {
+	b, err := os.ReadFile("main.go")
+	if err != nil {
+		t.Fatal(err)
+	}
+	s := string(b)
+	start := strings.Index(s, "func runEnrich(")
+	end := strings.Index(s[start:], "func similarTitles(")
+	enrich := s[start : start+end]
+	if strings.Count(enrich, "wk := wikipedia.New()") != 1 || strings.Count(enrich, "rescueCompilationPin(sp, mb, wk,") != 2 {
+		t.Fatal("enrich rescues do not share one client")
+	}
+	helper := s[strings.Index(s, "func rescueCompilationPin("):start]
+	if strings.Contains(helper, "wikipedia.New()") {
+		t.Fatal("rescue resets source state")
 	}
 }

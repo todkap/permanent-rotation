@@ -149,7 +149,7 @@ func adoptPin(rec *enrich.Record, best spotify.Track, why string) {
 // rescueCompilationPin returns the size of the candidate pool it searched,
 // so the caller can distinguish "original not found in the bounded Spotify searches" from
 // "candidates found but none better than the pin".
-func rescueCompilationPin(sp *spotify.Client, mb *musicbrainz.Client, song, artist, mbAlbum string, mbYear int, rec *enrich.Record) int {
+func rescueCompilationPin(sp *spotify.Client, mb *musicbrainz.Client, wk *wikipedia.Client, song, artist, mbAlbum string, mbYear int, rec *enrich.Record) int {
 	var pool []spotify.Track
 	seen := map[string]bool{rec.SpotifyID: true}
 	add := func(tracks []spotify.Track) {
@@ -188,7 +188,9 @@ func rescueCompilationPin(sp *spotify.Client, mb *musicbrainz.Client, song, arti
 			add(tracks)
 		}
 	}
-	if _, _, _, album, err := wikipedia.New().LookupRelease(song, artist, rec.Album); err == nil && album != "" {
+	if _, _, _, album, err := wk.LookupRelease(song, artist, rec.Album); err != nil {
+		report("rescue: %s - %s: Wikipedia source deferred: %v", song, artist, err)
+	} else if album != "" {
 		if tracks, err := sp.SearchAlbum(song, artist, album); err == nil {
 			add(tracks)
 		} else {
@@ -230,6 +232,7 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 	sp := spotify.New(env("SPOTIFY_CLIENT_ID"), env("SPOTIFY_CLIENT_SECRET"))
 	lf := lastfm.New(env("LASTFM_API_KEY"))
 	mb := musicbrainz.New()
+	wk := wikipedia.New() // one budget, cache and cooldown across every enrich rescue
 
 	fetched := map[string]enrich.Record{}
 	var lowConf []string
@@ -324,7 +327,7 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 			if mbErr == nil && mbYear > 0 {
 				if metadataOK && (rec.ReleaseYear > mbYear || spotify.LooksLikeCompilation(rec.Album) || rec.AlbumType == "single") {
 					before := rec.SpotifyID
-					poolSize := rescueCompilationPin(sp, mb, s.Song, s.Artist, mbAlbum, mbYear, &rec)
+					poolSize := rescueCompilationPin(sp, mb, wk, s.Song, s.Artist, mbAlbum, mbYear, &rec)
 					if rec.SpotifyID == before {
 						if poolSize == 0 {
 							report("rescue: %s - %s: original (%s %d) not found in the bounded Spotify searches, keeping %s %d", s.Song, s.Artist, mbAlbum, mbYear, rec.Album, rec.ReleaseYear)
@@ -368,7 +371,7 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 				// original album, and any remaining disagreement is flagged,
 				// never silently resolved
 				if mbAlbum, mbYear, err := mb.FirstRelease(s.Artist, s.Song); err == nil && mbYear > 0 && rec.ReleaseYear > 0 && mbYear < rec.ReleaseYear {
-					rescueCompilationPin(sp, mb, s.Song, s.Artist, mbAlbum, mbYear, &rec)
+					rescueCompilationPin(sp, mb, wk, s.Song, s.Artist, mbAlbum, mbYear, &rec)
 					rec.YearConflict = rec.ReleaseYear > mbYear
 				}
 				time.Sleep(time.Second) // musicbrainz courtesy

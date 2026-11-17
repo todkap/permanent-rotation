@@ -19,14 +19,17 @@ const MaxExtract = 1500
 type Client struct {
 	hc           *http.Client
 	apiURL       string
-	lastRequest  time.Time
+	lastRequest  time.Time // completion time, including body read and close
+	minSpacing   time.Duration
 	blockedUntil time.Time
 	cache        map[string][]byte
 	requests     int
 	retries      int
 }
 
-func New() *Client { return &Client{hc: &http.Client{Timeout: 15 * time.Second}, apiURL: apiURL} }
+func New() *Client {
+	return &Client{hc: &http.Client{Timeout: 15 * time.Second}, apiURL: apiURL, minSpacing: 5 * time.Second}
+}
 func (c *Client) Lookup(song, artist string) (string, string, string, error) {
 	t, u, e, _, err := c.LookupRelease(song, artist, "")
 	return t, u, e, err
@@ -191,15 +194,11 @@ func (c *Client) get(q url.Values) ([]byte, error) {
 	if time.Now().Before(c.blockedUntil) {
 		return nil, fmt.Errorf("wikipedia: rate-limit cooldown; retry after %s", c.blockedUntil.UTC().Format(time.RFC3339))
 	}
-	if c.apiURL == apiURL {
-		if time.Now().Before(c.blockedUntil) {
-			return nil, fmt.Errorf("wikipedia: rate-limit cooldown; retry the notes run later")
-		}
-		if wait := 5*time.Second - time.Since(c.lastRequest); wait > 0 {
-			time.Sleep(wait)
-		}
-		c.lastRequest = time.Now()
+	// Wait after the previous response has finished, not merely after its start.
+	if wait := c.minSpacing - time.Since(c.lastRequest); wait > 0 {
+		time.Sleep(wait)
 	}
+	defer func() { c.lastRequest = time.Now() }()
 	c.requests++
 	req, _ := http.NewRequest("GET", c.apiURL+"?"+q.Encode(), nil)
 	req.Header.Set("User-Agent", "PermanentRotation/0.2 (source verification; https://github.com/todkap/permanent-rotation; maintainer https://github.com/todkap)")
@@ -209,7 +208,7 @@ func (c *Client) get(q url.Values) ([]byte, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		if resp.StatusCode == 429 {
+		if resp.StatusCode == 429 || resp.StatusCode == 503 {
 			c.retries++
 			c.blockedUntil = retryUntil(resp.Header.Get("Retry-After"), time.Now(), c.retries)
 		}

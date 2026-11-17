@@ -2,6 +2,7 @@ package wikipedia
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -218,5 +219,72 @@ func TestRequestCacheAndBudget(t *testing.T) {
 	}
 	if calls != 1 {
 		t.Fatal("network after budget")
+	}
+}
+
+func Test503RetryAfterSecondsAndDate(t *testing.T) {
+	for _, h := range []string{"3600", time.Now().Add(2 * time.Hour).UTC().Format(http.TimeFormat)} {
+		t.Run(h, func(t *testing.T) {
+			calls := 0
+			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				calls++
+				w.Header().Set("Retry-After", h)
+				w.WriteHeader(503)
+			}))
+			defer srv.Close()
+			c := &Client{hc: srv.Client(), apiURL: srv.URL}
+			c.LookupRelease("Song", "Artist", "Album")
+			c.LookupRelease("Next", "Artist", "Album")
+			if calls != 1 || time.Until(c.RetryNotBefore()) < 59*time.Minute {
+				t.Fatal("503 delay/fallback", calls, c.RetryNotBefore())
+			}
+		})
+	}
+}
+func TestSharedBudgetAcrossReleaseRescues(t *testing.T) {
+	calls := 0
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls++; fmt.Fprint(w, `{"query":{"search":[]}}`) }))
+	defer srv.Close()
+	c := &Client{hc: srv.Client(), apiURL: srv.URL}
+	for i := 0; i < 30; i++ {
+		c.LookupRelease(fmt.Sprint("Song", i), "Artist", "")
+	}
+	if calls != 20 {
+		t.Fatal("shared release budget", calls)
+	}
+}
+
+type slowBody struct {
+	io.Reader
+	closed *time.Time
+}
+
+func (b slowBody) Read(p []byte) (int, error) {
+	time.Sleep(40 * time.Millisecond)
+	return b.Reader.Read(p)
+}
+func (b slowBody) Close() error { *b.closed = time.Now(); return nil }
+
+type timingTransport func(*http.Request) (*http.Response, error)
+
+func (f timingTransport) RoundTrip(r *http.Request) (*http.Response, error) { return f(r) }
+func TestSpacingAfterSlowResponseCompletion(t *testing.T) {
+	var completed time.Time
+	calls := 0
+	interval := 30 * time.Millisecond
+	c := &Client{apiURL: "https://example.invalid/api", minSpacing: interval, hc: &http.Client{Transport: timingTransport(func(r *http.Request) (*http.Response, error) {
+		calls++
+		if calls == 2 && time.Since(completed) < interval {
+			t.Fatalf("next request started %s after body closed; want >=%s", time.Since(completed), interval)
+		}
+		return &http.Response{StatusCode: 200, Body: slowBody{strings.NewReader("{}"), &completed}, Header: http.Header{}, Request: r}, nil
+	})}}
+	c.get(url.Values{"q": {"one"}})
+	c.get(url.Values{"q": {"two"}})
+	if calls != 2 {
+		t.Fatal(calls)
+	}
+	if New().minSpacing != 5*time.Second {
+		t.Fatal("production spacing not5sec")
 	}
 }
