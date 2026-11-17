@@ -1,6 +1,7 @@
 package wikipedia
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -206,7 +207,7 @@ func TestRequestCacheAndBudget(t *testing.T) {
 	calls := 0
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls++; fmt.Fprint(w, `{"query":{"search":[]}}`) }))
 	defer srv.Close()
-	c := &Client{hc: srv.Client(), apiURL: srv.URL}
+	c := &Client{hc: srv.Client(), apiURL: srv.URL, requestBudget: 20}
 	q := url.Values{"x": {"1"}}
 	c.get(q)
 	c.get(q)
@@ -245,7 +246,7 @@ func TestSharedBudgetAcrossReleaseRescues(t *testing.T) {
 	calls := 0
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { calls++; fmt.Fprint(w, `{"query":{"search":[]}}`) }))
 	defer srv.Close()
-	c := &Client{hc: srv.Client(), apiURL: srv.URL}
+	c := &Client{hc: srv.Client(), apiURL: srv.URL, requestBudget: 20}
 	for i := 0; i < 30; i++ {
 		c.LookupRelease(fmt.Sprint("Song", i), "Artist", "")
 	}
@@ -286,5 +287,35 @@ func TestSpacingAfterSlowResponseCompletion(t *testing.T) {
 	}
 	if New().minSpacing != 5*time.Second {
 		t.Fatal("production spacing not5sec")
+	}
+}
+
+func TestConfiguredBudgetAndImmediateLookupStop(t *testing.T) {
+	calls := 0
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		calls++
+		fmt.Fprint(w, `{"query":{"search":[{"title":"Song"}]}}`)
+	}))
+	defer srv.Close()
+	c := &Client{hc: srv.Client(), apiURL: srv.URL, requestBudget: 1}
+	_, _, _, _, err := c.LookupRelease("Song", "Artist", "Album")
+	if !errors.Is(err, ErrBudget) || calls != 1 || !c.BudgetExhausted() || c.Requests() != 1 {
+		t.Fatal("mid-lookup budget", calls, err)
+	}
+	c.LookupRelease("Second", "Artist", "Album")
+	if calls != 1 {
+		t.Fatal("later lookup passed budget")
+	}
+	c2 := &Client{hc: srv.Client(), apiURL: srv.URL, requestBudget: 60}
+	for i := 0; i < 60; i++ {
+		if _, err := c2.get(url.Values{"q": {fmt.Sprint(i)}}); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if !c2.BudgetExhausted() || c2.Requests() != 60 {
+		t.Fatal("larger budget not honored")
+	}
+	if NewWithBudget(120).budget() != 120 {
+		t.Fatal("full-pass budget unavailable")
 	}
 }

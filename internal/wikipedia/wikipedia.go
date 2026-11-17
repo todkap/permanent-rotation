@@ -3,6 +3,7 @@ package wikipedia
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -17,18 +18,33 @@ const apiURL = "https://en.wikipedia.org/w/api.php"
 const MaxExtract = 1500
 
 type Client struct {
-	hc           *http.Client
-	apiURL       string
-	lastRequest  time.Time // completion time, including body read and close
-	minSpacing   time.Duration
-	blockedUntil time.Time
-	cache        map[string][]byte
-	requests     int
-	retries      int
+	hc            *http.Client
+	apiURL        string
+	lastRequest   time.Time // completion time, including body read and close
+	minSpacing    time.Duration
+	blockedUntil  time.Time
+	cache         map[string][]byte
+	requests      int
+	retries       int
+	requestBudget int
 }
 
 func New() *Client {
-	return &Client{hc: &http.Client{Timeout: 15 * time.Second}, apiURL: apiURL, minSpacing: 5 * time.Second}
+	return &Client{hc: &http.Client{Timeout: 15 * time.Second}, apiURL: apiURL, minSpacing: 5 * time.Second, requestBudget: 60}
+}
+
+// NewWithBudget sets an explicit per-process outbound request ceiling.
+func NewWithBudget(budget int) *Client { c := New(); c.requestBudget = budget; return c }
+
+var ErrBudget = errors.New("wikipedia: request budget exhausted")
+
+func (c *Client) BudgetExhausted() bool { return c.requests >= c.budget() }
+func (c *Client) Requests() int         { return c.requests }
+func (c *Client) budget() int {
+	if c.requestBudget > 0 {
+		return c.requestBudget
+	}
+	return 60
 }
 func (c *Client) Lookup(song, artist string) (string, string, string, error) {
 	t, u, e, _, err := c.LookupRelease(song, artist, "")
@@ -50,7 +66,7 @@ func (c *Client) LookupRelease(song, artist, album string) (title, pageURL, extr
 		titles, e := c.searchTitles(query)
 		if e != nil {
 			lastErr = e
-			if !c.RetryNotBefore().IsZero() {
+			if errors.Is(e, ErrBudget) || !c.RetryNotBefore().IsZero() {
 				return "", "", "", "", e
 			}
 			continue
@@ -63,7 +79,7 @@ func (c *Client) LookupRelease(song, artist, album string) (title, pageURL, extr
 			page, e := c.page(t)
 			if e != nil {
 				lastErr = e
-				if !c.RetryNotBefore().IsZero() {
+				if errors.Is(e, ErrBudget) || !c.RetryNotBefore().IsZero() {
 					return "", "", "", "", e
 				}
 				continue
@@ -188,8 +204,8 @@ func (c *Client) get(q url.Values) ([]byte, error) {
 	if b, ok := c.cache[key]; ok {
 		return b, nil
 	}
-	if c.requests >= 20 {
-		return nil, fmt.Errorf("wikipedia: batch request budget reached; deferred")
+	if c.BudgetExhausted() {
+		return nil, ErrBudget
 	}
 	if time.Now().Before(c.blockedUntil) {
 		return nil, fmt.Errorf("wikipedia: rate-limit cooldown; retry after %s", c.blockedUntil.UTC().Format(time.RFC3339))
