@@ -80,7 +80,7 @@ The Action is the whole backend. One workflow matches the songs against Spotify,
 
 Some scale, at the time of writing. 106 commits on main and climbing. 13 pull requests, all merged. 55 runs of the build Action. 44 of those commits are the Action checking in refreshed data on its own; the rest are me in the browser. 106 test functions across nine test files. Go for the tool, one shell script for the playlist, 50 songs.
 
-What the numbers do not show is how it got built. This was not vibe coding, and the agent did not build it all at once. It was an iterative, agentic conversation with Instinct: a step at a time, my decisions and my merges in between, the agent doing the typing. Human in the loop, start to finish.
+What the numbers do not show is how it got built. Not in one shot, and not by handing an agent a prompt and walking away. It was an iterative, agentic conversation with Instinct: a step at a time, my decisions and my merges in between, the agent doing the typing. Human in the loop, start to finish.
 
 ### Make your own
 
