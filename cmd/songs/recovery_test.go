@@ -269,7 +269,7 @@ func TestWorkflowRecoveryAndBatchWiring(t *testing.T) {
 		t.Fatal(err)
 	}
 	s := string(b)
-	for _, want := range []string{"ref: ${{ github.ref_name }}", "fetch-depth: 0", "if: github.repository == 'todkap/permanent-rotation'", "--batch \"$NOTES_BATCH\" --pace 8", "options: ['4', '2', '1']"} {
+	for _, want := range []string{"ref: ${{ github.ref_name }}", "fetch-depth: 0", "if: github.repository == 'todkap/permanent-rotation'", "--batch \"$NOTES_BATCH\" --wiki-requests \"$WIKI_REQUESTS\" --pace 8", "options: ['12', '4', '50']"} {
 		if !strings.Contains(s, want) {
 			t.Fatal("workflow missing", want)
 		}
@@ -322,11 +322,169 @@ func TestEnrichWiresOneWikipediaClientForEveryRescue(t *testing.T) {
 	start := strings.Index(s, "func runEnrich(")
 	end := strings.Index(s[start:], "func similarTitles(")
 	enrich := s[start : start+end]
-	if strings.Count(enrich, "wk := wikipedia.New()") != 1 || strings.Count(enrich, "rescueCompilationPin(sp, mb, wk,") != 2 {
+	if strings.Count(enrich, "wk := wikipedia.NewWithBudget(wikiRequests)") != 1 || strings.Count(enrich, "rescueCompilationPin(sp, mb, wk,") != 2 {
 		t.Fatal("enrich rescues do not share one client")
 	}
 	helper := s[strings.Index(s, "func rescueCompilationPin("):start]
 	if strings.Contains(helper, "wikipedia.New()") {
 		t.Fatal("rescue resets source state")
+	}
+}
+
+func TestConfigurableLimits(t *testing.T) {
+	for _, pair := range [][2]int{{4, 20}, {12, 60}, {50, 120}} {
+		if err := validateLimits(pair[0], pair[1]); err != nil {
+			t.Fatal(pair, err)
+		}
+	}
+	for _, pair := range [][2]int{{0, 20}, {51, 60}, {12, 0}, {12, 121}} {
+		if validateLimits(pair[0], pair[1]) == nil {
+			t.Fatal("accepted invalid limits", pair)
+		}
+	}
+}
+func TestBudgetStopsNotesWithoutAttemptingRemaining(t *testing.T) {
+	oldTransport := http.DefaultTransport
+	defer func() { http.DefaultTransport = oldTransport }()
+	oldBatch, oldBudget := notesBatch, wikiRequests
+	notesBatch, wikiRequests = 50, 1
+	defer func() { notesBatch, wikiRequests = oldBatch, oldBudget }()
+	calls := 0
+	http.DefaultTransport = noteTestTransport(func(r *http.Request) (*http.Response, error) {
+		calls++
+		return &http.Response{StatusCode: 200, Body: io.NopCloser(strings.NewReader(`{"query":{"search":[{"title":"Song0"}]}}`)), Header: http.Header{}, Request: r}, nil
+	})
+	dir := t.TempDir()
+	csv := filepath.Join(dir, "songs.csv")
+	ctx := filepath.Join(dir, "context.json")
+	ef := filepath.Join(dir, "enriched.json")
+	text := "song,artist,era,tags,memory,angle\n"
+	c := &notes.Context{Notes: map[string]notes.Note{}}
+	e := &enrich.File{}
+	for i := 0; i < 3; i++ {
+		song := fmt.Sprint("Song", i)
+		text += song + ",Artist,College (~1992),,,\n"
+		c.Notes[notes.Key(song, "Artist")] = notes.Note{Note: "Existing note.", SourceURL: "https://en.wikipedia.org/wiki/Bad?", PendingVerification: true}
+		e.Songs = append(e.Songs, enrich.Record{Song: song, Artist: "Artist", ReleaseChanged: true})
+	}
+	os.WriteFile(csv, []byte(text), 0600)
+	c.Save(ctx)
+	e.Save(ef)
+	runNotes(csv, ctx, ef, 1, false, false, 0)
+	got, _ := notes.Load(ctx)
+	gotE, _ := enrich.LoadFile(ef)
+	if calls != 1 || len(got.LastAttempt) != 1 {
+		t.Fatal("budget ran beyond first partial song", calls, got.LastAttempt)
+	}
+	for k, n := range c.Notes {
+		if got.Notes[k] != n {
+			t.Fatal("budget changed prior text", k)
+		}
+	}
+	for _, r := range gotE.Songs {
+		if !r.ReleaseChanged {
+			t.Fatal("budget cleared marker")
+		}
+	}
+}
+func TestFiftySongPassSkipsPersistedSources(t *testing.T) {
+	oldTransport := http.DefaultTransport
+	defer func() { http.DefaultTransport = oldTransport }()
+	http.DefaultTransport = noteTestTransport(func(r *http.Request) (*http.Response, error) {
+		t.Fatal("fresh persisted source caused network")
+		return nil, nil
+	})
+	oldBatch, oldBudget := notesBatch, wikiRequests
+	notesBatch, wikiRequests = 50, 120
+	defer func() { notesBatch, wikiRequests = oldBatch, oldBudget }()
+	dir := t.TempDir()
+	csv := filepath.Join(dir, "songs.csv")
+	ctx := filepath.Join(dir, "context.json")
+	ef := filepath.Join(dir, "enriched.json")
+	text := "song,artist,era,tags,memory,angle\n"
+	c := &notes.Context{Notes: map[string]notes.Note{}}
+	e := &enrich.File{}
+	for i := 0; i < 50; i++ {
+		song := fmt.Sprint("Song", i)
+		text += song + ",Artist,College (~1992),,,\n"
+		n := notes.Note{Note: "Verified note.", SourceURL: "https://en.wikipedia.org/wiki/" + song, Album: "Album", ReleaseYear: 1991}
+		stampSource(&n, song, "Artist", time.Now())
+		c.Notes[notes.Key(song, "Artist")] = n
+		e.Songs = append(e.Songs, enrich.Record{Song: song, Artist: "Artist", Album: "Album", ReleaseYear: 1991})
+	}
+	os.WriteFile(csv, []byte(text), 0600)
+	c.Save(ctx)
+	e.Save(ef)
+	runNotes(csv, ctx, ef, 1, false, false, 0)
+	got, _ := notes.Load(ctx)
+	if len(got.Notes) != 50 || len(got.LastAttempt) != 0 {
+		t.Fatal("full verified pass did not skip safely")
+	}
+}
+func TestWorkflowConfigurableBudgets(t *testing.T) {
+	b, err := os.ReadFile("../../.github/workflows/build.yml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	s := string(b)
+	for _, want := range []string{"default: '12'", "options: ['60', '20', '120']", "default: '60'", "timeout-minutes: 90"} {
+		if !strings.Contains(s, want) {
+			t.Fatal("missing workflow config", want)
+		}
+	}
+	if strings.Count(s, "--wiki-requests \"$WIKI_REQUESTS\"") != 2 {
+		t.Fatal("both commands need explicit budget")
+	}
+}
+
+func TestLimitsStopBetweenSongsWithoutAttemptingTail(t *testing.T) {
+	for _, code := range []int{200, 429, 503} {
+		t.Run(fmt.Sprint(code), func(t *testing.T) {
+			oldTransport := http.DefaultTransport
+			defer func() { http.DefaultTransport = oldTransport }()
+			oldBatch, oldBudget := notesBatch, wikiRequests
+			notesBatch, wikiRequests = 50, 1
+			defer func() { notesBatch, wikiRequests = oldBatch, oldBudget }()
+			calls := 0
+			http.DefaultTransport = noteTestTransport(func(r *http.Request) (*http.Response, error) {
+				calls++
+				return &http.Response{StatusCode: code, Status: fmt.Sprint(code), Header: http.Header{"Retry-After": []string{"3600"}}, Body: io.NopCloser(strings.NewReader(`{"query":{"pages":{"1":{"title":"Song0","fullurl":"https://en.wikipedia.org/wiki/Song0","extract":"Song0 is a song by Artist."}}}}`)), Request: r}, nil
+			})
+			dir := t.TempDir()
+			csv := filepath.Join(dir, "songs.csv")
+			ctx := filepath.Join(dir, "context.json")
+			ef := filepath.Join(dir, "enriched.json")
+			text := "song,artist,era,tags,memory,angle\n"
+			c := &notes.Context{Notes: map[string]notes.Note{}}
+			e := &enrich.File{}
+			for i := 0; i < 3; i++ {
+				song := fmt.Sprint("Song", i)
+				text += song + ",Artist,College (~1992),,,\n"
+				c.Notes[notes.Key(song, "Artist")] = notes.Note{Note: "Existing note.", SourceURL: "https://en.wikipedia.org/wiki/" + song}
+				e.Songs = append(e.Songs, enrich.Record{Song: song, Artist: "Artist"})
+			}
+			os.WriteFile(csv, []byte(text), 0600)
+			c.Save(ctx)
+			e.Save(ef)
+			runNotes(csv, ctx, ef, 1, false, false, 0)
+			got, _ := notes.Load(ctx)
+			if calls != 1 || len(got.LastAttempt) != 1 {
+				t.Fatal("remaining songs counted attempted", calls, got.LastAttempt)
+			}
+			for k, n := range c.Notes {
+				if got.Notes[k].Note != n.Note {
+					t.Fatal("existing text lost", k)
+				}
+			}
+			for _, song := range []string{"Song1", "Song2"} {
+				k := notes.Key(song, "Artist")
+				if got.Notes[k] != c.Notes[k] {
+					t.Fatal("tail note changed", k)
+				}
+			}
+			if code != 200 && got.RetryNotBefore == "" {
+				t.Fatal("cooldown not persisted")
+			}
+		})
 	}
 }

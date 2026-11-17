@@ -8,6 +8,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -52,9 +53,14 @@ func main() {
 	includeMemory := fs.Bool("include-memory", true, "send memory text to the model (opt out with -include-memory=false)")
 	paceSecs := fs.Int("pace", 5, "seconds between Gemini requests (free tier allows 15/min; lower this on a paid tier)")
 	forceNotes := fs.Bool("force", false, "notes: regenerate even songs that already have a note (default fills only missing ones)")
-	batch := fs.Int("batch", 4, "maximum songs making source requests per notes run")
+	batch := fs.Int("batch", 12, "maximum songs making source requests per notes run")
+	requestBudget := fs.Int("wiki-requests", 60, "maximum outbound Wikipedia requests per command (1-120)")
 	recoveryRef := fs.String("recovery-ref", "", "one-time restore of missing notes from this git commit")
 	fs.Parse(args)
+	if err := validateLimits(*batch, *requestBudget); err != nil {
+		fail(err)
+	}
+	wikiRequests = *requestBudget
 
 	switch cmd {
 	case "enrich":
@@ -72,9 +78,7 @@ func main() {
 			fail(err)
 		}
 	case "notes":
-		if *batch < 1 || *batch > 4 {
-			fail(fmt.Errorf("notes batch must be between 1 and 4"))
-		}
+
 		notesBatch = *batch
 		runNotes(*csvPath, *contextPath, *outPath, *minSongs, *includeMemory, *forceNotes, time.Duration(*paceSecs)*time.Second)
 	default:
@@ -232,7 +236,7 @@ func runEnrich(csvPath, outPath string, minSongs int) {
 	sp := spotify.New(env("SPOTIFY_CLIENT_ID"), env("SPOTIFY_CLIENT_SECRET"))
 	lf := lastfm.New(env("LASTFM_API_KEY"))
 	mb := musicbrainz.New()
-	wk := wikipedia.New() // one budget, cache and cooldown across every enrich rescue
+	wk := wikipedia.NewWithBudget(wikiRequests) // one budget, cache and cooldown across every enrich rescue
 
 	fetched := map[string]enrich.Record{}
 	var lowConf []string
@@ -602,7 +606,7 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 		}
 	}
 	g := gemini.New(env("GEMINI_API_KEY"), env("GEMINI_MODEL"))
-	wk := wikipedia.New()
+	wk := wikipedia.NewWithBudget(wikiRequests)
 	var ef *enrich.File
 	enriched := map[string]*enrich.Record{}
 	if f, err := enrich.LoadFile(enrichedPath); err != nil {
@@ -637,7 +641,7 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 	if ctx.LastAttempt == nil {
 		ctx.LastAttempt = map[string]string{}
 	}
-	for _, s := range songs {
+	for songIndex, s := range songs {
 		k := notes.Key(s.Song, s.Artist)
 		rec, haveRec := enriched[k]
 		old, hasOld := ctx.Notes[k]
@@ -649,9 +653,13 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 			report("note: skipped (persisted verified source): %s - %s", s.Song, s.Artist)
 			continue
 		}
-		if remoteSongs >= notesBatch {
-			report("note: deferred (batch limit %d, unchanged): %s - %s", notesBatch, s.Song, s.Artist)
-			continue
+		if remoteSongs >= notesBatch || wk.BudgetExhausted() {
+			reason := fmt.Sprintf("song limit %d", notesBatch)
+			if wk.BudgetExhausted() {
+				reason = fmt.Sprintf("Wikipedia request budget %d", wikiRequests)
+			}
+			deferRemaining(songs[songIndex:], reason)
+			break
 		}
 		remoteSongs++
 		ctx.LastAttempt[k] = now.Format(time.RFC3339)
@@ -659,8 +667,13 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 			canonical, ok, sourceErr := wk.CheckSource(old.SourceURL, s.Song, s.Artist, cleanAlbum(recAlbum(rec)))
 			if sourceErr != nil {
 				report("note: deferred (source UNKNOWN, existing text/marker unchanged): %s - %s: %v", s.Song, s.Artist, sourceErr)
+				if errors.Is(sourceErr, wikipedia.ErrBudget) {
+					deferRemaining(songs[songIndex+1:], "Wikipedia request budget exhausted")
+					break
+				}
 				if until := wk.RetryNotBefore(); !until.IsZero() {
 					recordThrottle(ctx, until, now)
+					deferRemaining(songs[songIndex+1:], "source cooldown")
 					break
 				}
 				continue
@@ -719,8 +732,13 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 		wikiURL := ""
 		if wTitle, wURL, wExtract, _, sourceErr := wk.LookupRelease(s.Song, s.Artist, cleanAlbum(recAlbum(rec))); sourceErr != nil {
 			report("note: deferred (fresh source UNKNOWN, no destructive validation): %s - %s: %v", s.Song, s.Artist, sourceErr)
+			if errors.Is(sourceErr, wikipedia.ErrBudget) {
+				deferRemaining(songs[songIndex+1:], "Wikipedia request budget exhausted")
+				break
+			}
 			if until := wk.RetryNotBefore(); !until.IsZero() {
 				recordThrottle(ctx, until, now)
+				deferRemaining(songs[songIndex+1:], "source cooldown")
 				break
 			}
 			continue
@@ -840,6 +858,7 @@ func runNotes(csvPath, contextPath, enrichedPath string, minSongs int, includeMe
 		}
 	}
 	report("notes: %d written, %d skipped (existing), %d retries, %d kept old after failed regeneration, %d existing removed, %d missing/no note written; %d source-check songs (limit %d) -> %s", added, skipped, retried, kept, dropped, missing, remoteSongs, notesBatch, contextPath)
+	report("Wikipedia: %d/%d outbound requests used in notes", wk.Requests(), wikiRequests)
 	fmt.Println("Review the generated note diff and published facts. The supplied Action commits and deploys automatically; it has no human review gate.")
 	flushSummary("Notes: per-song outcomes")
 }
@@ -863,7 +882,24 @@ func noteAlbumIssue(text string, rec *enrich.Record) string {
 	return notes.AlbumYearIssue(text, cleanAlbum(rec.Album), rec.ReleaseYear)
 }
 
-var notesBatch = 4
+var notesBatch = 12
+var wikiRequests = 60
+
+func validateLimits(songs, requests int) error {
+	if songs < 1 || songs > 50 {
+		return fmt.Errorf("notes batch must be between 1 and 50")
+	}
+	if requests < 1 || requests > 120 {
+		return fmt.Errorf("Wikipedia request budget must be between 1 and 120")
+	}
+	return nil
+}
+func deferRemaining(songs []csvio.Song, reason string) {
+	report("notes: stopping; %d remaining songs deferred, not attempted (%s)", len(songs), reason)
+	for _, s := range songs {
+		report("note: deferred (not attempted; %s): %s - %s", reason, s.Song, s.Artist)
+	}
+}
 
 const sourceVersion = 2
 
