@@ -2,7 +2,7 @@
 
 Create a playlist from your Permanent Rotation timeline, from the tracks linked on your site. Browser sign-in uses your **Client ID, not your Client Secret**. Nothing is created until you type `confirm`.
 
-[[Live sample site](https://todkap.github.io/permanent-rotation/index.html) · [Public Spotify playlist](https://open.spotify.com/playlist/3Mx9a5o9ZQW5v6nqoKUllO) · [The story behind it](https://www.linkedin.com/pulse/permanent-rotation-agentic-project-end-year-todd-kaplinger-nky5c/) · [Todd's sample data](examples/todd/) · [Local playlist guide](scripts/README.md)
+[Live sample site](https://todkap.github.io/permanent-rotation/index.html) · [Public Spotify playlist](https://open.spotify.com/playlist/3Mx9a5o9ZQW5v6nqoKUllO) · [The story behind it](https://www.linkedin.com/pulse/permanent-rotation-agentic-project-end-year-todd-kaplinger-nky5c/) · [Todd's sample data](examples/todd/) · [Local playlist guide](scripts/README.md)
 
 
 ## On this page
