@@ -2,7 +2,8 @@
 
 Turn a spreadsheet of songs that stayed with you into a personal music timeline. A small Go tool and GitHub Action add labeled music data; an optional local Mac script creates the Spotify playlist. Your words stay the source of truth.
 
-[Live sample site](https://todkap.github.io/permanent-rotation/index.html) · [Public Spotify playlist](https://open.spotify.com/playlist/3Mx9a5o9ZQW5v6nqoKUllO) · [Todd's sample data](examples/todd/) · [Local playlist guide](scripts/README.md)
+[Live sample site](https://todkap.github.io/permanent-rotation/index.html) · [Public Spotify playlist](https://open.spotify.com/playlist/3Mx9a5o9ZQW5v6nqoKUllO) · [The story behind it](https://www.linkedin.com/pulse/permanent-rotation-agentic-project-end-year-todd-kaplinger-nky5c/) · [Todd's sample data](examples/todd/) · [Local playlist guide](scripts/README.md)
+(https://open.spotify.com/playlist/3Mx9a5o9ZQW5v6nqoKUllO) · [Todd's sample data](examples/todd/) · [Local playlist guide](scripts/README.md)
 
 The sample has 50 songs and a 49-track playlist. Deep Cover is omitted from Spotify because it has no match.
 
